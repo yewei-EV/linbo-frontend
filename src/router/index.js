@@ -371,12 +371,12 @@ export const asyncRouterMap = [
         component: () => import('@/views/lms/item/index'),
         meta: {title: '货物列表', icon: 'ums-admin'},
       },
-      // {
-      //   path: 'order',
-      //   name: 'order',
-      //   component: () => import('@/views/item/order/index'),
-      //   meta: {title: '订单列表', icon: 'ums-role'}
-      // }
+      {
+        path: 'order',
+        name: 'order',
+        component: () => import('@/views/lms/order/index'),
+        meta: {title: '订单列表', icon: 'ums-role'}
+      }
     ]
   },
   {path: '*', redirect: '/404', hidden: true}

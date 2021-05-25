@@ -41,19 +41,63 @@ export function fetchItemList(params) {
   })
 }
 
-export function createAdmin(data) {
+export function fetchItemOrders(itemId) {
   return request({
-    url: '/admin/register',
+    url: '/item/order/' + itemId,
+    method: 'get',
+  })
+}
+
+export function fetchOrderList(params) {
+  return request({
+    url: '/order/list',
+    method: 'get',
+    params: params
+  })
+}
+
+export function createItem(data) {
+  return request({
+    url: '/item/create',
     method: 'post',
     data: data
   })
 }
 
-export function updateAdmin(id, data) {
+export function updateItem(data) {
   return request({
-    url: '/admin/update/' + id,
+    url: '/item/update/' + data.id,
     method: 'post',
     data: data
+  })
+}
+export function deleteItem(id) {
+  return request({
+    url: '/item/delete/',
+    method: 'post',
+    params: {'ids': id}
+  })
+}
+export function createOrder(data) {
+  return request({
+    url: '/order/create',
+    method: 'post',
+    data: data
+  })
+}
+
+export function updateOrder(data) {
+  return request({
+    url: '/order/update/' + data.id,
+    method: 'post',
+    data: data
+  })
+}
+export function deleteOrder(id) {
+  return request({
+    url: '/order/delete/',
+    method: 'post',
+    params: {'ids': id}
   })
 }
 

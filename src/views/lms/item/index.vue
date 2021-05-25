@@ -29,14 +29,8 @@
           <el-form-item label="识别码：">
             <el-input v-model="listQuery.userSn" class="input-width" placeholder="识别码" clearable></el-input>
           </el-form-item>
-          <el-form-item label="收件地点：">
-            <el-input v-model="listQuery.location" class="input-width" placeholder="收件地点" clearable></el-input>
-          </el-form-item>
           <el-form-item label="备注：">
             <el-input v-model="listQuery.note" class="input-width" placeholder="备注" clearable></el-input>
-          </el-form-item>
-          <el-form-item label="创建时间：">
-            <el-input v-model="listQuery.createTime" class="input-width" placeholder="创建时间" clearable></el-input>
           </el-form-item>
           <el-form-item label="SKU：">
             <el-input v-model="listQuery.sku" class="input-width" placeholder="SKU" clearable></el-input>
@@ -44,14 +38,32 @@
           <el-form-item label="尺寸：">
             <el-input v-model="listQuery.size" class="input-width" placeholder="尺寸" clearable></el-input>
           </el-form-item>
+          <el-form-item label="收件地点：">
+            <el-select v-model="listQuery.location" placeholder="全部" clearable style="width: 177px">
+              <el-option v-for="item in regionOptions"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
           <el-form-item label="货物状态：">
-            <el-select v-model="listQuery.status" placeholder="全部" clearable class="input-width">
+            <el-select v-model="listQuery.status" placeholder="全部" clearable style="width: 177px">
               <el-option v-for="item in statusOptions"
                          :key="item.value"
                          :label="item.label"
                          :value="item.value">
               </el-option>
             </el-select>
+          </el-form-item>
+          <el-form-item label="创建时间：">
+            <el-date-picker
+              style="width: 177px"
+              v-model="listQuery.createTime"
+              value-format="yyyy-MM-dd"
+              type="date"
+              placeholder="请选择时间">
+            </el-date-picker>
           </el-form-item>
         </el-form>
       </div>
@@ -62,17 +74,18 @@
       <el-button size="mini" class="btn-add" @click="handleAdd()" style="margin-left: 20px">添加</el-button>
     </el-card>
     <div class="table-container">
-      <el-table ref="adminTable"
+      <el-table ref="itemTable"
                 :data="list"
                 style="width: 100%;"
                 v-loading="listLoading" border>
+        <el-table-column type="selection" width="40" align="center"></el-table-column>
         <el-table-column label="序列号" width="90" align="center">
           <template slot-scope="scope">{{scope.row.locator}}</template>
         </el-table-column>
         <el-table-column label="运单号" width="160" align="center">
           <template slot-scope="scope">{{scope.row.deliverySn}}</template>
         </el-table-column>
-        <el-table-column label="识别码" align="center">
+        <el-table-column label="识别码" width="160" align="center">
           <template slot-scope="scope">{{scope.row.userSn}}</template>
         </el-table-column>
         <el-table-column label="地点" width="50" align="center">
@@ -90,19 +103,17 @@
         <el-table-column label="备注" width="100" align="center">
           <template slot-scope="scope">{{scope.row.note}}</template>
         </el-table-column>
+        <el-table-column label="最新订单" width="100" align="center">
+          <template slot-scope="scope">{{ scope.row.orders?scope.row.orders[0].action:null }}</template>
+        </el-table-column>
         <el-table-column label="货物状态" width="80" align="center">
           <template slot-scope="scope">{{statusOptions[scope.row.status].label}}</template>
         </el-table-column>
-        <el-table-column label="操作" width="180" align="center">
+        <el-table-column label="操作" width="100" align="center">
           <template slot-scope="scope">
             <el-button size="mini"
                        type="text"
-                       @click="handleSelectRole(scope.$index, scope.row)">分配角色
-            </el-button>
-            <el-button size="mini"
-                       type="text"
-                       @click="handleUpdate(scope.$index, scope.row)">
-              编辑
+                       @click="handleUpdate(scope.row)">编辑
             </el-button>
             <el-button size="mini"
                        type="text"
@@ -111,6 +122,26 @@
           </template>
         </el-table-column>
       </el-table>
+    </div>
+    <div class="batch-operate-container">
+      <el-select
+        size="small"
+        v-model="operateType" placeholder="批量操作">
+        <el-option
+          v-for="item in operateOptions"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value">
+        </el-option>
+      </el-select>
+      <el-button
+        style="margin-left: 20px"
+        class="search-button"
+        @click="handleBatchOperate()"
+        type="primary"
+        size="small">
+        确定
+      </el-button>
     </div>
     <div class="pagination-container">
       <el-pagination
@@ -125,35 +156,44 @@
       </el-pagination>
     </div>
     <el-dialog
-      :title="isEdit?'编辑用户':'添加用户'"
+      :title="isEdit?'编辑货物':'添加货物'"
       :visible.sync="dialogVisible"
-      width="40%">
-      <el-form :model="admin"
-               ref="adminForm"
-               label-width="150px" size="small">
-        <el-form-item label="帐号：">
-          <el-input v-model="admin.username" style="width: 250px"></el-input>
+      width="80%">
+      <el-form :inline="true" :model="item"
+               ref="itemForm"
+               label-width="180px" size="small">
+        <el-form-item label="序列号：">
+          <el-input v-model="item.locator" style="width: 250px"></el-input>
         </el-form-item>
-        <el-form-item label="姓名：">
-          <el-input v-model="admin.nickName" style="width: 250px"></el-input>
+        <el-form-item label="运单号：">
+          <el-input v-model="item.deliverySn" style="width: 250px"></el-input>
         </el-form-item>
-        <el-form-item label="邮箱：">
-          <el-input v-model="admin.email" style="width: 250px"></el-input>
+        <el-form-item label="识别码：">
+          <el-input v-model="item.userSn" style="width: 250px"></el-input>
         </el-form-item>
-        <el-form-item label="密码：">
-          <el-input v-model="admin.password"  type="password" style="width: 250px"></el-input>
+        <el-form-item label="地点：">
+          <el-select v-model="item.location" placeholder="全部" clearable class="input-width" style="width: 250px">
+            <el-option v-for="item in regionOptions"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
+        <el-form-item label="SKU：">
+          <el-input v-model="item.sku" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="尺寸：">
+          <el-input v-model="item.size" style="width: 250px"></el-input>
+        </el-form-item>
+<!--        <el-form-item label="状态：">-->
+<!--          <el-input v-model="item.status" style="width: 250px"></el-input>-->
+<!--        </el-form-item>-->
         <el-form-item label="备注：">
-          <el-input v-model="admin.note"
+          <el-input v-model="item.note"
                     type="textarea"
-                    :rows="5"
+                    :rows="1"
                     style="width: 250px"></el-input>
-        </el-form-item>
-        <el-form-item label="是否启用：">
-          <el-radio-group v-model="admin.status">
-            <el-radio :label="1">是</el-radio>
-            <el-radio :label="0">否</el-radio>
-          </el-radio-group>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -161,30 +201,12 @@
         <el-button type="primary" @click="handleDialogConfirm()" size="small">确 定</el-button>
       </span>
     </el-dialog>
-    <el-dialog
-      title="分配角色"
-      :visible.sync="allocDialogVisible"
-      width="30%">
-      <el-select v-model="allocRoleIds" multiple placeholder="请选择" size="small" style="width: 80%">
-        <el-option
-          v-for="item in allRoleList"
-          :key="item.id"
-          :label="item.name"
-          :value="item.id">
-        </el-option>
-      </el-select>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="allocDialogVisible = false" size="small">取 消</el-button>
-        <el-button type="primary" @click="handleAllocDialogConfirm()" size="small">确 定</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 <script>
-  import {createAdmin,updateAdmin,updateStatus,deleteAdmin,getRoleByAdmin,allocRole} from '@/api/login';
-  import {fetchAllRoleList} from '@/api/role';
+  import {createItem,updateItem,updateStatus,deleteItem,getRoleByAdmin} from '@/api/login';
   import {formatDate} from '@/utils/date';
-  import {fetchItemList} from "../../../api/login";
+  import {fetchItemList,fetchItemOrders,getInfo} from "../../../api/login";
 
   const defaultListQuery = {
     pageNum: 1,
@@ -197,38 +219,67 @@
     createTime: null,
     sku: null,
     size: null,
-    status: null
+    status: null,
+    orders: []
   };
-  const defaultAdmin = {
+  const defaultItem = {
     id: null,
-    username: null,
-    password: null,
-    nickName: null,
-    email: null,
+    locator: null,
+    deliverySn: null,
+    userSn: null,
+    location: null,
     note: null,
-    status: 1
+    createTime: null,
+    sku: null,
+    size: null,
+    status: null,
+    orders: [],
   };
   export default {
     name: 'itemList',
     data() {
       return {
+        userInfo: null,
         listQuery: Object.assign({}, defaultListQuery),
-        statusOptions: [{label:"未入库",value:0}, {label:"已入库",value:1}],
+        statusOptions: [
+          {label:"未入库", value:0},
+          {label:"已入库", value:1}
+        ],
+        regionOptions: [
+          {label:"美国", value:'US'},
+          {label:"西班牙", value:'SP'},
+          {label:"欧洲", value:'EU'}
+        ],
         list: null,
         total: null,
         listLoading: false,
         dialogVisible: false,
-        admin: Object.assign({}, defaultAdmin),
+        item: Object.assign({}, defaultItem),
         isEdit: false,
         allocDialogVisible: false,
         allocRoleIds:[],
         allRoleList:[],
-        allocAdminId:null
+        allocAdminId:null,
+        operateType: null,
+        operateOptions: [
+          {
+            label: "批量发货",
+            value: 1
+          },
+          {
+            label: "关闭订单",
+            value: 2
+          },
+          {
+            label: "删除订单",
+            value: 3
+          }
+        ]
       }
     },
     created() {
       this.getList();
-      this.getAllRoleList();
+      this.getUserInfo();
     },
     filters: {
       formatDateTime(time) {
@@ -236,7 +287,7 @@
           return 'N/A';
         }
         let date = new Date(time);
-        return formatDate(date, 'yyyy-MM-dd hh:mm:ss')
+        return formatDate(date, 'yyyy-MM-dd hh:mm')
       }
     },
     methods: {
@@ -259,7 +310,7 @@
       handleAdd() {
         this.dialogVisible = true;
         this.isEdit = false;
-        this.admin = Object.assign({},defaultAdmin);
+        this.item = Object.assign({}, defaultItem);
       },
       handleStatusChange(index, row) {
         this.$confirm('是否要修改该状态?', '提示', {
@@ -282,12 +333,12 @@
         });
       },
       handleDelete(index, row) {
-        this.$confirm('是否要删除该用户?', '提示', {
+        this.$confirm('是否要删除该货物?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteAdmin(row.id).then(response => {
+          deleteItem(row.id).then(response => {
             this.$message({
               type: 'success',
               message: '删除成功!'
@@ -296,10 +347,10 @@
           });
         });
       },
-      handleUpdate(index, row) {
+      handleUpdate(row) {
         this.dialogVisible = true;
         this.isEdit = true;
-        this.admin = Object.assign({},row);
+        this.item = Object.assign({},row);
       },
       handleDialogConfirm() {
         this.$confirm('是否要确认?', '提示', {
@@ -308,7 +359,7 @@
           type: 'warning'
         }).then(() => {
           if (this.isEdit) {
-            updateAdmin(this.admin.id,this.admin).then(response => {
+            updateItem(this.item).then(response => {
               this.$message({
                 message: '修改成功！',
                 type: 'success'
@@ -317,7 +368,8 @@
               this.getList();
             })
           } else {
-            createAdmin(this.admin).then(response => {
+            this.item.createTime = new Date();
+            createItem(this.item).then(response => {
               this.$message({
                 message: '添加成功！',
                 type: 'success'
@@ -328,40 +380,27 @@
           }
         })
       },
-      handleAllocDialogConfirm(){
-        this.$confirm('是否要确认?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          let params = new URLSearchParams();
-          params.append("adminId", this.allocAdminId);
-          params.append("roleIds", this.allocRoleIds);
-          allocRole(params).then(response => {
-            this.$message({
-              message: '分配成功！',
-              type: 'success'
-            });
-            this.allocDialogVisible = false;
-          })
-        })
-      },
-      handleSelectRole(index,row){
-        this.allocAdminId = row.id;
-        this.allocDialogVisible = true;
-        this.getRoleListByAdmin(row.id);
+      async getListOrder(response) {
+        for (const item of response.data.list) {
+          await fetchItemOrders(item.id).then(response => {
+            item.orders = response.data;
+          });
+        }
+        return response;
       },
       getList() {
         this.listLoading = true;
         fetchItemList(this.listQuery).then(response => {
-          this.listLoading = false;
-          this.list = response.data.list;
-          this.total = response.data.total;
+          this.getListOrder(response).then(response => {
+            this.listLoading = false;
+            this.list = response.data.list;
+            this.total = response.data.total;
+          })
         });
       },
-      getAllRoleList() {
-        fetchAllRoleList().then(response => {
-          this.allRoleList = response.data;
+      getUserInfo() {
+        getInfo().then(response => {
+          this.userInfo = response.data;
         });
       },
       getRoleListByAdmin(adminId) {

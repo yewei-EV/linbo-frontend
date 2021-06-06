@@ -11,6 +11,19 @@ export function login(username, password) {
   })
 }
 
+export function register(username, password, email, discordId) {
+  return request({
+    url: '/admin/register',
+    method: 'post',
+    data: {
+      username,
+      password,
+      email,
+      discordId
+    }
+  })
+}
+
 export function getInfo() {
   return request({
     url: '/admin/info',
@@ -36,6 +49,14 @@ export function fetchList(params) {
 export function fetchItemList(params) {
   return request({
     url: '/item/list',
+    method: 'get',
+    params: params
+  })
+}
+
+export function fetchPreciseItemList(params) {
+  return request({
+    url: '/item/listPrecise',
     method: 'get',
     params: params
   })
@@ -76,6 +97,13 @@ export function deleteItem(id) {
     url: '/item/delete/',
     method: 'post',
     params: {'ids': id}
+  })
+}
+export function allocOrder(itemId, orderId) {
+  return request({
+    url: '/item/allocateOrder/update',
+    method: 'post',
+    data: {'itemId': itemId, 'orderId': orderId}
   })
 }
 export function createOrder(data) {

@@ -40,26 +40,43 @@
           <el-button style="width: 45%" type="primary" :loading="loading" @click.native.prevent="handleLogin">
             登录
           </el-button>
-          <el-button style="width: 45%" type="primary" @click.native.prevent="handleTry">
-            获取体验账号
+          <el-button style="width: 45%" type="primary" @click.native.prevent="handleRegister">
+            注册
           </el-button>
         </el-form-item>
       </el-form>
     </el-card>
     <img :src="login_center_bg" class="login-center-layout">
     <el-dialog
-      title="公众号二维码"
+      title="新用户注册"
+      :model="registerForm"
+      ref="registerForm"
       :visible.sync="dialogVisible"
       :show-close="false"
       :center="true"
       width="30%">
       <div style="text-align: center">
-        <span class="font-title-large"><span class="color-main font-extra-large">关注公众号</span>回复<span class="color-main font-extra-large">体验</span>获取体验账号</span>
-        <br>
-        <img src="http://macro-oss.oss-cn-shenzhen.aliyuncs.com/mall/banner/qrcode_for_macrozheng_258.jpg" width="160" height="160" style="margin-top: 10px">
+        <el-input name="registerName"
+                  type="text"
+                  v-model="registerForm.registerName"
+                  placeholder="请输入用户名">
+        </el-input>
+        <el-input name="registerPassword"
+                  v-model="registerForm.registerPassword"
+                  placeholder="请输入密码">
+        </el-input>
+        <el-input name="registerEmail"
+                  v-model="registerForm.registerEmail"
+                  placeholder="请输入邮箱">
+        </el-input>
+        <el-input name="registerDiscordId"
+                  v-model="registerForm.registerDiscordId"
+                  placeholder="请输入Discord ID">
+        </el-input>
       </div>
       <span slot="footer" class="dialog-footer">
-    <el-button type="primary" @click="dialogConfirm">确定</el-button>
+        <el-button type="primary" @click="dialogCancel">取消</el-button>
+        <el-button type="primary" @click="dialogConfirm">确定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -69,6 +86,7 @@
   import {isvalidUsername} from '@/utils/validate';
   import {setSupport,getSupport,setCookie,getCookie} from '@/utils/support';
   import login_center_bg from '@/assets/images/login_center_bg.png'
+  import { register } from '@/api/login'
 
   export default {
     name: 'login',
@@ -91,6 +109,12 @@
         loginForm: {
           username: '',
           password: '',
+        },
+        registerForm: {
+          registerName: '',
+          registerPassword: '',
+          registerEmail: '',
+          registerDiscordId: ''
         },
         loginRules: {
           username: [{required: true, trigger: 'blur', validator: validateUsername}],
@@ -144,16 +168,32 @@
           }
         })
       },
-      handleTry(){
-        this.dialogVisible =true
+      handleRegister(){
+        this.dialogVisible = true
       },
       dialogConfirm(){
-        this.dialogVisible =false;
-        setSupport(true);
+        this.dialogVisible = false;
+        register(this.registerForm.registerName, this.registerForm.registerPassword, this.registerForm.registerEmail,
+        this.registerForm.registerDiscordId)
+          .then(response => {
+            const data = response.data
+            if (data.id) {
+              this.$message({
+                type: 'success',
+                message: '注册成功!',
+                duration: 1000
+              });
+            } else {
+              this.$message({
+                message: '注册失败，请稍后再试！',
+                type: 'warning',
+                duration: 1000
+              });
+            }
+          });
       },
       dialogCancel(){
         this.dialogVisible = false;
-        setSupport(false);
       }
     }
   }

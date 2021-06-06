@@ -43,7 +43,7 @@
           <template slot-scope="scope">{{scope.row.username}}</template>
         </el-table-column>
         <el-table-column label="姓名" align="center">
-          <template slot-scope="scope">{{scope.row.nickName}}</template>
+          <template slot-scope="scope">{{scope.row.discordId}}</template>
         </el-table-column>
         <el-table-column label="邮箱" align="center">
           <template slot-scope="scope">{{scope.row.email}}</template>
@@ -106,7 +106,7 @@
           <el-input v-model="admin.username" style="width: 250px"></el-input>
         </el-form-item>
         <el-form-item label="姓名：">
-          <el-input v-model="admin.nickName" style="width: 250px"></el-input>
+          <el-input v-model="admin.discordId" style="width: 250px"></el-input>
         </el-form-item>
         <el-form-item label="邮箱：">
           <el-input v-model="admin.email" style="width: 250px"></el-input>
@@ -165,7 +165,7 @@
     id: null,
     username: null,
     password: null,
-    nickName: null,
+    discordId: null,
     email: null,
     note: null,
     status: 1

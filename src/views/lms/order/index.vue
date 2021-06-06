@@ -32,12 +32,6 @@
           <el-form-item label="识别码：">
             <el-input v-model="listQuery.userSn" class="input-width" placeholder="识别码" clearable></el-input>
           </el-form-item>
-          <el-form-item label="发货地点：">
-            <el-input v-model="listQuery.origin" class="input-width" placeholder="发货地点" clearable></el-input>
-          </el-form-item>
-          <el-form-item label="到货地点：">
-            <el-input v-model="listQuery.destination" class="input-width" placeholder="到货地点" clearable></el-input>
-          </el-form-item>
           <el-form-item label="创建时间：">
             <el-date-picker
               class="input-width"
@@ -49,15 +43,6 @@
           </el-form-item>
           <el-form-item label="订单状态：">
             <el-select v-model="listQuery.status" placeholder="全部" clearable class="input-width">
-              <el-option v-for="item in statusOptions"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="支付状态：">
-            <el-select v-model="listQuery.paymentStatus" placeholder="全部" clearable class="input-width">
               <el-option v-for="item in statusOptions"
                          :key="item.value"
                          :label="item.label"
@@ -113,23 +98,17 @@
         <el-table-column label="识别码" width="160" align="center">
           <template slot-scope="scope">{{scope.row.userSn}}</template>
         </el-table-column>
-        <el-table-column label="发货地点" width="60" align="center">
-          <template slot-scope="scope">{{scope.row.origin}}</template>
-        </el-table-column>
-        <el-table-column label="到货地点" width="60" align="center">
+        <el-table-column label="地址" width="60" align="center">
           <template slot-scope="scope">{{scope.row.destination}}</template>
         </el-table-column>
         <el-table-column label="创建时间" width="80" align="center">
           <template slot-scope="scope">{{scope.row.createTime | formatDateTime}}</template>
         </el-table-column>
         <el-table-column label="订单状态" width="80" align="center">
-          <template slot-scope="scope">{{scope.row.status}}</template>
+          <template slot-scope="scope">{{statusOptions[scope.row.status].label}}</template>
         </el-table-column>
         <el-table-column label="价格" width="80" align="center">
           <template slot-scope="scope">￥{{scope.row.price}}</template>
-        </el-table-column>
-        <el-table-column label="支付状态" width="60" align="center">
-          <template slot-scope="scope">{{scope.row.paymentStatus}}</template>
         </el-table-column>
         <el-table-column label="支付成功时间" width="120" align="center">
           <template slot-scope="scope">{{scope.row.paymentTime | formatDateTime}}</template>
@@ -199,12 +178,6 @@
         <el-form-item label="识别码：">
           <el-input v-model="order.userSn" style="width: 250px"></el-input>
         </el-form-item>
-        <el-form-item label="发货地点：">
-          <el-input v-model="order.origin" style="width: 250px"></el-input>
-        </el-form-item>
-        <el-form-item label="到货地点：">
-          <el-input v-model="order.destination" style="width: 250px"></el-input>
-        </el-form-item>
         <el-form-item label="备注：">
           <el-input v-model="order.note"
                     type="textarea"
@@ -247,25 +220,24 @@ const defaultListQuery = {
   action: null,
   deliverySn: null,
   userSn: null,
-  origin: null,
   destination: null,
   note: null,
   createTime: null,
   status: null,
-  paymentStatus: null,
   paymentTime: null
 };
 const defaultOrder = {
   id: null,
   action: null,
+  weight: null,
+  weightUnit: null,
   deliverySn: null,
   userSn: null,
-  origin: null,
+  amount: null,
   destination: null,
   note: null,
   createTime: null,
   status: null,
-  paymentStatus: null,
   paymentTime: null
 }
 export default {
@@ -289,44 +261,24 @@ export default {
       },
       statusOptions: [
         {
-          label: '待付款',
+          label: '待确认',
           value: 0
         },
         {
-          label: '待发货',
+          label: '待付款',
           value: 1
         },
         {
-          label: '已发货',
+          label: '已付款',
           value: 2
         },
         {
-          label: '已完成',
+          label: '已发货',
           value: 3
         },
         {
-          label: '已关闭',
+          label: '已完成',
           value: 4
-        }
-      ],
-      orderTypeOptions: [
-        {
-          label: '正常订单',
-          value: 0
-        },
-        {
-          label: '秒杀订单',
-          value: 1
-        }
-      ],
-      sourceTypeOptions: [
-        {
-          label: 'PC订单',
-          value: 0
-        },
-        {
-          label: 'APP订单',
-          value: 1
         }
       ],
       operateOptions: [
@@ -347,6 +299,9 @@ export default {
     }
   },
   created() {
+    this.listQuery.id = this.$route.query.id;
+    this.listQuery.deliverySn = this.$route.query.deliverySn;
+    this.listQuery.userSn = this.$route.query.userSn;
     this.getList();
   },
   filters: {
@@ -399,9 +354,6 @@ export default {
     },
     handleSelectionChange(val){
       this.multipleSelection = val;
-    },
-    handleViewOrder(index, row){
-      this.$router.push({path:'/oms/orderDetail',query:{id:row.id}})
     },
     handleCloseOrder(index, row){
       this.closeOrder.dialogVisible=true;
@@ -544,20 +496,6 @@ export default {
           this.getList();
         });
       })
-    },
-    covertOrder(order){
-      let address=order.receiverProvince+order.receiverCity+order.receiverRegion+order.receiverDetailAddress;
-      let listItem={
-        orderId:order.id,
-        orderSn:order.orderSn,
-        receiverName:order.receiverName,
-        receiverPhone:order.receiverPhone,
-        receiverPostCode:order.receiverPostCode,
-        address:address,
-        deliveryCompany:null,
-        deliverySn:null
-      };
-      return listItem;
     }
   }
 }

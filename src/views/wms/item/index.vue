@@ -29,12 +29,6 @@
           <el-form-item label="备注：">
             <el-input v-model="listQuery.note" class="input-width" placeholder="备注" clearable></el-input>
           </el-form-item>
-          <el-form-item label="SKU：">
-            <el-input v-model="listQuery.sku" class="input-width" placeholder="SKU" clearable></el-input>
-          </el-form-item>
-          <el-form-item label="尺寸：">
-            <el-input v-model="listQuery.size" class="input-width" placeholder="尺寸" clearable></el-input>
-          </el-form-item>
           <el-form-item label="地点：">
             <el-select v-model="listQuery.location" placeholder="全部" clearable style="width: 177px">
               <el-option v-for="item in regionOptions"
@@ -68,7 +62,7 @@
     <el-card class="operate-container" shadow="never">
       <i class="el-icon-tickets"></i>
       <span>数据列表</span>
-      <el-button size="mini" class="btn-add" @click="handleAdd()" style="margin-left: 20px">添加</el-button>
+      <el-button size="small" class="btn-add" type="danger" @click="handleAdd()">包裹入库</el-button>
     </el-card>
     <div class="table-container">
       <el-table ref="itemTable"
@@ -80,7 +74,7 @@
         <el-table-column label="运单号" width="160" align="center">
           <template slot-scope="scope">{{scope.row.deliverySn}}</template>
         </el-table-column>
-        <el-table-column label="识别码" width="160" align="center">
+        <el-table-column label="识别码" width="100" align="center">
           <template slot-scope="scope">{{scope.row.userSn}}</template>
         </el-table-column>
         <el-table-column label="地点" width="50" align="center">
@@ -89,14 +83,14 @@
         <el-table-column label="添加时间" width="160" align="center">
           <template slot-scope="scope">{{scope.row.createTime | formatDateTime}}</template>
         </el-table-column>
+        <el-table-column label="位置信息" width="100" align="center">
+          <template slot-scope="scope">{{scope.row.positionInfo}}</template>
+        </el-table-column>
         <el-table-column label="SKU" width="60" align="center">
           <template slot-scope="scope">{{scope.row.sku}}</template>
         </el-table-column>
         <el-table-column label="尺寸" width="60" align="center">
           <template slot-scope="scope">{{scope.row.size}}</template>
-        </el-table-column>
-        <el-table-column label="备注" width="100" align="center">
-          <template slot-scope="scope">{{scope.row.note}}</template>
         </el-table-column>
         <el-table-column label="最新操作" width="100" align="center">
           <template slot-scope="scope">
@@ -107,27 +101,26 @@
             </el-button>
           </template>
         </el-table-column>
-        <el-table-column label="状态" width="80" align="center">
+        <el-table-column label="状态" width="100" align="center">
           <template slot-scope="scope">{{statusOptions[scope.row.itemStatus].label}}</template>
         </el-table-column>
         <el-table-column label="操作" width="100" align="center">
           <template slot-scope="scope">
             <el-button size="mini"
-                       type="text"
-                       @click="handleUpdate(scope.row)">编辑
-            </el-button>
-            <el-button size="mini"
-                       type="text"
-                       @click="handleDelete(scope.$index, scope.row)">删除
-            </el-button>
-            <el-button size="mini"
                        type="success"
-                       v-if="showNextButton(scope.row)"
+                       v-if="showNextButton(scope.row.itemStatus)"
                        @click="handleFinish(scope.row)">
               {{scope.row.itemStatus | formatNextButton}}
             </el-button>
-
+            <el-button size="mini"
+                       type="info"
+                       style="margin-left:0;margin-top:10px;"
+                       @click="handleUpdate(scope.row)">编辑
+            </el-button>
           </template>
+        </el-table-column>
+        <el-table-column label="备注" width="100" align="center">
+          <template slot-scope="scope">{{scope.row.note}}</template>
         </el-table-column>
       </el-table>
     </div>
@@ -164,18 +157,26 @@
       </el-pagination>
     </div>
     <el-dialog
-      :title="isEdit?'编辑货物':'添加货物'"
+      :title="isEdit?'编辑包裹':'添加包裹'"
       :visible.sync="dialogVisible"
       width="80%">
       <el-form :inline="true" :model="item"
                ref="itemForm"
                label-width="180px" size="small">
+        <div class="optionalDivider">
+          <div class="tableTitle">
+            <span class="midText">
+              包裹信息：
+            </span>
+          </div>
+        </div>
         <el-form-item label="运单号：">
           <el-input v-model="item.deliverySn" style="width: 250px"></el-input>
         </el-form-item>
         <el-form-item label="识别码：">
           <el-input v-model="item.userSn" style="width: 250px"></el-input>
         </el-form-item>
+        <el-button type="warning" @click="checkIfPreload()" size="mini" v-if="!this.isEdit&&!this.isFinish">查询预录</el-button>
         <el-form-item label="地点：">
           <el-select v-model="item.location" placeholder="全部" clearable class="input-width" style="width: 250px">
             <el-option v-for="item in regionOptions"
@@ -185,29 +186,29 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="备注：">
-          <el-input v-model="item.note"
-                    type="textarea"
-                    :rows="1"
-                    style="width: 250px"></el-input>
-        </el-form-item>
         <el-form-item label="SKU：">
           <el-input v-model="item.sku" style="width: 250px"></el-input>
         </el-form-item>
         <el-form-item label="尺寸：">
           <el-input v-model="item.size" style="width: 250px"></el-input>
         </el-form-item>
-        <div class="optionalDivider">
+        <el-form-item label="位置信息：">
+          <el-input v-model="item.positionInfo" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="备注：">
+          <el-input v-model="item.note"
+                    type="textarea"
+                    :rows="1"
+                    style="width: 250px"></el-input>
+        </el-form-item>
+        <div class="optionalDivider" v-if="this.isEdit">
           <div class="tableTitle">
             <span class="midText">
-              选择操作：
+              称重信息：
             </span>
           </div>
         </div>
-        <el-form-item label="重量：">
-          <el-input v-model="order.weight" style="width: 250px"></el-input>
-        </el-form-item>
-        <el-form-item label="重量单位：">
+        <el-form-item label="重量单位：" v-if="this.isEdit">
           <el-select v-model="order.weightUnit" clearable style="width: 250px">
             <el-option v-for="item in weightUnitOptions"
                        :key="item.value"
@@ -216,36 +217,9 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="操作：">
-          <el-select v-model="order.orderAction" clearable style="width: 250px">
-            <el-option v-for="action in actionOptions"
-                       :key="action.value"
-                       :label="action.label"
-                       :value="action.value">
-            </el-option>
-          </el-select>
+        <el-form-item label="重量：" v-if="this.isEdit">
+          <el-input v-model="order.weight" style="width: 250px"></el-input>
         </el-form-item>
-        <el-form-item v-if="order.orderAction===0 || order.orderAction===4" label="地址：">
-          <el-input v-model="order.destination"
-                    type="textarea"
-                    :rows="1"
-                    style="width: 250px"></el-input>
-        </el-form-item>
-        <el-form :inline="true" :model="order"
-                 ref="orderForm"
-                 v-if="order.orderAction===5 || order.orderAction===6"
-                 label-width="180px" size="small">
-          <div class="optionalDivider">
-            <div class="tableTitle">
-            <span class="midText">
-              上传附件：
-            </span>
-            </div>
-          </div>
-          <el-form-item label="寄卖平台回执：" prop="附件">
-            <single-upload v-model="order.attachment"></single-upload>
-          </el-form-item>
-        </el-form>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false" size="small">取 消</el-button>
@@ -282,7 +256,7 @@
         </el-form-item>
         <el-form-item label="订单状态：">
           <el-select v-model="order.orderStatus" clearable style="width: 250px">
-            <el-option v-for="status in statusOptions"
+            <el-option v-for="status in orderStatusOptions"
                        :key="status.value"
                        :label="status.label"
                        :value="status.value">
@@ -307,18 +281,18 @@
   </div>
 </template>
 <script>
-  import {createItem,updateItem,updateStatus,deleteItem,getRoleByAdmin} from '@/api/login';
+  import {createItem,deleteItem,getRoleByAdmin} from '@/api/login';
   import SingleUpload from '@/components/Upload/singleUpload'
   import {formatDate} from '@/utils/date';
+  import {getNextStatus} from '@/utils/statusLogic';
   import {
     fetchItemList,
     fetchPreciseItemList,
     fetchItemOrders,
     getInfo,
-    allocOrder,
-    createOrder, updateOrder, updateItemStatus
+    allocOrder, updateItem,
+    createOrder, updateOrder
   } from "../../../api/login";
-  import {getNextStatus} from "../../../utils/statusLogic";
 
   const defaultListQuery = {
     pageNum: 1,
@@ -328,8 +302,6 @@
     location: null,
     note: null,
     createTime: null,
-    sku: null,
-    size: null,
     itemStatus: null,
     positionInfo: null,
     orders: []
@@ -358,31 +330,40 @@
     note: null,
     createTime: null,
     orderStatus: null,
+    paymentStatus: null,
     paymentTime: null,
+    newDeliverySn: null,
     attachment: null
   };
   const defaultAllocGroup = {
     itemId: null,
     orderId: null
-  }
+  };
   export default {
     name: 'itemList',
     components:{SingleUpload},
     data() {
       return {
+        processButton: '完成',
         userInfo: null,
-        userSn: null,
         listQuery: Object.assign({}, defaultListQuery),
-        actionOptions: [
-          {label:"待确认", value:"-1"},
-          {label:"集运国内", value:"0"},
-          {label:"直邮国内", value:"1"},
-          {label:"退货", value:"2"},
-          {label:"快递海外", value:"3"},
-          {label:"海外寄存", value:"4"},
-          {label:"StockX寄卖", value:"5"},
-          {label:"得物寄卖", value:"6"},
-          {label:"国内寄存", value:"7"},
+        orderStatusOptions: [
+          {
+            label: '待定价',
+            value: 0
+          },
+          {
+            label: '待付款',
+            value: 1
+          },
+          {
+            label: '已付款',
+            value: 2
+          },
+          {
+            label: '已完成',
+            value: 3
+          }
         ],
         statusOptions: [
           {
@@ -476,6 +457,7 @@
           {label:"lb", value:'0'},
           {label:"kg", value:'1'}
         ],
+        warehouseLocation: null,
         multipleSelection: [],
         list: null,
         total: null,
@@ -505,24 +487,36 @@
       }
     },
     created() {
-      this.getList();
-      this.getUserInfo();
+      this.listQuery.itemStatus = this.$route.query.itemStatus;
+      this.listQuery.location = this.$route.query.location;
+      getInfo().then(response => {
+        this.userInfo = response.data;
+        this.warehouseLocation = response.data.region;
+        if (!this.listQuery.location) {
+          this.listQuery.location = this.warehouseLocation;
+        }
+        this.getList();
+      });
     },
     filters: {
       formatNextButton(currentStatus) {
         switch (currentStatus) {
-          case 10:
+          case 0:
             return "入库";
-          case 12:
+          case 4:
             return "发货";
-          case 13:
+          case 5:
             return "发货";
-          case 14:
+          case 6:
             return "发货";
-          case 15:
+          case 7:
+            return "发货";
+          case 8:
             return "寄存";
+          case 9:
+            return "发货";
           default:
-            return "归档";
+            return "待定";
         }
       },
       formatDateTime(time) {
@@ -578,7 +572,9 @@
       handleAdd() {
         this.dialogVisible = true;
         this.isEdit = false;
+        this.isFinish = false;
         this.item = Object.assign({}, defaultItem);
+        this.item.location = this.warehouseLocation;
       },
       handleDelete(index, row) {
         this.$confirm('是否要删除该货物?', '提示', {
@@ -605,8 +601,35 @@
       handleUpdate(row) {
         this.dialogVisible = true;
         this.isEdit = true;
+        this.isFinish = false;
         this.item = Object.assign({},row);
-        this.order = Object.assign({},row.orders[0]);
+      },
+      checkIfPreload() {
+        let query = {
+          pageNum: 1,
+          pageSize: 10,
+          deliverySn: this.item.deliverySn,
+          userSn: this.item.userSn,
+          location: this.item.location,
+        };
+        fetchPreciseItemList(query).then(response => {
+          if (response.data.list.length > 0) {
+            this.dialogVisible = false;
+            this.listQuery.deliverySn = query.deliverySn;
+            this.listQuery.userSn = query.userSn;
+            this.listQuery.location = query.location;
+            this.handleSearchList();
+            this.$message({
+              type: 'success',
+              message: '货物已预录!'
+            });
+          } else {
+            this.$message({
+              type: 'warning',
+              message: '没有搜索到已预登记的包裹!'
+            });
+          }
+        });
       },
       handleDialogConfirm() {
         this.$confirm('是否要确认?', '提示', {
@@ -616,7 +639,7 @@
         }).then(() => {
           if (this.isFinish) {
             this.item.itemStatus = getNextStatus(this.item.itemStatus);
-            updateItemStatus(this.item, this.order.orderAction).then(() => {
+            updateItem(this.item).then(() => {
               this.$message({
                 message: '发货成功！',
                 type: 'success'
@@ -630,12 +653,12 @@
                 message: '修改成功！',
                 type: 'success'
               });
-              this.dialogVisible =false;
+              this.dialogVisible = false;
               this.getList();
             })
           } else {
             this.item.createTime = new Date();
-            // find if item is preloaded or not
+            //find if item is preloaded or not
             let query = {
               pageNum: 1,
               pageSize: 10,
@@ -767,28 +790,38 @@
           })
         });
       },
-      getUserInfo() {
-        getInfo().then(response => {
-          this.userInfo = response.data;
-          this.userSn = response.data.userSn;
+      getRoleListByAdmin(adminId) {
+        getRoleByAdmin(adminId).then(response => {
+          let allocRoleList = response.data;
+          this.allocRoleIds=[];
+          if(allocRoleList!=null&&allocRoleList.length>0){
+            for(let i=0;i<allocRoleList.length;i++){
+              this.allocRoleIds.push(allocRoleList[i].id);
+            }
+          }
         });
       },
-      showNextButton(row) {
-        if (row.orders.length < 1 || row.itemStatus < 10 || row.itemStatus > 17) {
-          return false;
-        }
-        switch (row.orders[0].orderAction) {
-          case "0":
+      showNextButton(currentStatus) {
+        switch (currentStatus) {
+          case 0:
             return true;
-          case "6":
+          case 4:
             return true;
-          case "7":
+          case 5:
+            return true;
+          case 6:
+            return true;
+          case 7:
+            return true;
+          case 8:
+            return true;
+          case 9:
             return true;
           default:
             return false;
         }
       }
-    }
+    },
   }
 </script>
 <style>

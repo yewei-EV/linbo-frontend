@@ -1,179 +1,120 @@
 <template>
   <div class="app-container">
-    <div class="address-layout">
-      <el-row :gutter="20">
-        <el-col :span="6">
-          <div class="out-border">
-            <div class="layout-title">后台项目</div>
-            <div class="color-main address-content">
-              <a href="https://github.com/macrozheng/mall">mall</a>
-            </div>
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div class="out-border">
-            <div class="layout-title">前端项目</div>
-            <div class="color-main address-content">
-              <a href="https://github.com/macrozheng/mall-admin-web">mall-admin-web</a>
-            </div>
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div class="out-border">
-            <div class="layout-title">学习教程</div>
-            <div class="color-main address-content">
-              <a href="https://github.com/macrozheng/mall-learning">mall-learning</a>
-            </div>
-          </div>
-        </el-col>
-      </el-row>
-    </div>
     <div class="total-layout">
       <el-row :gutter="20">
-        <el-col :span="6">
-          <div class="total-frame">
+        <el-col :span="12">
+          <div class="total-frame" style="text-align: center;">
             <img :src="img_home_order" class="total-icon">
-            <div class="total-title">今日订单总数</div>
-            <div class="total-value">200</div>
+            <div class="total-title">今日包裹</div>
+            <div class="total-value">{{this.todayInboundItemCount?this.inboundItemCount:0}}</div>
           </div>
         </el-col>
-        <el-col :span="6">
-          <div class="total-frame">
+        <el-col :span="12">
+          <div class="total-frame" style="text-align: center;">
             <img :src="img_home_today_amount" class="total-icon">
-            <div class="total-title">今日销售总额</div>
-            <div class="total-value">￥5000.00</div>
+            <div class="total-title">今日发货</div>
+            <div class="total-value">{{this.todayOutboundItemCount?this.outboundItemCount:0}}</div>
           </div>
         </el-col>
-        <el-col :span="6">
-          <div class="total-frame">
+      </el-row>
+      <el-row :gutter="20" style="margin-top: 20px">
+        <el-col :span="12">
+          <div class="total-frame" style="text-align: center;">
             <img :src="img_home_yesterday_amount" class="total-icon">
-            <div class="total-title">昨日销售总额</div>
-            <div class="total-value">￥5000.00</div>
+            <div class="total-title">包裹总数</div>
+            <div class="total-value">{{this.totalInboundItemCount?this.totalInboundItemCount:0}}</div>
           </div>
         </el-col>
-        <!--<el-col :span="6">-->
-          <!--<div class="total-frame">-->
-            <!--<svg-icon icon-class="total-week" class="total-icon">-->
-            <!--</svg-icon>-->
-            <!--<div class="total-title">近7天销售总额</div>-->
-            <!--<div class="total-value">￥50000.00</div>-->
-          <!--</div>-->
-        <!--</el-col>-->
+        <el-col :span="12">
+          <div class="total-frame" style="text-align: center;">
+            <svg-icon icon-class="total-week" class="total-icon">
+            </svg-icon>
+            <div class="total-title">发货总数</div>
+            <div class="total-value">{{this.totalOutboundItemCount?this.totalOutboundItemCount:0}}</div>
+          </div>
+        </el-col>
       </el-row>
     </div>
-    <el-card class="mine-layout">
-      <div style="text-align: center">
-        <img width="150px" height="150px" src="http://macro-oss.oss-cn-shenzhen.aliyuncs.com/mall/banner/qrcode_for_macrozheng_258.jpg">
-      </div>
-      <div style="text-align: center">mall全套学习教程连载中！</div>
-      <div style="text-align: center;margin-top: 5px"><span class="color-main">关注公号</span>，第一时间获取。</div>
-    </el-card>
-    <div class="un-handle-layout">
-      <div class="layout-title">待处理事务</div>
-      <div class="un-handle-content">
-        <el-row :gutter="20">
-          <el-col :span="8">
-            <div class="un-handle-item">
-              <span class="font-medium">待付款订单</span>
-              <span style="float: right" class="color-danger">(10)</span>
-            </div>
-          </el-col>
-          <el-col :span="8">
-            <div class="un-handle-item">
-              <span class="font-medium">已完成订单</span>
-              <span style="float: right" class="color-danger">(10)</span>
-            </div>
-          </el-col>
-          <el-col :span="8">
-            <div class="un-handle-item">
-              <span class="font-medium">待确认收货订单</span>
-              <span style="float: right" class="color-danger">(10)</span>
-            </div>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="8">
-            <div class="un-handle-item">
-              <span class="font-medium">待发货订单</span>
-              <span style="float: right" class="color-danger">(10)</span>
-            </div>
-          </el-col>
-          <el-col :span="8">
-            <div class="un-handle-item">
-              <span class="font-medium">新缺货登记</span>
-              <span style="float: right" class="color-danger">(10)</span>
-            </div>
-          </el-col>
-          <el-col :span="8">
-            <div class="un-handle-item">
-              <span class="font-medium">待处理退款申请</span>
-              <span style="float: right" class="color-danger">(10)</span>
-            </div>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="8">
-            <div class="un-handle-item">
-              <span class="font-medium">已发货订单</span>
-              <span style="float: right" class="color-danger">(10)</span>
-            </div>
-          </el-col>
-          <el-col :span="8">
-            <div class="un-handle-item">
-              <span class="font-medium">待处理退货订单</span>
-              <span style="float: right" class="color-danger">(10)</span>
-            </div>
-          </el-col>
-          <el-col :span="8">
-            <div class="un-handle-item">
-              <span class="font-medium">广告位即将到期</span>
-              <span style="float: right" class="color-danger">(10)</span>
-            </div>
-          </el-col>
-        </el-row>
-      </div>
-    </div>
-    <div class="overview-layout">
+
+    <div class="button-layout">
       <el-row :gutter="20">
         <el-col :span="12">
-          <div class="out-border">
-            <div class="layout-title">商品总览</div>
-            <div style="padding: 40px">
-              <el-row>
-                <el-col :span="6" class="color-danger overview-item-value">100</el-col>
-                <el-col :span="6" class="color-danger overview-item-value">400</el-col>
-                <el-col :span="6" class="color-danger overview-item-value">50</el-col>
-                <el-col :span="6" class="color-danger overview-item-value">500</el-col>
-              </el-row>
-              <el-row class="font-medium">
-                <el-col :span="6" class="overview-item-title">已下架</el-col>
-                <el-col :span="6" class="overview-item-title">已上架</el-col>
-                <el-col :span="6" class="overview-item-title">库存紧张</el-col>
-                <el-col :span="6" class="overview-item-title">全部商品</el-col>
-              </el-row>
-            </div>
+          <div style="text-align: center;">
+            <el-button size="large" class="btn-add" type="success" @click="directToPreloadItemList()" style="margin-left: 20px">预登记包裹</el-button>
           </div>
         </el-col>
         <el-col :span="12">
-          <div class="out-border">
-            <div class="layout-title">用户总览</div>
-            <div style="padding: 40px">
-              <el-row>
-                <el-col :span="6" class="color-danger overview-item-value">100</el-col>
-                <el-col :span="6" class="color-danger overview-item-value">200</el-col>
-                <el-col :span="6" class="color-danger overview-item-value">1000</el-col>
-                <el-col :span="6" class="color-danger overview-item-value">5000</el-col>
-              </el-row>
-              <el-row class="font-medium">
-                <el-col :span="6" class="overview-item-title">今日新增</el-col>
-                <el-col :span="6" class="overview-item-title">昨日新增</el-col>
-                <el-col :span="6" class="overview-item-title">本月新增</el-col>
-                <el-col :span="6" class="overview-item-title">会员总数</el-col>
-              </el-row>
-            </div>
+          <div style="text-align: center;">
+            <el-button size="large" class="btn-add" type="warning" @click="directToUnknownItemList()" style="margin-left: 20px">待认领包裹</el-button>
           </div>
         </el-col>
       </el-row>
+    </div>
+
+    <div class="un-handle-layout">
+      <div class="layout-title">包裹信息</div>
+      <div class="un-handle-content">
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <div class="un-handle-item">
+              <span class="font-medium">已预录</span>
+              <el-button style="float: right; padding: 0; font-size: 20px"
+                         class="color-danger" type="text" @click="handleSpecificItemList(0)">
+                ({{this.currentPreloadItemCount}})
+              </el-button>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="un-handle-item">
+              <span class="font-medium">已入库</span>
+              <el-button style="float: right; padding: 0; font-size: 20px"
+                         class="color-danger" type="text" @click="handleSpecificItemList(1)">
+                ({{this.currentInboundItemCount}})
+              </el-button>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <div class="un-handle-item">
+              <span class="font-medium">待付款</span>
+              <el-button style="float: right; padding: 0; font-size: 20px"
+                         class="color-danger" type="text" @click="handleSpecificItemList(2)">
+                ({{this.currentNeedToPayItemCount}})
+              </el-button>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="un-handle-item">
+              <span class="font-medium">处理中</span>
+              <el-button style="float: right; padding: 0; font-size: 20px"
+                         class="color-danger" type="text" @click="handleSpecificItemList(3)">
+                ({{this.currentProcessingItemCount}})
+              </el-button>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <div class="un-handle-item">
+              <span class="font-medium">已发货</span>
+              <el-button style="float: right; padding: 0; font-size: 20px"
+                         class="color-danger" type="text" @click="handleSpecificItemList(10)">
+                ({{this.currentSentItemCount}})
+              </el-button>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="un-handle-item">
+              <span class="font-medium">寄存中</span>
+              <el-button style="float: right; padding: 0; font-size: 20px"
+                         class="color-danger" type="text" @click="handleSpecificItemList(11)">
+                ({{this.currentStorageItemCount}})
+              </el-button>
+            </div>
+          </el-col>
+        </el-row>
+      </div>
     </div>
     <div class="statistics-layout">
       <div class="layout-title">订单统计</div>
@@ -245,210 +186,425 @@
 </template>
 
 <script>
-  import {str2Date} from '@/utils/date';
-  import img_home_order from '@/assets/images/home_order.png';
-  import img_home_today_amount from '@/assets/images/home_today_amount.png';
-  import img_home_yesterday_amount from '@/assets/images/home_yesterday_amount.png';
-  const DATA_FROM_BACKEND = {
-    columns: ['date', 'orderCount','orderAmount'],
-    rows: [
-      {date: '2018-11-01', orderCount: 10, orderAmount: 1093},
-      {date: '2018-11-02', orderCount: 20, orderAmount: 2230},
-      {date: '2018-11-03', orderCount: 33, orderAmount: 3623},
-      {date: '2018-11-04', orderCount: 50, orderAmount: 6423},
-      {date: '2018-11-05', orderCount: 80, orderAmount: 8492},
-      {date: '2018-11-06', orderCount: 60, orderAmount: 6293},
-      {date: '2018-11-07', orderCount: 20, orderAmount: 2293},
-      {date: '2018-11-08', orderCount: 60, orderAmount: 6293},
-      {date: '2018-11-09', orderCount: 50, orderAmount: 5293},
-      {date: '2018-11-10', orderCount: 30, orderAmount: 3293},
-      {date: '2018-11-11', orderCount: 20, orderAmount: 2293},
-      {date: '2018-11-12', orderCount: 80, orderAmount: 8293},
-      {date: '2018-11-13', orderCount: 100, orderAmount: 10293},
-      {date: '2018-11-14', orderCount: 10, orderAmount: 1293},
-      {date: '2018-11-15', orderCount: 40, orderAmount: 4293}
-    ]
-  };
-  export default {
-    name: 'home',
-    data() {
-      return {
-        pickerOptions: {
-          shortcuts: [{
-            text: '最近一周',
-            onClick(picker) {
-              const end = new Date();
-              let start = new Date();
-              start.setFullYear(2018);
-              start.setMonth(10);
-              start.setDate(1);
-              end.setTime(start.getTime() + 3600 * 1000 * 24 * 7);
-              picker.$emit('pick', [start, end]);
-            }
-          }, {
-            text: '最近一月',
-            onClick(picker) {
-              const end = new Date();
-              let start = new Date();
-              start.setFullYear(2018);
-              start.setMonth(10);
-              start.setDate(1);
-              end.setTime(start.getTime() + 3600 * 1000 * 24 * 30);
-              picker.$emit('pick', [start, end]);
-            }
-          }]
+import {str2Date} from '@/utils/date';
+import img_home_order from '@/assets/images/home_order.png';
+import img_home_today_amount from '@/assets/images/home_today_amount.png';
+import img_home_yesterday_amount from '@/assets/images/home_yesterday_amount.png';
+import {fetchItemCount,fetchSalesCount} from '@/api/warehouse';
+import {getInfo} from "../../api/login";
+
+const DATA_FROM_BACKEND = {
+  columns: ['date', 'orderCount','orderAmount'],
+  rows: [
+    {date: '2018-11-01', orderCount: 10, orderAmount: 1093},
+    {date: '2018-11-02', orderCount: 20, orderAmount: 2230},
+    {date: '2018-11-03', orderCount: 33, orderAmount: 3623},
+    {date: '2018-11-04', orderCount: 50, orderAmount: 6423},
+    {date: '2018-11-05', orderCount: 80, orderAmount: 8492},
+    {date: '2018-11-06', orderCount: 60, orderAmount: 6293},
+    {date: '2018-11-07', orderCount: 20, orderAmount: 2293},
+    {date: '2018-11-08', orderCount: 60, orderAmount: 6293},
+    {date: '2018-11-09', orderCount: 50, orderAmount: 5293},
+    {date: '2018-11-10', orderCount: 30, orderAmount: 3293},
+    {date: '2018-11-11', orderCount: 20, orderAmount: 2293},
+    {date: '2018-11-12', orderCount: 80, orderAmount: 8293},
+    {date: '2018-11-13', orderCount: 100, orderAmount: 10293},
+    {date: '2018-11-14', orderCount: 10, orderAmount: 1293},
+    {date: '2018-11-15', orderCount: 40, orderAmount: 4293}
+  ]
+};
+export default {
+  name: 'home',
+  data() {
+    return {
+      userInfo: null,
+      todayInboundItemCount: 0,
+      todayOutboundItemCount: 0,
+      totalInboundItemCount: 0,
+      totalOutboundItemCount: 0,
+      currentPreloadItemCount: 0,
+      currentInboundItemCount: 0,
+      currentNeedToPayItemCount: 0,
+      currentProcessingItemCount: 0,
+      currentSentItemCount: 0,
+      currentStorageItemCount: 0,
+      regionOptions: [
+        {label:"美国1", value:'US1'},
+        {label:"美国2", value:'US2'},
+        {label:"西班牙", value:'SP'},
+        {label:"欧洲", value:'EU'}
+      ],
+      itemCountOption: {
+        dayOffset: null,
+        location: null,
+        status: null
+      },
+      statusOptions: [
+        {
+          label: '待入库',
+          value: 0
         },
-        orderCountDate: '',
-        chartSettings: {
-          xAxisType: 'time',
-          area:true,
-          axisSite: { right: ['orderAmount']},
+        {
+          label: '已入库（海外仓）',
+          value: 1
+        },
+        {
+          label: '待付款',
+          value: 2
+        },
+        {
+          label: '已付款',
+          value: 3
+        },
+        {
+          label: '待集运国内',
+          value: 4
+        },
+        {
+          label: '待直邮国内',
+          value: 5
+        },
+        {
+          label: '待退货',
+          value: 6
+        },
+        {
+          label: '待快递海外',
+          value: 7
+        },
+        {
+          label: '待海外寄存',
+          value: 8
+        },
+        {
+          label: '待StockX寄卖',
+          value: 9
+        },
+        {
+          label: '已发货（海外仓）',
+          value: 10
+        },
+        {
+          label: '已寄存（海外仓）',
+          value: 11
+        },
+        {
+          label: '已入库（国内仓）',
+          value: 12
+        },
+        {
+          label: '待得物寄卖',
+          value: 13
+        },
+        {
+          label: '待快递国内',
+          value: 14
+        },
+        {
+          label: '待国内寄存',
+          value: 15
+        },
+        {
+          label: '已发货（国内仓）',
+          value: 16
+        },
+        {
+          label: '已寄存（国内仓）',
+          value: 17
+        },
+        {
+          label: '已归档',
+          value: 18
+        },
+        {
+          label: '待认领',
+          value: 19
+        }
+      ],
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近一周',
+          onClick(picker) {
+            const end = new Date();
+            let start = new Date();
+            start.setFullYear(2018);
+            start.setMonth(10);
+            start.setDate(1);
+            end.setTime(start.getTime() + 3600 * 1000 * 24 * 7);
+            picker.$emit('pick', [start, end]);
+          }
+        }, {
+          text: '最近一月',
+          onClick(picker) {
+            const end = new Date();
+            let start = new Date();
+            start.setFullYear(2018);
+            start.setMonth(10);
+            start.setDate(1);
+            end.setTime(start.getTime() + 3600 * 1000 * 24 * 30);
+            picker.$emit('pick', [start, end]);
+          }
+        }]
+      },
+      orderCountDate: '',
+      chartSettings: {
+        xAxisType: 'time',
+        area: true,
+        axisSite: { right: ['orderAmount']},
         labelMap: {'orderCount': '订单数量', 'orderAmount': '订单金额'}},
-        chartData: {
-          columns: [],
-          rows: []
-        },
-        loading: false,
-        dataEmpty: false,
-        img_home_order,
-        img_home_today_amount,
-        img_home_yesterday_amount
-      }
+      chartData: {
+        columns: [],
+        rows: []
+      },
+      loading: false,
+      dataEmpty: false,
+      img_home_order,
+      img_home_today_amount,
+      img_home_yesterday_amount
+    }
+  },
+  created(){
+    this.getSalesInfo();
+    this.initOrderCountDate();
+    this.getData();
+  },
+  methods:{
+    directToPreloadItemList() {
+      this.$router.push({
+        path: '/user/preload'
+      })
     },
-    created(){
-      this.initOrderCountDate();
+    directToUnknownItemList() {
+
+    },
+    handleSpecificItemList(itemStatus) {
+      this.$router.push({
+        path: '/user/item',
+        query: {
+          itemStatus: itemStatus
+        }
+      })
+    },
+    getSalesInfo() {
+      getInfo().then(response => {
+        this.userInfo = response.data;
+        this.fetchStatisticsInfo();
+      });
+    },
+    fetchStatisticsInfo() {
+      let inBoundOption = {
+        dayOffset: 0,
+        userSn: this.userInfo.userSn,
+        statusRange: "1,9"
+      }
+      let outBoundOption = {
+        dayOffset: 0,
+        userSn: this.userInfo.userSn,
+        statusRange: "10,18"
+      }
+      fetchItemCount(inBoundOption).then((response) => {
+        this.todayInboundItemCount = response.data;
+      });
+      fetchItemCount(outBoundOption).then((response) => {
+        this.todayOutboundItemCount = response.data;
+      });
+      let totalInBoundOption = {
+        dayOffset: 7,
+        userSn: this.userInfo.userSn,
+        statusRange: "1,9"
+      };
+      let totalOutBoundOption = {
+        dayOffset: 7,
+        userSn: this.userInfo.userSn,
+        statusRange: "10,18"
+      };
+      fetchItemCount(totalInBoundOption).then((response) => {
+        this.totalInboundItemCount = response.data;
+      });
+      fetchItemCount(totalOutBoundOption).then((response) => {
+        this.totalOutboundItemCount = response.data;
+      });
+
+      // user packages statistics info
+      let preloadOption = {
+        userSn: this.userInfo.userSn,
+        statusRange: "0"
+      };
+      fetchItemCount(preloadOption).then((response) => {
+        this.currentPreloadItemCount = response.data;
+      });
+      let currentInboundOption = {
+        userSn: this.userInfo.userSn,
+        statusRange: "1"
+      };
+      fetchItemCount(currentInboundOption).then((response) => {
+        this.currentInboundItemCount = response.data;
+      });
+      let needToPayOption = {
+        userSn: this.userInfo.userSn,
+        statusRange: "2"
+      };
+      fetchItemCount(needToPayOption).then((response) => {
+        this.currentNeedToPayItemCount = response.data;
+      });
+      let processingOption = {
+        userSn: this.userInfo.userSn,
+        statusRange: "3,9"
+      };
+      fetchItemCount(processingOption).then((response) => {
+        this.currentProcessingItemCount = response.data;
+      });
+      let sentOption = {
+        userSn: this.userInfo.userSn,
+        statusRange: "10,18"
+      };
+      fetchItemCount(sentOption).then((response) => {
+        this.currentSentItemCount = response.data;
+      });
+      let storageOption = {
+        userSn: this.userInfo.userSn,
+        statusRange: "11"
+      };
+      let chinaStorageOption = {
+        userSn: this.userInfo.userSn,
+        statusRange: "17"
+      };
+      fetchItemCount(storageOption).then((response1) => {
+        fetchItemCount(chinaStorageOption).then((response2) => {
+          this.currentStorageItemCount = response1.data + response2.data;
+        });
+      });
+
+    },
+    switchWarehouseLocation() {
+      this.fetchStatisticsInfo();
+    },
+    handleDateChange(){
       this.getData();
     },
-    methods:{
-      handleDateChange(){
-        this.getData();
-      },
-      initOrderCountDate(){
-        let start = new Date();
-        start.setFullYear(2018);
-        start.setMonth(10);
-        start.setDate(1);
-        const end = new Date();
-        end.setTime(start.getTime() + 1000 * 60 * 60 * 24 * 7);
-        this.orderCountDate=[start,end];
-      },
-      getData(){
-        setTimeout(() => {
-          this.chartData = {
-            columns: ['date', 'orderCount','orderAmount'],
-            rows: []
-          };
-          for(let i=0;i<DATA_FROM_BACKEND.rows.length;i++){
-            let item=DATA_FROM_BACKEND.rows[i];
-            let currDate=str2Date(item.date);
-            let start=this.orderCountDate[0];
-            let end=this.orderCountDate[1];
-            if(currDate.getTime()>=start.getTime()&&currDate.getTime()<=end.getTime()){
-              this.chartData.rows.push(item);
-            }
+    initOrderCountDate(){
+      let start = new Date();
+      start.setFullYear(2018);
+      start.setMonth(10);
+      start.setDate(1);
+      const end = new Date();
+      end.setTime(start.getTime() + 1000 * 60 * 60 * 24 * 7);
+      this.orderCountDate=[start,end];
+    },
+    getData(){
+      setTimeout(() => {
+        this.chartData = {
+          columns: ['date', 'orderCount','orderAmount'],
+          rows: []
+        };
+        for(let i=0;i<DATA_FROM_BACKEND.rows.length;i++){
+          let item=DATA_FROM_BACKEND.rows[i];
+          let currDate=str2Date(item.date);
+          let start=this.orderCountDate[0];
+          let end=this.orderCountDate[1];
+          if(currDate.getTime()>=start.getTime()&&currDate.getTime()<=end.getTime()){
+            this.chartData.rows.push(item);
           }
-          this.dataEmpty = false;
-          this.loading = false
-        }, 1000)
-      }
+        }
+        this.dataEmpty = false;
+        this.loading = false
+      }, 1000)
     }
   }
+}
 </script>
 
 <style scoped>
-  .app-container {
-    margin-top: 40px;
-    margin-left: 120px;
-    margin-right: 120px;
-  }
+.app-container {
+  margin-top: 40px;
+  margin-left: 120px;
+  margin-right: 120px;
+}
 
-  .address-layout {
-  }
+.button-layout {
+  margin-top: 40px;
+}
 
-  .total-layout {
-    margin-top: 20px;
-  }
+.total-frame {
+  border: 1px solid #DCDFE6;
+  padding: 20px;
+  height: 100px;
+}
 
-  .total-frame {
-    border: 1px solid #DCDFE6;
-    padding: 20px;
-    height: 100px;
-  }
+.total-icon {
+  color: #409EFF;
+  width: 60px;
+  height: 60px;
+}
 
-  .total-icon {
-    color: #409EFF;
-    width: 60px;
-    height: 60px;
-  }
+.total-title {
+  position: relative;
+  font-size: 16px;
+  color: #909399;
+  left: 70px;
+  top: -50px;
+}
 
-  .total-title {
-    position: relative;
-    font-size: 16px;
-    color: #909399;
-    left: 70px;
-    top: -50px;
-  }
+.total-value {
+  position: relative;
+  font-size: 18px;
+  color: #606266;
+  left: 70px;
+  top: -40px;
+}
 
-  .total-value {
-    position: relative;
-    font-size: 18px;
-    color: #606266;
-    left: 70px;
-    top: -40px;
-  }
+.un-handle-layout {
+  margin-top: 40px;
+  border: 1px solid #DCDFE6;
+}
 
-  .un-handle-layout {
-    margin-top: 20px;
-    border: 1px solid #DCDFE6;
-  }
+.layout-title {
+  color: #606266;
+  padding: 15px 20px;
+  background: #F2F6FC;
+  font-weight: bold;
+}
 
-  .layout-title {
-    color: #606266;
-    padding: 15px 20px;
-    background: #F2F6FC;
-    font-weight: bold;
-  }
+.un-handle-content {
+  padding: 20px 40px;
+}
 
-  .un-handle-content {
-    padding: 20px 40px;
-  }
+.un-handle-item {
+  border-bottom: 1px solid #EBEEF5;
+  padding: 10px;
+}
 
-  .un-handle-item {
-    border-bottom: 1px solid #EBEEF5;
-    padding: 10px;
-  }
+.overview-layout {
+  margin-top: 20px;
+}
 
-  .overview-layout {
-    margin-top: 20px;
-  }
+.overview-item-value {
+  font-size: 24px;
+  text-align: center;
+}
 
-  .overview-item-value {
-    font-size: 24px;
-    text-align: center;
-  }
+.overview-item-title {
+  margin-top: 10px;
+  text-align: center;
+}
 
-  .overview-item-title {
-    margin-top: 10px;
-    text-align: center;
-  }
+.out-border {
+  border: 1px solid #DCDFE6;
+}
 
-  .out-border {
-    border: 1px solid #DCDFE6;
-  }
-
-  .statistics-layout {
-    margin-top: 20px;
-    border: 1px solid #DCDFE6;
-  }
-  .mine-layout {
-    position: absolute;
-    right: 140px;
-    top: 107px;
-    width: 250px;
-    height: 235px;
-  }
-  .address-content{
-    padding: 20px;
-    font-size: 18px
-  }
+.statistics-layout {
+  margin-top: 40px;
+  border: 1px solid #DCDFE6;
+}
+.mine-layout {
+  position: absolute;
+  right: 140px;
+  top: 107px;
+  width: 250px;
+  height: 235px;
+}
+.address-content{
+  padding: 20px;
+  font-size: 18px
+}
 </style>

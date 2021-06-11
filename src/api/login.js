@@ -92,6 +92,13 @@ export function updateItem(data) {
     data: data
   })
 }
+export function updateItemStatus(data, orderAction) {
+  return request({
+    url: '/item/updateStatus/' + orderAction,
+    method: 'post',
+    data: data
+  })
+}
 export function deleteItem(id) {
   return request({
     url: '/item/delete/',

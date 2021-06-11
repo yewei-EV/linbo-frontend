@@ -36,6 +36,48 @@ export const constantRouterMap = [
 
 export const asyncRouterMap = [
   {
+    path:'/user',
+    component: Layout,
+    redirect: '/user/item',
+    name: 'user',
+    meta: {title: '包裹管理', icon: 'order'},
+    children: [
+      {
+        path: 'preload',
+        name: 'preload',
+        component: () => import('@/views/user/preload/index'),
+        meta: {title: '预登记', icon: 'product-add'},
+      },
+      {
+        path: 'item',
+        name: 'item',
+        component: () => import('@/views/user/item/index'),
+        meta: {title: '包裹列表', icon: 'ums-role'}
+      }
+    ]
+  },
+  {
+    path:'/wms',
+    component: Layout,
+    redirect: '/wms/dashboard',
+    name: 'wms',
+    meta: {title: '海外仓管理', icon: 'order'},
+    children: [
+      {
+        path: 'dashboard',
+        name: 'dashboard',
+        component: () => import('@/views/wms/dashboard/index'),
+        meta: {title: '控制台', icon: 'ums-admin'},
+      },
+      {
+        path: 'item',
+        name: 'item',
+        component: () => import('@/views/wms/item/index'),
+        meta: {title: '货物列表', icon: 'ums-role'}
+      }
+    ]
+  },
+  {
     path: '/pms',
     component: Layout,
     redirect: '/pms/product',

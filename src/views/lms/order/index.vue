@@ -24,7 +24,13 @@
             <el-input v-model="listQuery.id" class="input-width" placeholder="ID" clearable></el-input>
           </el-form-item>
           <el-form-item label="订单操作：">
-            <el-input v-model="listQuery.action" class="input-width" placeholder="订单操作" clearable></el-input>
+            <el-select v-model="listQuery.orderAction" placeholder="全部" clearable class="input-width">
+              <el-option v-for="action in actionOptions"
+                         :key="action.value"
+                         :label="action.label"
+                         :value="action.value">
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="运单号：">
             <el-input v-model="listQuery.deliverySn" class="input-width" placeholder="运单号" clearable></el-input>
@@ -42,8 +48,8 @@
             </el-date-picker>
           </el-form-item>
           <el-form-item label="订单状态：">
-            <el-select v-model="listQuery.status" placeholder="全部" clearable class="input-width">
-              <el-option v-for="item in statusOptions"
+            <el-select v-model="listQuery.orderStatus" placeholder="全部" clearable class="input-width">
+              <el-option v-for="item in orderStatusOptions"
                          :key="item.value"
                          :label="item.label"
                          :value="item.value">
@@ -81,7 +87,7 @@
           <template slot-scope="scope">{{scope.row.id}}</template>
         </el-table-column>
         <el-table-column label="订单操作" width="100" align="center">
-          <template slot-scope="scope">{{scope.row.action}}</template>
+          <template slot-scope="scope">{{scope.row.orderAction | formatAction}}</template>
         </el-table-column>
         <el-table-column label="重量" width="60" align="center">
           <template slot-scope="scope">{{scope.row.weight}}</template>
@@ -105,7 +111,7 @@
           <template slot-scope="scope">{{scope.row.createTime | formatDateTime}}</template>
         </el-table-column>
         <el-table-column label="订单状态" width="80" align="center">
-          <template slot-scope="scope">{{statusOptions[scope.row.status].label}}</template>
+          <template slot-scope="scope">{{orderStatusOptions[scope.row.orderStatus].label}}</template>
         </el-table-column>
         <el-table-column label="价格" width="80" align="center">
           <template slot-scope="scope">￥{{scope.row.price}}</template>
@@ -119,12 +125,17 @@
         <el-table-column label="操作" width="200" align="center">
           <template slot-scope="scope">
             <el-button size="mini"
-                       type="text"
+                       type="primary"
                        @click="handleUpdate(scope.row)">编辑
             </el-button>
             <el-button size="mini"
-                       type="text"
+                       type="primary"
                        @click="handleDelete(scope.$index, scope.row)">删除
+            </el-button>
+            <el-button size="mini"
+                       type="danger"
+                       v-if="scope.row.orderStatus===1"
+                       @click="handlePayment(scope.row)">已付款
             </el-button>
           </template>
         </el-table-column>
@@ -170,13 +181,22 @@
                ref="orderForm"
                label-width="180px" size="small">
         <el-form-item label="订单操作：">
-          <el-input v-model="order.action" style="width: 250px"></el-input>
+          <el-select v-model="order.orderAction" placeholder="全部" clearable style="width: 250px">
+            <el-option v-for="action in actionOptions"
+                       :key="action.value"
+                       :label="action.label"
+                       :value="action.value">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="运单号：">
           <el-input v-model="order.deliverySn" style="width: 250px"></el-input>
         </el-form-item>
         <el-form-item label="识别码：">
           <el-input v-model="order.userSn" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="价格：">
+          <el-input v-model="order.price" style="width: 250px"></el-input>
         </el-form-item>
         <el-form-item label="备注：">
           <el-input v-model="order.note"
@@ -203,7 +223,7 @@
       </el-input>
       <span slot="footer" class="dialog-footer">
         <el-button @click="closeOrder.dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="handleCloseOrderConfirm">确 定</el-button>
+        <el-button type="primary" @click="">确 定</el-button>
       </span>
     </el-dialog>
     <logistics-dialog v-model="logisticsDialogVisible"></logistics-dialog>
@@ -217,18 +237,18 @@ const defaultListQuery = {
   pageNum: 1,
   pageSize: 10,
   id: null,
-  action: null,
+  orderAction: null,
   deliverySn: null,
   userSn: null,
   destination: null,
   note: null,
   createTime: null,
-  status: null,
+  orderStatus: null,
   paymentTime: null
 };
 const defaultOrder = {
   id: null,
-  action: null,
+  orderAction: null,
   weight: null,
   weightUnit: null,
   deliverySn: null,
@@ -237,7 +257,7 @@ const defaultOrder = {
   destination: null,
   note: null,
   createTime: null,
-  status: null,
+  orderStatus: null,
   paymentTime: null
 }
 export default {
@@ -259,9 +279,20 @@ export default {
         content:null,
         orderIds:[]
       },
-      statusOptions: [
+      actionOptions: [
+        {label:"待确认", value:"-1"},
+        {label:"集运国内", value:"0"},
+        {label:"直邮国内", value:"1"},
+        {label:"退货", value:"2"},
+        {label:"快递海外", value:"3"},
+        {label:"海外寄存", value:"4"},
+        {label:"StockX寄卖", value:"5"},
+        {label:"得物寄卖", value:"6"},
+        {label:"国内寄存", value:"7"},
+      ],
+      orderStatusOptions: [
         {
-          label: '待确认',
+          label: '待定价',
           value: 0
         },
         {
@@ -273,12 +304,8 @@ export default {
           value: 2
         },
         {
-          label: '已发货',
-          value: 3
-        },
-        {
           label: '已完成',
-          value: 4
+          value: 3
         }
       ],
       operateOptions: [
@@ -312,37 +339,28 @@ export default {
       let date = new Date(time);
       return formatDate(date, 'yyyy-MM-dd hh:mm')
     },
-    formatPayType(value) {
-      if (value === 1) {
-        return '支付宝';
-      } else if (value === 2) {
-        return '微信';
-      } else {
-        return '未支付';
+    formatAction(actionCode) {
+      switch (actionCode) {
+        case "0":
+          return "集运国内";
+        case "1":
+          return "直邮国内";
+        case "2":
+          return "退货";
+        case "3":
+          return "快递海外";
+        case "4":
+          return "海外寄存";
+        case "5":
+          return "StockX寄卖";
+        case "6":
+          return "得物寄卖";
+        case "7":
+          return "国内寄存";
+        default:
+          return "待用户选择";
       }
-    },
-    formatSourceType(value) {
-      if (value === 1) {
-        return 'APP订单';
-      } else {
-        return 'PC订单';
-      }
-    },
-    formatStatus(value) {
-      if (value === 1) {
-        return '待发货';
-      } else if (value === 2) {
-        return '已发货';
-      } else if (value === 3) {
-        return '已完成';
-      } else if (value === 4) {
-        return '已关闭';
-      } else if (value === 5) {
-        return '无效订单';
-      } else {
-        return '待付款';
-      }
-    },
+    }
   },
   methods: {
     handleResetSearch() {
@@ -380,7 +398,7 @@ export default {
         //批量发货
         let list=[];
         for(let i=0;i<this.multipleSelection.length;i++){
-          if(this.multipleSelection[i].status===1){
+          if(this.multipleSelection[i].orderStatus===1){
             list.push(this.covertOrder(this.multipleSelection[i]));
           }
         }
@@ -438,6 +456,24 @@ export default {
       this.isEdit = true;
       this.order = Object.assign({},row);
     },
+    handlePayment(row) {
+      this.$confirm('是否要确认?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.order = Object.assign({}, row);
+        this.order.orderStatus = 2;
+        this.order.paymentTime = Date.now();
+        updateOrder(this.order).then(response => {
+          this.$message({
+            type: 'success',
+            message: '修改成功!'
+          });
+          this.getList();
+        });
+      });
+    },
     handleDialogConfirm() {
       this.$confirm('是否要确认?', '提示', {
         confirmButtonText: '确定',
@@ -445,25 +481,28 @@ export default {
         type: 'warning'
       }).then(() => {
         if (this.isEdit) {
+          if (this.order.price) {
+            this.order.orderStatus = 1;
+          }
           updateOrder(this.order).then(response => {
             this.$message({
               message: '修改成功！',
               type: 'success'
             });
-            this.dialogVisible =false;
+            this.dialogVisible = false;
             this.getList();
           })
         } else {
-          this.order.createTime = new Date();
-          createOrder(this.order).then(response => {
-            this.$message({
-              message: '添加成功！',
-              type: 'success'
-            });
-            this.dialogVisible =false;
-            this.getList();
-          })
-        }
+            this.order.createTime = new Date();
+            createOrder(this.order).then(response => {
+              this.$message({
+                message: '添加成功！',
+                type: 'success'
+              });
+              this.dialogVisible =false;
+              this.getList();
+            })
+          }
       })
     },
     getList() {

@@ -57,19 +57,23 @@
       width="30%">
       <div style="text-align: center">
         <el-input name="registerName"
+                  class="register-input"
                   type="text"
                   v-model="registerForm.registerName"
                   placeholder="请输入用户名">
         </el-input>
         <el-input name="registerPassword"
+                  class="register-input"
                   v-model="registerForm.registerPassword"
                   placeholder="请输入密码">
         </el-input>
         <el-input name="registerEmail"
+                  class="register-input"
                   v-model="registerForm.registerEmail"
                   placeholder="请输入邮箱">
         </el-input>
         <el-input name="registerDiscordId"
+                  class="register-input"
                   v-model="registerForm.registerDiscordId"
                   placeholder="请输入Discord ID">
         </el-input>
@@ -220,5 +224,8 @@
     max-width: 100%;
     max-height: 100%;
     margin-top: 200px;
+  }
+  .register-input {
+    margin-bottom: 20px;
   }
 </style>

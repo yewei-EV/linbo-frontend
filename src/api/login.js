@@ -151,6 +151,20 @@ export function deleteAdmin(id) {
   })
 }
 
+export function getAdminByDiscordId(discordId) {
+  return request({
+    url: '/admin/discordId/' + discordId,
+    method: 'get'
+  })
+}
+
+export function getAdminByUserSn(userSn) {
+  return request({
+    url: '/admin/userSn/' + userSn,
+    method: 'get'
+  })
+}
+
 export function getRoleByAdmin(id) {
   return request({
     url: '/admin/role/' + id,

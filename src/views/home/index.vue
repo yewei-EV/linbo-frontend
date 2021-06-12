@@ -375,7 +375,13 @@ export default {
       })
     },
     directToUnknownItemList() {
-
+      this.$router.push({
+        path: '/user/item',
+        query: {
+          itemStatus: 19,
+          userSn: ""
+        }
+      })
     },
     handleSpecificItemList(itemStatus) {
       this.$router.push({

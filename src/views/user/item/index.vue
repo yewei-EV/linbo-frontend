@@ -82,7 +82,7 @@
         <el-table-column label="状态" width="100" align="center">
           <template slot-scope="scope">{{statusOptions[scope.row.itemStatus].label}}</template>
         </el-table-column>orderAction
-        <el-table-column label="操作" width="160" align="center">
+        <el-table-column label="操作" width="160" align="center" v-if="this.listQuery.userSn">
           <template slot-scope="scope">
             <el-button size="mini"
                        type="danger"
@@ -444,8 +444,11 @@
     created() {
       getInfo().then(response => {
         this.userInfo = response.data;
-        this.listQuery.userSn = this.userInfo.userSn;
+        this.listQuery.userSn = this.$route.query.userSn;
         this.listQuery.itemStatus = this.$route.query.itemStatus;
+        if (!this.listQuery.userSn && !this.listQuery.itemStatus) {
+          this.listQuery.userSn = response.data.userSn;
+        }
         this.getList();
       });
     },
@@ -505,6 +508,7 @@
         this.listQuery = Object.assign({}, defaultListQuery);
       },
       handleSearchList() {
+        this.listQuery.userSn = this.userInfo.userSn;
         this.listQuery.pageNum = 1;
         this.getList();
       },

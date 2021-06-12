@@ -122,20 +122,22 @@
         <el-table-column label="备注" width="100" align="center">
           <template slot-scope="scope">{{scope.row.note}}</template>
         </el-table-column>
-        <el-table-column label="操作" width="200" align="center">
+        <el-table-column label="操作" width="100" align="center">
           <template slot-scope="scope">
-            <el-button size="mini"
-                       type="primary"
-                       @click="handleUpdate(scope.row)">编辑
-            </el-button>
-            <el-button size="mini"
-                       type="primary"
-                       @click="handleDelete(scope.$index, scope.row)">删除
-            </el-button>
             <el-button size="mini"
                        type="danger"
                        v-if="scope.row.orderStatus===1"
                        @click="handlePayment(scope.row)">已付款
+            </el-button>
+            <el-button size="mini"
+                       type="primary"
+                       style="margin-left:0;margin-top:10px;"
+                       @click="handleUpdate(scope.row)">编辑
+            </el-button>
+            <el-button size="mini"
+                       type="primary"
+                       style="margin-left:0;margin-top:10px;"
+                       @click="handleDelete(scope.$index, scope.row)">删除
             </el-button>
           </template>
         </el-table-column>

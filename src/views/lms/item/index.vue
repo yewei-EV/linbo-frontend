@@ -81,7 +81,13 @@
           <template slot-scope="scope">{{scope.row.deliverySn}}</template>
         </el-table-column>
         <el-table-column label="识别码" width="160" align="center">
-          <template slot-scope="scope">{{scope.row.userSn}}</template>
+          <template slot-scope="scope">
+            <el-button size="mini"
+                       type="text"
+                       @click="showDiscordIdByUserSn(scope.row.userSn)">
+              {{scope.row.userSn}}
+            </el-button>
+          </template>
         </el-table-column>
         <el-table-column label="地点" width="50" align="center">
           <template slot-scope="scope">{{scope.row.location}}</template>
@@ -113,20 +119,22 @@
         <el-table-column label="操作" width="100" align="center">
           <template slot-scope="scope">
             <el-button size="mini"
-                       type="text"
-                       @click="handleUpdate(scope.row)">编辑
-            </el-button>
-            <el-button size="mini"
-                       type="text"
-                       @click="handleDelete(scope.$index, scope.row)">删除
-            </el-button>
-            <el-button size="mini"
                        type="success"
+                       style="margin-left:0;"
                        v-if="showNextButton(scope.row)"
                        @click="handleFinish(scope.row)">
               {{scope.row.itemStatus | formatNextButton}}
             </el-button>
-
+            <el-button size="mini"
+                       type="info"
+                       style="margin-left:0;margin-top:10px;"
+                       @click="handleUpdate(scope.row)">编辑
+            </el-button>
+            <el-button size="mini"
+                       type="info"
+                       style="margin-left:0;margin-top:10px;"
+                       @click="handleDelete(scope.$index, scope.row)">删除
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -316,7 +324,7 @@
     fetchItemOrders,
     getInfo,
     allocOrder,
-    createOrder, updateOrder, updateItemStatus
+    createOrder, updateOrder, updateItemStatus, getAdminByUserSn
   } from "../../../api/login";
   import {getNextStatus} from "../../../utils/statusLogic";
 
@@ -667,6 +675,14 @@
       handleOrderDetail(order) {
         this.orderDialogVisible = true;
         this.order = order;
+      },
+      showDiscordIdByUserSn(userSn) {
+        getAdminByUserSn(userSn).then((response) => {
+          this.$alert('用户Discord ID: ' + response.data.discordId, '提示', {
+            confirmButtonText: '确定',
+            type: 'info'
+          })
+        });
       },
       gotoOrderPage(order) {
         this.$router.push({

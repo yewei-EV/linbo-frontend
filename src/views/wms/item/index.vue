@@ -605,6 +605,13 @@
         this.item = Object.assign({},row);
       },
       checkIfPreload() {
+        if (!this.item.deliverySn || !this.item.userSn) {
+          this.$message({
+            type: 'warning',
+            message: '请填写运单号和识别码!'
+          });
+          return;
+        }
         let query = {
           pageNum: 1,
           pageSize: 10,
@@ -659,6 +666,13 @@
           } else {
             this.item.createTime = new Date();
             //find if item is preloaded or not
+            if (!this.item.deliverySn) {
+              this.$message({
+                type: 'warning',
+                message: '请填写运单号!'
+              });
+              return;
+            }
             let query = {
               pageNum: 1,
               pageSize: 10,
@@ -678,7 +692,11 @@
                   message: '货物已预录!'
                 });
               } else {
-                this.item.itemStatus = 0;
+                if (!this.item.userSn) {
+                  this.item.itemStatus = 19;
+                } else {
+                  this.item.itemStatus = 0;
+                }
                 createItem(this.item).then((response) => {
                   this.createOrderWithItem(response);
                 })

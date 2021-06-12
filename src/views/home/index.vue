@@ -1,5 +1,70 @@
 <template>
   <div class="app-container">
+    <div class="info-layout">
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <div class="info-frame">
+            <div class="info-title">海外仓地址：</div>
+            <div class="info-content">
+              <el-row :gutter="20">
+                <el-col :span="12" class="content-title">
+                  Name
+                </el-col>
+                <el-col :span="12" class="content-value">
+                  Test
+                </el-col>
+              </el-row>
+            </div>
+            <div class="info-content">
+              <el-row :gutter="20">
+                <el-col :span="12" class="content-title">
+                  Address Line 1
+                </el-col>
+                <el-col :span="12" class="content-value">
+                  Test
+                </el-col>
+              </el-row>
+            </div>
+            <div class="info-content">
+              <el-row :gutter="20">
+                <el-col :span="12" class="content-title">
+                  Address Line 2
+                </el-col>
+                <el-col :span="12" class="content-value">
+                  Test
+                </el-col>
+              </el-row>
+            </div>
+            <div class="info-content">
+              <el-row :gutter="20">
+                <el-col :span="12" class="content-title">
+                  City, State, Zip Code
+                </el-col>
+                <el-col :span="12" class="content-value">
+                  Test
+                </el-col>
+              </el-row>
+            </div>
+            <div class="info-content">
+              <el-row :gutter="20">
+                <el-col :span="12" class="content-title">
+                  Phone
+                </el-col>
+                <el-col :span="12" class="content-value">
+                  Test
+                </el-col>
+              </el-row>
+            </div>
+          </div>
+        </el-col>
+        <el-col :span="12">
+          <div class="info-frame">
+            <div class="info-title">用户： {{this.userInfo.username}}</div>
+            <div class="info-user">识别码： {{this.userInfo.userSn}}</div>
+          </div>
+        </el-col>
+      </el-row>
+    </div>
     <div class="total-layout">
       <el-row :gutter="20">
         <el-col :span="12">
@@ -196,21 +261,21 @@ import {getInfo} from "../../api/login";
 const DATA_FROM_BACKEND = {
   columns: ['date', 'orderCount','orderAmount'],
   rows: [
-    {date: '2018-11-01', orderCount: 10, orderAmount: 1093},
-    {date: '2018-11-02', orderCount: 20, orderAmount: 2230},
-    {date: '2018-11-03', orderCount: 33, orderAmount: 3623},
-    {date: '2018-11-04', orderCount: 50, orderAmount: 6423},
-    {date: '2018-11-05', orderCount: 80, orderAmount: 8492},
-    {date: '2018-11-06', orderCount: 60, orderAmount: 6293},
-    {date: '2018-11-07', orderCount: 20, orderAmount: 2293},
-    {date: '2018-11-08', orderCount: 60, orderAmount: 6293},
-    {date: '2018-11-09', orderCount: 50, orderAmount: 5293},
-    {date: '2018-11-10', orderCount: 30, orderAmount: 3293},
-    {date: '2018-11-11', orderCount: 20, orderAmount: 2293},
-    {date: '2018-11-12', orderCount: 80, orderAmount: 8293},
-    {date: '2018-11-13', orderCount: 100, orderAmount: 10293},
-    {date: '2018-11-14', orderCount: 10, orderAmount: 1293},
-    {date: '2018-11-15', orderCount: 40, orderAmount: 4293}
+    {date: '2021-05-01', orderCount: 10, orderAmount: 1093},
+    {date: '2021-05-02', orderCount: 20, orderAmount: 2230},
+    {date: '2021-05-03', orderCount: 33, orderAmount: 3623},
+    {date: '2021-05-04', orderCount: 50, orderAmount: 6423},
+    {date: '2021-05-05', orderCount: 80, orderAmount: 8492},
+    {date: '2021-05-06', orderCount: 60, orderAmount: 6293},
+    {date: '2021-05-07', orderCount: 20, orderAmount: 2293},
+    {date: '2021-05-08', orderCount: 60, orderAmount: 6293},
+    {date: '2021-05-09', orderCount: 50, orderAmount: 5293},
+    {date: '2021-05-10', orderCount: 30, orderAmount: 3293},
+    {date: '2021-05-11', orderCount: 20, orderAmount: 2293},
+    {date: '2021-05-12', orderCount: 80, orderAmount: 8293},
+    {date: '2021-05-13', orderCount: 100, orderAmount: 10293},
+    {date: '2021-05-14', orderCount: 10, orderAmount: 1293},
+    {date: '2021-05-15', orderCount: 40, orderAmount: 4293}
   ]
 };
 export default {
@@ -327,8 +392,8 @@ export default {
           onClick(picker) {
             const end = new Date();
             let start = new Date();
-            start.setFullYear(2018);
-            start.setMonth(10);
+            start.setFullYear(2021);
+            start.setMonth(4);
             start.setDate(1);
             end.setTime(start.getTime() + 3600 * 1000 * 24 * 7);
             picker.$emit('pick', [start, end]);
@@ -338,8 +403,8 @@ export default {
           onClick(picker) {
             const end = new Date();
             let start = new Date();
-            start.setFullYear(2018);
-            start.setMonth(10);
+            start.setFullYear(2021);
+            start.setMonth(4);
             start.setDate(1);
             end.setTime(start.getTime() + 3600 * 1000 * 24 * 30);
             picker.$emit('pick', [start, end]);
@@ -490,8 +555,8 @@ export default {
     },
     initOrderCountDate(){
       let start = new Date();
-      start.setFullYear(2018);
-      start.setMonth(10);
+      start.setFullYear(2021);
+      start.setMonth(4);
       start.setDate(1);
       const end = new Date();
       end.setTime(start.getTime() + 1000 * 60 * 60 * 24 * 7);
@@ -563,54 +628,52 @@ export default {
   margin-top: 40px;
   border: 1px solid #DCDFE6;
 }
-
 .layout-title {
   color: #606266;
   padding: 15px 20px;
   background: #F2F6FC;
   font-weight: bold;
 }
-
 .un-handle-content {
   padding: 20px 40px;
 }
-
 .un-handle-item {
   border-bottom: 1px solid #EBEEF5;
   padding: 10px;
 }
-
-.overview-layout {
-  margin-top: 20px;
-}
-
-.overview-item-value {
-  font-size: 24px;
-  text-align: center;
-}
-
-.overview-item-title {
-  margin-top: 10px;
-  text-align: center;
-}
-
-.out-border {
-  border: 1px solid #DCDFE6;
-}
-
 .statistics-layout {
   margin-top: 40px;
   border: 1px solid #DCDFE6;
 }
-.mine-layout {
-  position: absolute;
-  right: 140px;
-  top: 107px;
-  width: 250px;
-  height: 235px;
+.total-layout {
+  margin-top: 40px;
 }
-.address-content{
+.info-frame {
+  border: 1px solid #DCDFE6;
   padding: 20px;
-  font-size: 18px
+  height: 210px;
+  background-color: #164988;
+}
+.info-title {
+  color: orange;
+  font-size: 20px;
+}
+.info-content {
+  margin-top: 10px;
+}
+.content-title {
+  color: white;
+  font-weight: bold
+}
+.content-value {
+  color: whitesmoke;
+}
+.info-user {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  font-size: 30px;
+  color: white;
+  position: absolute;
+  bottom: 0;
 }
 </style>

@@ -68,7 +68,7 @@
     <el-card class="operate-container" shadow="never">
       <i class="el-icon-tickets"></i>
       <span>数据列表</span>
-      <el-button size="mini" class="btn-add" @click="handleAdd()" style="margin-left: 20px">添加</el-button>
+      <el-button size="mini" type="danger" class="btn-add" @click="handleAdd()" style="margin-left: 20px">录入包裹</el-button>
     </el-card>
     <div class="table-container">
       <el-table ref="itemTable"
@@ -76,11 +76,11 @@
                 style="width: 100%;"
                 @selection-change="handleSelectionChange"
                 v-loading="listLoading" border>
-        <el-table-column type="selection" width="40" align="center"></el-table-column>
-        <el-table-column label="运单号" width="160" align="center">
+        <el-table-column type="selection" min-width="40" align="center"></el-table-column>
+        <el-table-column label="运单号" min-width="160" align="center">
           <template slot-scope="scope">{{scope.row.deliverySn}}</template>
         </el-table-column>
-        <el-table-column label="识别码" width="160" align="center">
+        <el-table-column label="识别码" min-width="100" align="center">
           <template slot-scope="scope">
             <el-button size="mini"
                        type="text"
@@ -89,22 +89,22 @@
             </el-button>
           </template>
         </el-table-column>
-        <el-table-column label="地点" width="50" align="center">
+        <el-table-column label="地点" min-width="50" align="center">
           <template slot-scope="scope">{{scope.row.location}}</template>
         </el-table-column>
-        <el-table-column label="添加时间" width="160" align="center">
+        <el-table-column label="添加时间" min-width="140" align="center">
           <template slot-scope="scope">{{scope.row.createTime | formatDateTime}}</template>
         </el-table-column>
-        <el-table-column label="SKU" width="60" align="center">
+        <el-table-column label="SKU" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.sku}}</template>
         </el-table-column>
-        <el-table-column label="尺寸" width="60" align="center">
+        <el-table-column label="尺寸" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.size}}</template>
         </el-table-column>
-        <el-table-column label="备注" width="100" align="center">
+        <el-table-column label="备注" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.note}}</template>
         </el-table-column>
-        <el-table-column label="最新操作" width="100" align="center">
+        <el-table-column label="最新操作" min-width="100" align="center">
           <template slot-scope="scope">
             <el-button size="mini"
                        type="text"
@@ -113,10 +113,10 @@
             </el-button>
           </template>
         </el-table-column>
-        <el-table-column label="状态" width="80" align="center">
+        <el-table-column label="状态" min-width="80" align="center">
           <template slot-scope="scope">{{statusOptions[scope.row.itemStatus].label}}</template>
         </el-table-column>
-        <el-table-column label="操作" width="100" align="center">
+        <el-table-column label="操作" min-width="100" align="center">
           <template slot-scope="scope">
             <el-button size="mini"
                        type="success"
@@ -172,7 +172,7 @@
       </el-pagination>
     </div>
     <el-dialog
-      :title="isEdit?'编辑货物':'添加货物'"
+      :title="isEdit?'编辑包裹':'添加包裹'"
       :visible.sync="dialogVisible"
       width="80%">
       <el-form :inline="true" :model="item"
@@ -634,12 +634,14 @@
             })
           } else if (this.isEdit) {
             updateItem(this.item).then(() => {
-              this.$message({
-                message: '修改成功！',
-                type: 'success'
-              });
-              this.dialogVisible =false;
-              this.getList();
+              updateOrder(this.order).then(() => {
+                this.$message({
+                  message: '修改成功！',
+                  type: 'success'
+                });
+                this.dialogVisible = false;
+                this.getList();
+              })
             })
           } else {
             this.item.createTime = new Date();
@@ -748,7 +750,9 @@
         this.order.deliverySn = this.item.deliverySn;
         this.order.note = this.item.note;
         this.order.orderStatus = 1;
-        this.order.orderAction = -1;
+        if (!this.order.orderAction) {
+          this.order.orderAction = -1;
+        }
         createOrder(this.order).then((orderRes) => {
           this.allocateOrderToItem(itemRes, orderRes);
         })

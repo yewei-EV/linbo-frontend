@@ -54,23 +54,23 @@
                 style="width: 100%;"
                 @selection-change="handleSelectionChange"
                 v-loading="listLoading" border>
-        <el-table-column type="selection" width="40" align="center"></el-table-column>
-        <el-table-column label="运单号" width="160" align="center">
+        <el-table-column type="selection" min-width="40" align="center"></el-table-column>
+        <el-table-column label="运单号" min-width="160" align="center">
           <template slot-scope="scope">{{scope.row.deliverySn}}</template>
         </el-table-column>
-        <el-table-column label="地点" width="50" align="center">
+        <el-table-column label="地点" min-width="50" align="center">
           <template slot-scope="scope">{{scope.row.location}}</template>
         </el-table-column>
-        <el-table-column label="添加时间" width="160" align="center">
+        <el-table-column label="添加时间" min-width="110" align="center">
           <template slot-scope="scope">{{scope.row.createTime | formatDateTime}}</template>
         </el-table-column>
-        <el-table-column label="SKU" width="60" align="center">
+        <el-table-column label="SKU" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.sku}}</template>
         </el-table-column>
-        <el-table-column label="尺寸" width="60" align="center">
+        <el-table-column label="尺寸" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.size}}</template>
         </el-table-column>
-        <el-table-column label="最新操作" width="100" align="center">
+        <el-table-column label="最新操作" min-width="100" align="center">
           <template slot-scope="scope">
             <el-button size="mini"
                        type="text"
@@ -79,10 +79,10 @@
             </el-button>
           </template>
         </el-table-column>
-        <el-table-column label="状态" width="100" align="center">
+        <el-table-column label="状态" min-width="100" align="center">
           <template slot-scope="scope">{{statusOptions[scope.row.itemStatus].label}}</template>
         </el-table-column>orderAction
-        <el-table-column label="操作" width="160" align="center" v-if="this.listQuery.userSn">
+        <el-table-column label="操作" min-width="160" align="center" v-if="this.listQuery.userSn">
           <template slot-scope="scope">
             <el-button size="mini"
                        type="danger"
@@ -126,13 +126,19 @@
           </div>
         </div>
         <el-form-item label="操作：">
-          <el-select v-model="order.orderAction" clearable class="input-width" style="width: 250px">
+          <el-select v-model="order.orderAction" clearable style="width: 250px">
             <el-option v-for="order in actionOptions"
                        :key="order.value"
                        :label="order.label"
                        :value="order.value">
             </el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='0'||order.orderAction==='1'||order.orderAction==='3'" label="地址：">
+          <el-input v-model="order.destination"
+                    type="textarea"
+                    :rows="1"
+                    style="width: 250px"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -526,11 +532,11 @@
       },
       uploadAttachment(index, row) {
         this.orderAttachmentDialogVisible = true;
-        this.order.id = row.orders[0].id;
+        this.order = Object.assign({},row.orders[0]);
       },
       chooseActionByUser(index, row) {
         this.orderActionDialogVisible = true;
-        this.order.id = row.orders[0].id;
+        this.order = Object.assign({},row.orders[0]);
       },
       handleUpdate(row) {
         this.dialogVisible = true;

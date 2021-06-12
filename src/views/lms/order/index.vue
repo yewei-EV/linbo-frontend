@@ -74,7 +74,7 @@
     <el-card class="operate-container" shadow="never">
       <i class="el-icon-tickets"></i>
       <span>数据列表</span>
-      <el-button size="mini" class="btn-add" @click="handleAdd()" style="margin-left: 20px">添加</el-button>
+      <el-button size="mini" type="danger" class="btn-add" @click="handleAdd()" style="margin-left: 20px">添加订单</el-button>
     </el-card>
     <div class="table-container">
       <el-table ref="orderTable"
@@ -82,51 +82,45 @@
                 style="width: 100%;"
                 @selection-change="handleSelectionChange"
                 v-loading="listLoading" border>
-        <el-table-column type="selection" width="40" align="center"></el-table-column>
-        <el-table-column label="ID" width="60" align="center">
+        <el-table-column type="selection" min-width="40" align="center"></el-table-column>
+        <el-table-column label="ID" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.id}}</template>
         </el-table-column>
-        <el-table-column label="订单操作" width="100" align="center">
+        <el-table-column label="订单操作" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.orderAction | formatAction}}</template>
         </el-table-column>
-        <el-table-column label="重量" width="60" align="center">
+        <el-table-column label="价格" min-width="80" align="center">
+          <template slot-scope="scope">￥{{scope.row.price?scope.row.price:0}}</template>
+        </el-table-column>
+        <el-table-column label="重量" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.weight}}</template>
         </el-table-column>
-        <el-table-column label="重量单位" width="60" align="center">
+        <el-table-column label="重量单位" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.weightUnit}}</template>
         </el-table-column>
-        <el-table-column label="数量" width="50" align="center">
-          <template slot-scope="scope">{{scope.row.amount}}</template>
-        </el-table-column>
-        <el-table-column label="运单号" width="160" align="center">
+<!--        <el-table-column label="数量" min-width="50" align="center">-->
+<!--          <template slot-scope="scope">{{scope.row.amount}}</template>-->
+<!--        </el-table-column>-->
+        <el-table-column label="运单号" min-width="160" align="center">
           <template slot-scope="scope">{{scope.row.deliverySn}}</template>
         </el-table-column>
-        <el-table-column label="识别码" width="160" align="center">
+        <el-table-column label="识别码" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.userSn}}</template>
         </el-table-column>
-        <el-table-column label="地址" width="60" align="center">
+        <el-table-column label="地址" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.destination}}</template>
         </el-table-column>
-        <el-table-column label="创建时间" width="80" align="center">
+        <el-table-column label="创建时间" min-width="80" align="center">
           <template slot-scope="scope">{{scope.row.createTime | formatDateTime}}</template>
         </el-table-column>
-        <el-table-column label="订单状态" width="80" align="center">
+        <el-table-column label="订单状态" min-width="80" align="center">
           <template slot-scope="scope">{{orderStatusOptions[scope.row.orderStatus].label}}</template>
         </el-table-column>
-        <el-table-column label="价格" width="80" align="center">
-          <template slot-scope="scope">￥{{scope.row.price}}</template>
-        </el-table-column>
-        <el-table-column label="支付成功时间" width="120" align="center">
-          <template slot-scope="scope">{{scope.row.paymentTime | formatDateTime}}</template>
-        </el-table-column>
-        <el-table-column label="备注" width="100" align="center">
-          <template slot-scope="scope">{{scope.row.note}}</template>
-        </el-table-column>
-        <el-table-column label="操作" width="100" align="center">
+        <el-table-column label="操作" min-width="100" align="center">
           <template slot-scope="scope">
             <el-button size="mini"
                        type="danger"
-                       v-if="scope.row.orderStatus===1"
+                       v-if="scope.row.orderStatus===1 && scope.row.price"
                        @click="handlePayment(scope.row)">已付款
             </el-button>
             <el-button size="mini"
@@ -134,12 +128,18 @@
                        style="margin-left:0;margin-top:10px;"
                        @click="handleUpdate(scope.row)">编辑
             </el-button>
-            <el-button size="mini"
-                       type="primary"
-                       style="margin-left:0;margin-top:10px;"
-                       @click="handleDelete(scope.$index, scope.row)">删除
-            </el-button>
+<!--            <el-button size="mini"-->
+<!--                       type="primary"-->
+<!--                       style="margin-left:0;margin-top:10px;"-->
+<!--                       @click="handleDelete(scope.$index, scope.row)">删除-->
+<!--            </el-button>-->
           </template>
+        </el-table-column>
+        <el-table-column label="备注" min-width="100" align="center">
+          <template slot-scope="scope">{{scope.row.note}}</template>
+        </el-table-column>
+        <el-table-column label="支付成功时间" min-width="120" align="center">
+          <template slot-scope="scope">{{scope.row.paymentTime | formatDateTime}}</template>
         </el-table-column>
       </el-table>
     </div>
@@ -191,11 +191,20 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="运单号：">
-          <el-input v-model="order.deliverySn" style="width: 250px"></el-input>
+        <el-form-item label="地址：">
+          <el-input v-model="order.destination" style="width: 250px"></el-input>
         </el-form-item>
-        <el-form-item label="识别码：">
-          <el-input v-model="order.userSn" style="width: 250px"></el-input>
+        <el-form-item label="重量：">
+          <el-input v-model="order.weight" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="重量单位：">
+          <el-select v-model="order.weightUnit" clearable style="width: 250px">
+            <el-option v-for="unit in weightUnitOptions"
+                       :key="unit.value"
+                       :label="unit.label"
+                       :value="unit.value">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="价格：">
           <el-input v-model="order.price" style="width: 250px"></el-input>
@@ -291,6 +300,10 @@ export default {
         {label:"StockX寄卖", value:"5"},
         {label:"得物寄卖", value:"6"},
         {label:"国内寄存", value:"7"},
+      ],
+      weightUnitOptions: [
+        {label:"lb", value:'0'},
+        {label:"kg", value:'1'}
       ],
       orderStatusOptions: [
         {

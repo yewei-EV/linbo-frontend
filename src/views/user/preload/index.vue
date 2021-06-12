@@ -63,7 +63,7 @@
       </el-row>
       <el-row :gutter="20">
         <el-col :span="20" class="preload-field">
-          <el-form-item v-if="order.orderAction===0||order.orderAction===1||order.orderAction===3" label="地址：">
+          <el-form-item v-if="order.orderAction==='0'||order.orderAction==='1'||order.orderAction==='3'" label="地址：">
             <el-input v-model="order.destination"
                       type="textarea"
                       :rows="5"
@@ -299,6 +299,13 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        if (!this.checkAllFieldsFilled()) {
+          this.$message({
+            type: 'error',
+            message: '请填写全部参数!'
+          });
+          return;
+        }
         this.item.createTime = new Date();
         this.item.userSn = this.userSn;
         this.item.itemStatus = 0;
@@ -313,7 +320,9 @@ export default {
       this.order.deliverySn = this.item.deliverySn;
       this.order.location = this.item.location;
       this.order.orderStatus = 1;
-      this.order.orderAction = -1;
+      if (!this.order.orderAction) {
+        this.order.orderAction = -1;
+      }
       createOrder(this.order).then((orderRes) => {
         this.allocateOrderToItem(itemRes, orderRes);
       })
@@ -344,6 +353,10 @@ export default {
         this.userInfo = response.data;
         this.userSn = response.data.userSn;
       });
+    },
+    checkAllFieldsFilled() {
+      return !(!this.item.deliverySn || !this.item.location || !this.item.sku
+        || !this.item.size || !this.order.orderAction);
     }
   }
 }

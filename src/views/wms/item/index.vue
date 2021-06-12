@@ -70,29 +70,29 @@
                 style="width: 100%;"
                 @selection-change="handleSelectionChange"
                 v-loading="listLoading" border>
-        <el-table-column type="selection" width="40" align="center"></el-table-column>
-        <el-table-column label="运单号" width="160" align="center">
+        <el-table-column type="selection" min-width="40" align="center"></el-table-column>
+        <el-table-column label="运单号" min-width="160" align="center">
           <template slot-scope="scope">{{scope.row.deliverySn}}</template>
         </el-table-column>
-        <el-table-column label="识别码" width="100" align="center">
+        <el-table-column label="识别码" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.userSn}}</template>
         </el-table-column>
-        <el-table-column label="地点" width="50" align="center">
+        <el-table-column label="地点" min-width="50" align="center">
           <template slot-scope="scope">{{scope.row.location}}</template>
         </el-table-column>
-        <el-table-column label="添加时间" width="160" align="center">
+        <el-table-column label="添加时间" min-width="140" align="center">
           <template slot-scope="scope">{{scope.row.createTime | formatDateTime}}</template>
         </el-table-column>
-        <el-table-column label="位置信息" width="100" align="center">
+        <el-table-column label="位置信息" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.positionInfo}}</template>
         </el-table-column>
-        <el-table-column label="SKU" width="60" align="center">
+        <el-table-column label="SKU" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.sku}}</template>
         </el-table-column>
-        <el-table-column label="尺寸" width="60" align="center">
+        <el-table-column label="尺寸" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.size}}</template>
         </el-table-column>
-        <el-table-column label="最新操作" width="100" align="center">
+        <el-table-column label="最新操作" min-width="100" align="center">
           <template slot-scope="scope">
             <el-button size="mini"
                        type="text"
@@ -101,10 +101,10 @@
             </el-button>
           </template>
         </el-table-column>
-        <el-table-column label="状态" width="100" align="center">
+        <el-table-column label="状态" min-width="100" align="center">
           <template slot-scope="scope">{{statusOptions[scope.row.itemStatus].label}}</template>
         </el-table-column>
-        <el-table-column label="操作" width="100" align="center">
+        <el-table-column label="操作" min-width="100" align="center">
           <template slot-scope="scope">
             <el-button size="mini"
                        type="success"
@@ -119,7 +119,7 @@
             </el-button>
           </template>
         </el-table-column>
-        <el-table-column label="备注" width="100" align="center">
+        <el-table-column label="备注" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.note}}</template>
         </el-table-column>
       </el-table>
@@ -603,11 +603,12 @@
         this.isEdit = true;
         this.isFinish = false;
         this.item = Object.assign({},row);
+        this.order = Object.assign({},row.orders[0]);
       },
       checkIfPreload() {
         if (!this.item.deliverySn || !this.item.userSn) {
           this.$message({
-            type: 'warning',
+            type: 'error',
             message: '请填写运单号和识别码!'
           });
           return;
@@ -656,19 +657,21 @@
             })
           } else if (this.isEdit) {
             updateItem(this.item).then(() => {
-              this.$message({
-                message: '修改成功！',
-                type: 'success'
-              });
-              this.dialogVisible = false;
-              this.getList();
+              updateOrder(this.order).then(() => {
+                this.$message({
+                  message: '修改成功！',
+                  type: 'success'
+                });
+                this.dialogVisible = false;
+                this.getList();
+              })
             })
           } else {
             this.item.createTime = new Date();
             //find if item is preloaded or not
             if (!this.item.deliverySn) {
               this.$message({
-                type: 'warning',
+                type: 'error',
                 message: '请填写运单号!'
               });
               return;

@@ -48,8 +48,7 @@
         </el-col>
         <el-col :span="12">
           <div class="total-frame" style="text-align: center;">
-            <svg-icon icon-class="total-week" class="total-icon">
-            </svg-icon>
+            <img :src="img_home_order" class="total-icon">
             <div class="total-title">7天销售</div>
             <div class="total-value">￥{{this.sevenDaysSales?this.sevenDaysSales:0}}</div>
           </div>

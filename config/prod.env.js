@@ -1,5 +1,5 @@
 'use strict'
 module.exports = {
   NODE_ENV: '"production"',
-  BASE_API: '"http://localhost:8093"'
+  BASE_API: '"//linbo.hypeeyes.com"'
 }

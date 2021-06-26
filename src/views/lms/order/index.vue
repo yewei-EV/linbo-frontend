@@ -237,13 +237,22 @@
         <el-button type="primary" @click="">确 定</el-button>
       </span>
     </el-dialog>
-    <logistics-dialog v-model="logisticsDialogVisible"></logistics-dialog>
   </div>
 </template>
 <script>
 import {formatDate} from '@/utils/date';
-import LogisticsDialog from '@/views/oms/order/components/logisticsDialog';
 import {fetchOrderList,updateOrder,createOrder,deleteOrder} from "../../../api/login";
+import {
+  orderStatusOptions,
+  statusOptions,
+  regionOptions,
+  weightUnitOptions,
+  operateOptions,
+  formatDateTime,
+  formatAction,
+  defaultItem,
+  defaultOrder, actionOptions
+} from '../../../dto/options';
 const defaultListQuery = {
   pageNum: 1,
   pageSize: 10,
@@ -257,23 +266,9 @@ const defaultListQuery = {
   orderStatus: null,
   paymentTime: null
 };
-const defaultOrder = {
-  id: null,
-  orderAction: null,
-  weight: null,
-  weightUnit: null,
-  deliverySn: null,
-  userSn: null,
-  amount: null,
-  destination: null,
-  note: null,
-  createTime: null,
-  orderStatus: null,
-  paymentTime: null
-}
 export default {
   name: "orderList",
-  components:{LogisticsDialog},
+  components:{},
   data() {
     return {
       listQuery: Object.assign({}, defaultListQuery),
@@ -290,39 +285,9 @@ export default {
         content:null,
         orderIds:[]
       },
-      actionOptions: [
-        {label:"待确认", value:"-1"},
-        {label:"集运国内", value:"0"},
-        {label:"直邮国内", value:"1"},
-        {label:"退货", value:"2"},
-        {label:"快递海外", value:"3"},
-        {label:"海外寄存", value:"4"},
-        {label:"StockX寄卖", value:"5"},
-        {label:"得物寄卖", value:"6"},
-        {label:"国内寄存", value:"7"},
-      ],
-      weightUnitOptions: [
-        {label:"lb", value:'0'},
-        {label:"kg", value:'1'}
-      ],
-      orderStatusOptions: [
-        {
-          label: '待定价',
-          value: 0
-        },
-        {
-          label: '待付款',
-          value: 1
-        },
-        {
-          label: '已付款',
-          value: 2
-        },
-        {
-          label: '已完成',
-          value: 3
-        }
-      ],
+      actionOptions: actionOptions,
+      weightUnitOptions: weightUnitOptions,
+      orderStatusOptions: orderStatusOptions,
       operateOptions: [
         {
           label: "批量发货",
@@ -336,8 +301,7 @@ export default {
           label: "删除订单",
           value: 3
         }
-      ],
-      logisticsDialogVisible:false
+      ]
     }
   },
   created() {
@@ -347,35 +311,8 @@ export default {
     this.getList();
   },
   filters: {
-    formatDateTime(time) {
-      if (time == null || time === '') {
-        return 'N/A';
-      }
-      let date = new Date(time);
-      return formatDate(date, 'yyyy-MM-dd hh:mm')
-    },
-    formatAction(actionCode) {
-      switch (actionCode) {
-        case "0":
-          return "集运国内";
-        case "1":
-          return "直邮国内";
-        case "2":
-          return "退货";
-        case "3":
-          return "快递海外";
-        case "4":
-          return "海外寄存";
-        case "5":
-          return "StockX寄卖";
-        case "6":
-          return "得物寄卖";
-        case "7":
-          return "国内寄存";
-        default:
-          return "待用户选择";
-      }
-    }
+    formatDateTime: formatDateTime,
+    formatAction: formatAction
   },
   methods: {
     handleResetSearch() {
@@ -391,9 +328,6 @@ export default {
     handleCloseOrder(index, row){
       this.closeOrder.dialogVisible=true;
       this.closeOrder.orderIds=[row.id];
-    },
-    handleViewLogistics(index, row){
-      this.logisticsDialogVisible=true;
     },
     handleDeleteOrder(index, row){
       let ids=[];

@@ -254,8 +254,12 @@ import {str2Date} from '@/utils/date';
 import img_home_order from '@/assets/images/home_order.png';
 import img_home_today_amount from '@/assets/images/home_today_amount.png';
 import img_home_yesterday_amount from '@/assets/images/home_yesterday_amount.png';
-import {fetchItemCount,fetchSalesCount} from '@/api/warehouse';
+import {fetchItemCount} from '@/api/warehouse';
 import {getInfo} from "../../api/login";
+import {
+  statusOptions,
+  regionOptions,
+} from '../../dto/options';
 
 const DATA_FROM_BACKEND = {
   columns: ['date', 'orderCount','orderAmount'],
@@ -292,99 +296,13 @@ export default {
       currentProcessingItemCount: 0,
       currentSentItemCount: 0,
       currentStorageItemCount: 0,
-      regionOptions: [
-        {label:"美国1", value:'US1'},
-        {label:"美国2", value:'US2'},
-        {label:"西班牙", value:'SP'},
-        {label:"欧洲", value:'EU'}
-      ],
+      regionOptions: regionOptions,
       itemCountOption: {
         dayOffset: null,
         location: null,
         status: null
       },
-      statusOptions: [
-        {
-          label: '待入库',
-          value: 0
-        },
-        {
-          label: '已入库（海外仓）',
-          value: 1
-        },
-        {
-          label: '待付款',
-          value: 2
-        },
-        {
-          label: '已付款',
-          value: 3
-        },
-        {
-          label: '待集运国内',
-          value: 4
-        },
-        {
-          label: '待直邮国内',
-          value: 5
-        },
-        {
-          label: '待退货',
-          value: 6
-        },
-        {
-          label: '待快递海外',
-          value: 7
-        },
-        {
-          label: '待海外寄存',
-          value: 8
-        },
-        {
-          label: '待StockX寄卖',
-          value: 9
-        },
-        {
-          label: '已发货（海外仓）',
-          value: 10
-        },
-        {
-          label: '已寄存（海外仓）',
-          value: 11
-        },
-        {
-          label: '已入库（国内仓）',
-          value: 12
-        },
-        {
-          label: '待得物寄卖',
-          value: 13
-        },
-        {
-          label: '待快递国内',
-          value: 14
-        },
-        {
-          label: '待国内寄存',
-          value: 15
-        },
-        {
-          label: '已发货（国内仓）',
-          value: 16
-        },
-        {
-          label: '已寄存（国内仓）',
-          value: 17
-        },
-        {
-          label: '已归档',
-          value: 18
-        },
-        {
-          label: '待认领',
-          value: 19
-        }
-      ],
+      statusOptions: statusOptions,
       pickerOptions: {
         shortcuts: [{
           text: '最近一周',

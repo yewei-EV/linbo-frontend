@@ -81,7 +81,19 @@
         </el-table-column>
         <el-table-column label="状态" min-width="100" align="center">
           <template slot-scope="scope">{{statusOptions[scope.row.itemStatus].label}}</template>
-        </el-table-column>orderAction
+        </el-table-column>
+        <el-table-column label="支付状态" min-width="100" align="center">
+          <template slot-scope="scope">
+            <el-button size="mini"
+                       type="text"
+                       v-bind:class="{'text-warning': scope.row.orders[0].orderStatus===0,
+                       'text-danger': scope.row.orders[0].orderStatus===1,
+                       'text-success': scope.row.orders[0].orderStatus===2}"
+                       @click="handleOrderDetail(scope.row.orders[0])">
+              {{ scope.row.orders[0].orderStatus | formatOrderStatus }}
+            </el-button>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" min-width="160" align="center" v-if="this.listQuery.userSn">
           <template slot-scope="scope">
             <el-button size="mini"
@@ -217,7 +229,7 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <div class="un-handle-item">
-            <span class="font-title-large">订单状态：</span>
+            <span class="font-title-large">支付状态：</span>
             {{order.orderStatus | formatOrderStatus}}
           </div>
         </el-col>
@@ -243,28 +255,28 @@
   </div>
 </template>
 <script>
-  import {createItem,updateItem,updateStatus,deleteItem,getRoleByAdmin} from '@/api/login';
+  import {getInfo,getRoleByAdmin} from "../../../api/login";
   import SingleUpload from '@/components/Upload/singleUpload'
-  import {formatDate} from '@/utils/date';
   import {
     orderStatusOptions,
     statusOptions,
     regionOptions,
     weightUnitOptions,
-    operateOptions,
+    defaultItem,
+    defaultOrder,
+    actionOptions,
     formatDateTime,
     formatAction,
-    defaultItem,
-    defaultOrder, actionOptions, formatWeightUnit, formatOrderStatus
+    formatWeightUnit,
+    formatOrderStatus,
   } from '../../../dto/options';
   import {
-    fetchItemList,
-    fetchPreciseItemList,
-    fetchItemOrders,
-    getInfo,
     allocOrder,
-    createOrder, updateOrder
-  } from "../../../api/login";
+    createOrder,
+    updateOrder,
+    fetchItemList,
+    fetchItemOrders, updateItemStatus
+  } from '../../../api/warehouse';
 
   const defaultListQuery = {
     pageNum: 1,
@@ -354,7 +366,8 @@
       },
       chooseActionByUser(index, row) {
         this.orderActionDialogVisible = true;
-        this.order = Object.assign({},row.orders[0]);
+        this.order = Object.assign({}, row.orders[0]);
+        this.item = Object.assign({}, row);
       },
       handleUpdate(row) {
         this.dialogVisible = true;
@@ -368,16 +381,18 @@
           type: 'warning'
         }).then(() => {
           if (this.order.orderAction) {
-            updateOrder(this.order).then(response => {
-              this.$message({
-                message: '选择成功！',
-                type: 'success'
-              });
-              this.orderActionDialogVisible = false;
-              this.getList();
-            })
+            updateItemStatus(this.item, this.order.orderAction).then(() => {
+              updateOrder(this.order).then(() => {
+                this.$message({
+                  message: '选择成功！',
+                  type: 'success'
+                });
+                this.orderActionDialogVisible = false;
+                this.getList();
+              })
+            });
           } else if (this.order.attachment) {
-            updateOrder(this.order).then(response => {
+            updateOrder(this.order).then(() => {
               this.$message({
                 message: '上传成功！',
                 type: 'success'
@@ -386,43 +401,6 @@
               this.getList();
             })
           }
-          // if (this.isEdit) {
-          //   updateItem(this.item).then(() => {
-          //     this.$message({
-          //       message: '修改成功！',
-          //       type: 'success'
-          //     });
-          //     this.dialogVisible =false;
-          //     this.getList();
-          //   })
-          // } else {
-          //   this.item.createTime = new Date();
-          //   //find if item is preloaded or not
-          //   let query = {
-          //     pageNum: 1,
-          //     pageSize: 10,
-          //     deliverySn: this.item.deliverySn,
-          //     userSn: this.item.userSn,
-          //     location: this.item.location,
-          //   };
-          //   fetchPreciseItemList(query).then(response => {
-          //     if (response.data.list.length > 0) {
-          //       this.dialogVisible = false;
-          //       this.listQuery.deliverySn = query.deliverySn;
-          //       this.listQuery.userSn = query.userSn;
-          //       this.listQuery.location = query.location;
-          //       this.handleSearchList();
-          //       this.$message({
-          //         type: 'success',
-          //         message: '货物已预录!'
-          //       });
-          //     } else {
-          //       createItem(this.item).then((response) => {
-          //         this.createOrderWithItem(response);
-          //       })
-          //     }
-          //   });
-          // }
         })
       },
       handleOrderDetail(order) {
@@ -497,8 +475,6 @@
             return "选择操作";
           case "5":
             return "上传回执";
-          case "6":
-            return "上传回执";
         }
       }
     },
@@ -529,6 +505,15 @@
 .un-handle-item {
   border-bottom: 1px solid #EBEEF5;
   padding: 20px 20px 20px 40px;
+}
+.text-danger {
+   color: red;
+ }
+.text-warning {
+  color: orange;
+}
+.text-success {
+  color: green;
 }
 </style>
 

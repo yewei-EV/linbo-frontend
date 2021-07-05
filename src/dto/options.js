@@ -29,11 +29,11 @@ export const statusOptions = [
     value: 1
   },
   {
-    label: '待付款',
+    label: '待打包',
     value: 2
   },
   {
-    label: '已付款',
+    label: '已打包',
     value: 3
   },
   {
@@ -49,7 +49,7 @@ export const statusOptions = [
     value: 6
   },
   {
-    label: '待快递海外',
+    label: '待直邮海外',
     value: 7
   },
   {
@@ -126,6 +126,10 @@ export const operateOptions = [
   {
     label: "批量关闭",
     value: 3
+  },
+  {
+    label: "批量打包",
+    value: 4
   },
 ]
 
@@ -225,4 +229,39 @@ export const actionOptions = [
   {label:"StockX寄卖", value:"5"},
   {label:"得物寄卖", value:"6"},
   {label:"国内寄存", value:"7"}
+]
+
+export const sizeOptions = [
+  {label:"US4", value:"US4"},
+  {label:"US4.5", value:"US4.5"},
+  {label:"US5", value:"US5"},
+  {label:"US5.5", value:"US5.5"},
+  {label:"US6", value:"US6"},
+  {label:"US6.5", value:"US6.5"},
+  {label:"US7", value:"US7"},
+  {label:"US7.5", value:"US7.5"},
+  {label:"US8", value:"US8"},
+  {label:"US8.5", value:"US8.5"},
+  {label:"US9", value:"US9"},
+  {label:"US9.5", value:"US9.5"},
+  {label:"US10", value:"US10"},
+  {label:"US10.5", value:"US10.5"},
+  {label:"US11", value:"US11"},
+  {label:"US11.5", value:"US11.5"},
+  {label:"US12", value:"US12"},
+  {label:"US12.5", value:"US12.5"},
+  {label:"US13", value:"US13"},
+  {label:"US13.5", value:"US13.5"},
+  {label:"US14", value:"US14"},
+  {label:"US14.5", value:"US14.5"},
+  {label:"US15", value:"US15"},
+  {label:"US15.5", value:"US15.5"},
+  {label:"US16", value:"US16"},
+  {label:"Small", value:"Small"},
+  {label:"Medium", value:"Medium"},
+  {label:"Large", value:"Large"},
+  {label:"XLarge", value:"XLarge"},
+  {label:"XXL", value:"XXL"},
+  {label:"XXXL", value:"XXXL"},
+  {label:"未知", value:"未知"},
 ]

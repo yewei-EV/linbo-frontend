@@ -33,7 +33,13 @@
       <el-row :gutter="20">
         <el-col :span="20" class="preload-field">
           <el-form-item label="尺寸：">
-            <el-input v-model="item.size" style="width: 250px"></el-input>
+            <el-select v-model="item.size" placeholder="全部" clearable class="input-width" style="width: 250px">
+              <el-option v-for="item in sizeOptions"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value">
+              </el-option>
+            </el-select>
           </el-form-item>
         </el-col>
       </el-row>
@@ -80,15 +86,8 @@
   </div>
 </template>
 <script>
-import {createItem,updateItem,updateStatus,deleteItem,getRoleByAdmin} from '@/api/login';
+import {getInfo} from "../../../api/login";
 import SingleUpload from '@/components/Upload/singleUpload'
-import {formatDate} from '@/utils/date';
-import {
-  fetchItemOrders,
-  getInfo,
-  allocOrder,
-  createOrder, updateOrder
-} from "../../../api/login";
 import {
   defaultItem,
   defaultOrder,
@@ -97,8 +96,13 @@ import {
   actionOptions,
   weightUnitOptions,
   formatAction,
-  formatDateTime
+  formatDateTime, sizeOptions
 } from "../../../dto/options";
+import {
+  allocOrder, createItem,
+  createOrder,
+  fetchItemOrders
+} from '../../../api/warehouse';
 
 const defaultAllocGroup = {
   itemId: null,
@@ -114,6 +118,7 @@ export default {
       defaultOrder: defaultOrder,
       statusOptions: statusOptions,
       regionOptions: regionOptions,
+      sizeOptions: sizeOptions,
       actionOptions: actionOptions,
       weightUnitOptions: weightUnitOptions,
       multipleSelection: [],

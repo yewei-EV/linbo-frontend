@@ -47,7 +47,7 @@
               placeholder="请选择时间">
             </el-date-picker>
           </el-form-item>
-          <el-form-item label="订单状态：">
+          <el-form-item label="支付状态：">
             <el-select v-model="listQuery.orderStatus" placeholder="全部" clearable class="input-width">
               <el-option v-for="item in orderStatusOptions"
                          :key="item.value"
@@ -113,15 +113,21 @@
         <el-table-column label="创建时间" min-width="80" align="center">
           <template slot-scope="scope">{{scope.row.createTime | formatDateTime}}</template>
         </el-table-column>
-        <el-table-column label="订单状态" min-width="80" align="center">
-          <template slot-scope="scope">{{orderStatusOptions[scope.row.orderStatus].label}}</template>
+        <el-table-column label="支付状态" min-width="80" align="center">
+          <template slot-scope="scope">
+            <span v-bind:class="{'text-warning': scope.row.orderStatus===0,
+                       'text-danger': scope.row.orderStatus===1,
+                       'text-success': scope.row.orderStatus===2}">
+            {{orderStatusOptions[scope.row.orderStatus].label}}
+            </span>
+          </template>
         </el-table-column>
         <el-table-column label="操作" min-width="100" align="center">
           <template slot-scope="scope">
             <el-button size="mini"
                        type="danger"
                        v-if="scope.row.orderStatus===1 && scope.row.price"
-                       @click="handlePayment(scope.row)">已付款
+                       @click="handlePayment(scope.row)">已付
             </el-button>
             <el-button size="mini"
                        type="primary"
@@ -240,8 +246,12 @@
   </div>
 </template>
 <script>
-import {formatDate} from '@/utils/date';
-import {fetchOrderList,updateOrder,createOrder,deleteOrder} from "../../../api/login";
+import {
+  fetchOrderList,
+  updateOrder,
+  createOrder,
+  deleteOrder, updateItemStatus, updateItemStatusByOrder,
+} from '../../../api/warehouse';
 import {
   orderStatusOptions,
   statusOptions,
@@ -305,6 +315,7 @@ export default {
     }
   },
   created() {
+    this.listQuery.orderStatus = this.$route.query.orderStatus;
     this.listQuery.id = this.$route.query.id;
     this.listQuery.deliverySn = this.$route.query.deliverySn;
     this.listQuery.userSn = this.$route.query.userSn;
@@ -359,7 +370,6 @@ export default {
           });
           return;
         }
-        this.$router.push({path:'/oms/deliverOrderList',query:{list:list}})
       }else if(this.operateType===2){
         //关闭订单
         this.closeOrder.orderIds=[];
@@ -414,12 +424,14 @@ export default {
         this.order = Object.assign({}, row);
         this.order.orderStatus = 2;
         this.order.paymentTime = Date.now();
-        updateOrder(this.order).then(response => {
-          this.$message({
-            type: 'success',
-            message: '修改成功!'
-          });
-          this.getList();
+        updateOrder(this.order).then(() => {
+          updateItemStatusByOrder(this.order).then(() => {
+            this.$message({
+              type: 'success',
+              message: '修改成功!'
+            });
+            this.getList();
+          })
         });
       });
     },
@@ -491,6 +503,15 @@ export default {
 <style scoped>
 .input-width {
   width: 203px;
+}
+.text-danger {
+  color: red;
+}
+.text-warning {
+  color: orange;
+}
+.text-success {
+  color: green;
 }
 </style>
 

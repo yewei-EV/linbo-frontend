@@ -71,14 +71,14 @@
           <div class="total-frame" style="text-align: center;">
             <img :src="img_home_order" class="total-icon">
             <div class="total-title">今日包裹</div>
-            <div class="total-value">{{this.todayInboundItemCount?this.inboundItemCount:0}}</div>
+            <div class="total-value">{{this.todayInboundItemCount?this.todayInboundItemCount:0}}</div>
           </div>
         </el-col>
         <el-col :span="12">
           <div class="total-frame" style="text-align: center;">
             <img :src="img_home_today_amount" class="total-icon">
             <div class="total-title">今日发货</div>
-            <div class="total-value">{{this.todayOutboundItemCount?this.outboundItemCount:0}}</div>
+            <div class="total-value">{{this.todayOutboundItemCount?this.todayOutboundItemCount:0}}</div>
           </div>
         </el-col>
       </el-row>

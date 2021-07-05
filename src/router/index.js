@@ -153,6 +153,12 @@ export const asyncRouterMap = [
     meta: {title: '物流', icon: 'order'},
     children: [
       {
+        path: 'dashboard',
+        name: 'dashboard',
+        component: () => import('@/views/lms/dashboard/index'),
+        meta: {title: '控制台', icon: 'ums-admin'},
+      },
+      {
         path: 'item',
         name: 'item',
         component: () => import('@/views/lms/item/index'),

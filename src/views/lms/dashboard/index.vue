@@ -1,26 +1,5 @@
 <template>
   <div class="app-container">
-    <div class="address-layout">
-      <el-row :gutter="20">
-        <el-col :span="60">
-          <label>仓库地点：</label>
-          <el-select v-model="warehouseLocation" placeholder="全部" clearable style="width: 177px">
-            <el-option v-for="item in regionOptions"
-                       :key="item.value"
-                       :label="item.label"
-                       :value="item.value">
-            </el-option>
-          </el-select>
-          <el-button
-            style="margin-left: 15px"
-            type="primary"
-            @click="switchWarehouseLocation()"
-            size="large">
-            切换
-          </el-button>
-        </el-col>
-      </el-row>
-    </div>
     <div class="total-layout">
       <el-row :gutter="20">
         <el-col :span="12">
@@ -38,22 +17,6 @@
           </div>
         </el-col>
       </el-row>
-      <el-row :gutter="20" style="margin-top: 20px">
-        <el-col :span="12">
-          <div class="total-frame" style="text-align: center;">
-            <img :src="img_home_yesterday_amount" class="total-icon">
-            <div class="total-title">今日销售</div>
-            <div class="total-value">￥{{this.todaySales?this.todaySales:0}}</div>
-          </div>
-        </el-col>
-        <el-col :span="12">
-          <div class="total-frame" style="text-align: center;">
-            <img :src="img_home_order" class="total-icon">
-            <div class="total-title">7天销售</div>
-            <div class="total-value">￥{{this.sevenDaysSales?this.sevenDaysSales:0}}</div>
-          </div>
-        </el-col>
-      </el-row>
     </div>
     <div class="un-handle-layout">
       <div class="layout-title">待处理包裹</div>
@@ -61,18 +24,18 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <div class="un-handle-item">
-              <span class="font-medium">待集运国内</span>
+              <span class="font-medium">待得物寄卖</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="directToSpecificItemList(4)">
-                ({{this.totalDeliveryCount}})
+                         class="color-danger" type="text" @click="directToSpecificItemList(13)">
+                ({{this.duOrderCount}})
               </el-button>
             </div>
           </el-col>
           <el-col :span="12">
             <div class="un-handle-item">
-              <span class="font-medium">待直邮国内</span>
+              <span class="font-medium">待快递国内</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="directToSpecificItemList(5)">
+                         class="color-danger" type="text" @click="directToSpecificItemList(14)">
                 ({{this.directDeliveryCount}})
               </el-button>
             </div>
@@ -81,39 +44,35 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <div class="un-handle-item">
-              <span class="font-medium">待处理退货</span>
+              <span class="font-medium">待国内寄存</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="directToSpecificItemList(6)">
-                ({{this.refundCount}})
-              </el-button>
-            </div>
-          </el-col>
-          <el-col :span="12">
-            <div class="un-handle-item">
-              <span class="font-medium">待快递海外</span>
-              <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="directToSpecificItemList(7)">
-                ({{this.localDeliveryCount}})
-              </el-button>
-            </div>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <div class="un-handle-item">
-              <span class="font-medium">待海外寄存</span>
-              <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="directToSpecificItemList(8)">
+                         class="color-danger" type="text" @click="directToSpecificItemList(15)">
                 ({{this.localStorageCount}})
               </el-button>
             </div>
           </el-col>
+        </el-row>
+      </div>
+    </div>
+    <div class="un-handle-layout">
+      <div class="layout-title">待处理财务订单</div>
+      <div class="un-handle-content">
+        <el-row :gutter="20">
           <el-col :span="12">
             <div class="un-handle-item">
-              <span class="font-medium">待StockX寄卖</span>
+              <span class="font-medium">待定价订单</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="directToSpecificItemList(9)">
-                ({{this.stockxOrderCount}})
+                         class="color-danger" type="text" @click="directToSpecificOrderList(0)">
+                ({{this.needToPricingCount}})
+              </el-button>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="un-handle-item">
+              <span class="font-medium">待收款订单</span>
+              <el-button style="float: right; padding: 0; font-size: 20px"
+                         class="color-danger" type="text" @click="directToSpecificOrderList(1)">
+                ({{this.needToPayCount}})
               </el-button>
             </div>
           </el-col>
@@ -198,7 +157,7 @@
     statusOptions,
     regionOptions,
   } from '../../../dto/options';
-  import {fetchItemCount, fetchSalesCount} from "../../../api/warehouse";
+  import {fetchItemCount, fetchOrderCount, fetchSalesCount} from "../../../api/warehouse";
   import {getInfo} from "../../../api/login";
 
   const DATA_FROM_BACKEND = {
@@ -229,14 +188,11 @@
         warehouseLocation: null,
         inboundItemCount: 0,
         outboundItemCount: 0,
-        todaySales: 0,
-        sevenDaysSales: 0,
-        totalDeliveryCount: 0,
+        duOrderCount: 0,
         directDeliveryCount: 0,
-        refundCount: 0,
-        localDeliveryCount: 0,
         localStorageCount: 0,
-        stockxOrderCount: 0,
+        needToPricingCount: 0,
+        needToPayCount: 0,
         regionOptions: regionOptions,
         statusOptions: statusOptions,
         pickerOptions: {
@@ -289,10 +245,18 @@
     methods:{
       directToSpecificItemList(itemStatus) {
         this.$router.push({
-          path: '/wms/item',
+          path: '/lms/item',
           query: {
             itemStatus: itemStatus,
             location: this.warehouseLocation
+          }
+        })
+      },
+      directToSpecificOrderList(orderStatus) {
+        this.$router.push({
+          path: '/lms/order',
+          query: {
+            orderStatus: orderStatus,
           }
         })
       },
@@ -306,13 +270,11 @@
       fetchStatisticsInfo() {
         let inBoundOption = {
           dayOffset: 0,
-          location: this.warehouseLocation,
-          statusRange: "1,9"
+          statusRange: "12,18"
         }
         let outBoundOption = {
           dayOffset: 0,
-          location: this.warehouseLocation,
-          statusRange: "10,18"
+          statusRange: "16,18"
         }
         fetchItemCount(inBoundOption).then((response) => {
           this.inboundItemCount = response.data;
@@ -321,62 +283,35 @@
           this.outboundItemCount = response.data;
         });
 
-        let saleOption = {
-          location: this.warehouseLocation,
-          dayOffset: 0
+        let duOrderCountOption = {
+          statusRange: "13"
         };
-        let saleOption7Days = {
-          location: this.warehouseLocation,
-          dayOffset: 7
-        };
-        fetchSalesCount(saleOption).then((response) => {
-          this.todaySales = response.data;
-        });
-        fetchSalesCount(saleOption7Days).then((response) => {
-          this.sevenDaysSales = response.data;
-        });
-
-        let totalDeliveryOption = {
-          location: this.warehouseLocation,
-          statusRange: "4"
-        };
-        fetchItemCount(totalDeliveryOption).then((response) => {
-          this.totalDeliveryCount = response.data;
+        fetchItemCount(duOrderCountOption).then((response) => {
+          this.duOrderCount = response.data;
         });
         let directDeliveryOption = {
-          location: this.warehouseLocation,
-          statusRange: "5"
+          statusRange: "14"
         };
         fetchItemCount(directDeliveryOption).then((response) => {
           this.directDeliveryCount = response.data;
         });
-        let refundOption = {
-          location: this.warehouseLocation,
-          statusRange: "6"
-        };
-        fetchItemCount(refundOption).then((response) => {
-          this.refundCount = response.data;
-        });
-        let localDeliveryOption = {
-          location: this.warehouseLocation,
-          statusRange: "7"
-        };
-        fetchItemCount(localDeliveryOption).then((response) => {
-          this.localDeliveryCount = response.data;
-        });
         let localStorageOption = {
-          location: this.warehouseLocation,
-          statusRange: "8"
+          statusRange: "15"
         };
         fetchItemCount(localStorageOption).then((response) => {
           this.localStorageCount = response.data;
         });
-        let stockxOrderOption = {
-          location: this.warehouseLocation,
-          statusRange: "9"
+        let needToPricingOption = {
+          statusRange: "0"
         };
-        fetchItemCount(stockxOrderOption).then((response) => {
-          this.stockxOrderCount = response.data;
+        fetchOrderCount(needToPricingOption).then((response) => {
+          this.needToPricingCount = response.data;
+        });
+        let needToPayOption = {
+          statusRange: "1"
+        };
+        fetchOrderCount(needToPayOption).then((response) => {
+          this.needToPayCount = response.data;
         });
       },
       switchWarehouseLocation() {

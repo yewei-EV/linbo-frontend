@@ -12,7 +12,7 @@
           查询搜索
         </el-button>
         <el-button
-          style="float:right;margin-right: 15px"
+          style="float:right;margin-right:15px"
           @click="handleResetSearch()"
           size="small">
           重置
@@ -26,8 +26,8 @@
           <el-form-item label="识别码：">
             <el-input v-model="listQuery.userSn" class="input-width" placeholder="识别码" clearable></el-input>
           </el-form-item>
-          <el-form-item label="备注：">
-            <el-input v-model="listQuery.note" class="input-width" placeholder="备注" clearable></el-input>
+          <el-form-item label="物流单号：">
+            <el-input v-model="listQuery.note" class="input-width" placeholder="物流单号" clearable></el-input>
           </el-form-item>
           <el-form-item label="地点：">
             <el-select v-model="listQuery.location" placeholder="全部" clearable style="width: 177px">
@@ -37,6 +37,9 @@
                          :value="item.value">
               </el-option>
             </el-select>
+          </el-form-item>
+          <el-form-item label="存放位置: ">
+            <el-input v-model="listQuery.positionInfo" class="input-width" placeholder="存放位置" clearable></el-input>
           </el-form-item>
           <el-form-item label="状态：">
             <el-select v-model="listQuery.itemStatus" placeholder="全部" clearable style="width: 177px">
@@ -83,7 +86,7 @@
         <el-table-column label="添加时间" min-width="140" align="center">
           <template slot-scope="scope">{{scope.row.createTime | formatDateTime}}</template>
         </el-table-column>
-        <el-table-column label="位置信息" min-width="100" align="center">
+        <el-table-column label="存放位置" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.positionInfo}}</template>
         </el-table-column>
         <el-table-column label="SKU" min-width="60" align="center">
@@ -104,6 +107,18 @@
         <el-table-column label="状态" min-width="100" align="center">
           <template slot-scope="scope">{{statusOptions[scope.row.itemStatus].label}}</template>
         </el-table-column>
+        <el-table-column label="支付状态" min-width="100" align="center">
+          <template slot-scope="scope">
+            <el-button size="mini"
+                       type="text"
+                       v-bind:class="{'text-warning': scope.row.orders[0].orderStatus===0,
+                       'text-danger': scope.row.orders[0].orderStatus===1,
+                       'text-success': scope.row.orders[0].orderStatus===2}"
+                       @click="handleOrderDetail(scope.row.orders[0])">
+              {{ scope.row.orders[0].orderStatus | formatOrderStatus }}
+            </el-button>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" min-width="100" align="center">
           <template slot-scope="scope">
             <el-button size="mini"
@@ -113,13 +128,19 @@
               {{scope.row.itemStatus | formatNextButton}}
             </el-button>
             <el-button size="mini"
+                       type="success"
+                       v-if="showPackageButton(scope.row.itemStatus)"
+                       @click="handlePackage(scope.row)">
+              打包
+            </el-button>
+            <el-button size="mini"
                        type="info"
                        style="margin-left:0;margin-top:10px;"
                        @click="handleUpdate(scope.row)">编辑
             </el-button>
           </template>
         </el-table-column>
-        <el-table-column label="备注" min-width="100" align="center">
+        <el-table-column label="物流单号" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.note}}</template>
         </el-table-column>
       </el-table>
@@ -190,35 +211,22 @@
           <el-input v-model="item.sku" style="width: 250px"></el-input>
         </el-form-item>
         <el-form-item label="尺寸：">
-          <el-input v-model="item.size" style="width: 250px"></el-input>
-        </el-form-item>
-        <el-form-item label="位置信息：">
-          <el-input v-model="item.positionInfo" style="width: 250px"></el-input>
-        </el-form-item>
-        <el-form-item label="备注：">
-          <el-input v-model="item.note"
-                    type="textarea"
-                    :rows="1"
-                    style="width: 250px"></el-input>
-        </el-form-item>
-        <div class="optionalDivider">
-          <div class="tableTitle">
-            <span class="midText">
-              称重信息：
-            </span>
-          </div>
-        </div>
-        <el-form-item label="重量单位：">
-          <el-select v-model="order.weightUnit" clearable style="width: 250px">
-            <el-option v-for="item in weightUnitOptions"
+          <el-select v-model="item.size" placeholder="全部" clearable class="input-width" style="width: 250px">
+            <el-option v-for="item in sizeOptions"
                        :key="item.value"
                        :label="item.label"
                        :value="item.value">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="重量：">
-          <el-input v-model="order.weight" style="width: 250px"></el-input>
+        <el-form-item label="存放位置：">
+          <el-input v-model="item.positionInfo" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="物流单号：">
+          <el-input v-model="item.note"
+                    type="textarea"
+                    :rows="1"
+                    style="width: 250px"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -254,7 +262,7 @@
         <el-form-item label="地址：">
           <el-input v-model="order.destination" style="width: 250px"></el-input>
         </el-form-item>
-        <el-form-item label="订单状态：">
+        <el-form-item label="支付状态：">
           <el-select v-model="order.orderStatus" clearable style="width: 250px">
             <el-option v-for="status in orderStatusOptions"
                        :key="status.value"
@@ -266,7 +274,7 @@
         <el-form-item label="价格：">
           <el-input v-model="order.price" style="width: 250px"></el-input>
         </el-form-item>
-        <el-form-item label="备注：">
+        <el-form-item label="物流单号：">
           <el-input v-model="item.note"
                     type="textarea"
                     :rows="1"
@@ -278,19 +286,71 @@
         <el-button type="primary" @click="gotoOrderPage(order)" size="small">进入订单</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      :title="'打包详情'"
+      :visible.sync="packageDialogVisible"
+      width="80%">
+      <el-form :inline="true" label-width="180px" size="small">
+        <div class="optionalDivider">
+          <div class="tableTitle">
+            <span class="midText">
+              包裹数量: {{this.multipleSelection.length===0?1:this.multipleSelection.length}}
+            </span>
+          </div>
+        </div>
+        <el-form-item label="存放位置：">
+          <el-input v-model="packagePositionInfo" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="物流单号：">
+          <el-input v-model="packageNote"
+                    type="textarea"
+                    :rows="1"
+                    style="width: 250px"></el-input>
+        </el-form-item>
+        <div class="optionalDivider">
+          <div class="tableTitle">
+            <span class="midText">
+              称重信息：
+            </span>
+          </div>
+        </div>
+        <el-form-item label="重量单位：">
+          <el-select v-model="packageWeightUnit" clearable style="width: 250px">
+            <el-option v-for="item in weightUnitOptions"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="重量：">
+          <el-input v-model="packageWeight" style="width: 250px"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="packageDialogVisible = false" size="small">取 消</el-button>
+        <el-button type="primary" @click="tryCombinePackages()" size="small">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
-import {createItem, deleteItem, getRoleByAdmin, updateItemStatus} from '../../../api/login';
-  import SingleUpload from '../../../components/Upload/singleUpload'
-  import {getNextStatus} from '../../../utils/statusLogic';
   import {
+    createItem,
+    deleteItem,
+    allocOrder,
+    updateItem,
+    createOrder,
+    updateOrder,
+    updateItemStatus,
     fetchItemList,
     fetchPreciseItemList,
-    fetchItemOrders,
+    fetchItemOrders
+  } from '../../../api/warehouse';
+  import SingleUpload from '../../../components/Upload/singleUpload'
+  import {
     getInfo,
-    allocOrder, updateItem,
-    createOrder, updateOrder
+    getRoleByAdmin
   } from "../../../api/login";
   import {
     orderStatusOptions,
@@ -298,10 +358,11 @@ import {createItem, deleteItem, getRoleByAdmin, updateItemStatus} from '../../..
     regionOptions,
     weightUnitOptions,
     operateOptions,
+    defaultItem,
+    defaultOrder,
     formatDateTime,
     formatAction,
-    defaultItem,
-    defaultOrder
+    formatOrderStatus, sizeOptions
   } from '../../../dto/options';
 
   const defaultListQuery = {
@@ -336,14 +397,21 @@ import {createItem, deleteItem, getRoleByAdmin, updateItemStatus} from '../../..
         dialogVisible: false,
         item: Object.assign({}, defaultItem),
         order: Object.assign({}, defaultOrder),
+        packageWeight: null,
+        packageWeightUnit: null,
+        packagePositionInfo: null,
+        packageNote: null,
+        packageItem: null,
         allocGroup: Object.assign({}, defaultAllocGroup),
         isEdit: false,
         isFinish: false,
         orderDialogVisible: false,
+        packageDialogVisible: false,
         operateType: null,
         orderStatusOptions: orderStatusOptions,
         statusOptions: statusOptions,
         regionOptions: regionOptions,
+        sizeOptions: sizeOptions,
         weightUnitOptions: weightUnitOptions,
         operateOptions: operateOptions,
       }
@@ -365,6 +433,8 @@ import {createItem, deleteItem, getRoleByAdmin, updateItemStatus} from '../../..
         switch (currentStatus) {
           case 0:
             return "入库";
+          case 2:
+            return "打包";
           case 4:
             return "发货";
           case 5:
@@ -382,7 +452,8 @@ import {createItem, deleteItem, getRoleByAdmin, updateItemStatus} from '../../..
         }
       },
       formatDateTime: formatDateTime,
-      formatAction: formatAction
+      formatAction: formatAction,
+      formatOrderStatus: formatOrderStatus
     },
     methods: {
       handleResetSearch() {
@@ -433,6 +504,12 @@ import {createItem, deleteItem, getRoleByAdmin, updateItemStatus} from '../../..
         this.item = Object.assign({},row);
         this.order = this.item.orders[0];
       },
+      handlePackage(row) {
+        this.packageItem = row;
+        this.packagePositionInfo = row.positionInfo;
+        this.packageNote = row.note;
+        this.packageDialogVisible = true;
+      },
       handleUpdate(row) {
         this.dialogVisible = true;
         this.isEdit = true;
@@ -481,7 +558,6 @@ import {createItem, deleteItem, getRoleByAdmin, updateItemStatus} from '../../..
           type: 'warning'
         }).then(() => {
           if (this.isFinish) {
-            this.item.itemStatus = getNextStatus(this.item.itemStatus);
             updateItemStatus(this.item, this.order.orderAction).then(() => {
               this.$message({
                 message: '发货成功！',
@@ -489,7 +565,10 @@ import {createItem, deleteItem, getRoleByAdmin, updateItemStatus} from '../../..
               });
               this.dialogVisible = false;
               this.getList();
-            })
+            }).catch(() => {
+              this.dialogVisible = false;
+              this.getList();
+            });
           } else if (this.isEdit) {
             updateItem(this.item).then(() => {
               updateOrder(this.order).then(() => {
@@ -557,7 +636,51 @@ import {createItem, deleteItem, getRoleByAdmin, updateItemStatus} from '../../..
           }
         })
       },
-      handleBatchOperate(){
+      async combinePackages(items) {
+        let mainOrder = null;
+        for (const element of items) {
+          if (!mainOrder) {
+            mainOrder = element.orders[0];
+            mainOrder.weightUnit = this.packageWeightUnit;
+            mainOrder.weight = this.packageWeight;
+            await updateOrder(mainOrder);
+          } else {
+            await allocOrder(element.id, mainOrder.id).then(() => {
+              mainOrder.deliverySn = mainOrder.deliverySn + "&" + element.deliverySn;
+              mainOrder.amount++;
+              updateOrder(mainOrder);
+            });
+          }
+          element.note = this.packageNote;
+          element.positionInfo = this.packagePositionInfo;
+          await updateItemStatus(element, mainOrder.orderAction);
+        }
+        this.$message({
+          message: '打包成功！',
+          type: 'success'
+        });
+        this.packageDialogVisible = false;
+        this.getList();
+      },
+      async tryCombinePackages() {
+        //check if multiple selections match limitation
+        if (this.multipleSelection.length === 0) {
+          await this.combinePackages(new Array(this.packageItem));
+        } else {
+          if (this.multipleSelection.map(value => value.userSn).every((val, i, arr) => val === arr[0])
+            && this.multipleSelection.map(value => value.orders[0].orderAction).every((val, i, arr) => val === arr[0])
+            && this.multipleSelection.map(value => value.orders[0].destination).every((val, i, arr) => val === arr[0])) {
+            await this.combinePackages(this.multipleSelection);
+          } else {
+            this.$message({
+              type: 'error',
+              message: '所有打包包裹必须是同一识别码和同一操作的!'
+            });
+            this.packageDialogVisible = false;
+          }
+        }
+      },
+      handleBatchOperate() {
         if(this.multipleSelection==null||this.multipleSelection.length<1){
           this.$message({
             message: '请选择要操作的订单',
@@ -603,6 +726,9 @@ import {createItem, deleteItem, getRoleByAdmin, updateItemStatus} from '../../..
               this.getList();
             });
           }
+        }else if(this.operateType===4){
+          //批量打包
+          this.packageDialogVisible = true;
         }
       },
       async createOrderWithItem(itemRes) {
@@ -660,18 +786,20 @@ import {createItem, deleteItem, getRoleByAdmin, updateItemStatus} from '../../..
       showNextButton(currentStatus) {
         switch (currentStatus) {
           case 0:
-            return true;
           case 4:
-            return true;
           case 5:
-            return true;
           case 6:
-            return true;
           case 7:
-            return true;
           case 8:
-            return true;
           case 9:
+            return true;
+          default:
+            return false;
+        }
+      },
+      showPackageButton(currentStatus) {
+        switch (currentStatus) {
+          case 2:
             return true;
           default:
             return false;
@@ -701,6 +829,15 @@ import {createItem, deleteItem, getRoleByAdmin, updateItemStatus} from '../../..
 .optionalDivider {
   margin-bottom: 36px;
   margin-top: 20px;
+}
+.text-danger {
+  color: red;
+}
+.text-warning {
+  color: orange;
+}
+.text-success {
+  color: green;
 }
 </style>
 

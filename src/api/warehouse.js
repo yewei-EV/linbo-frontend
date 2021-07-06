@@ -3,8 +3,8 @@ import request from '@/utils/request'
 export function fetchItemList(params) {
   return request({
     url: '/item/list',
-    method: 'get',
-    params: params
+    method: 'post',
+    data: params
   })
 }
 

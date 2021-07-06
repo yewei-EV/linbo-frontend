@@ -123,16 +123,16 @@
             <div class="un-handle-item">
               <span class="font-medium">已预录</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="handleSpecificItemList(0)">
+                         class="color-danger" type="text" @click="handleSpecificItemList([0])">
                 ({{this.currentPreloadItemCount}})
               </el-button>
             </div>
           </el-col>
           <el-col :span="12">
             <div class="un-handle-item">
-              <span class="font-medium">已入库</span>
+              <span class="font-medium">待打包</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="handleSpecificItemList(1)">
+                         class="color-danger" type="text" @click="handleSpecificItemList([1,2])">
                 ({{this.currentInboundItemCount}})
               </el-button>
             </div>
@@ -143,7 +143,7 @@
             <div class="un-handle-item">
               <span class="font-medium">待付款</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="handleSpecificItemList(2)">
+                         class="color-danger" type="text" @click="handleSpecificItemList([2,12])">
                 ({{this.currentNeedToPayItemCount}})
               </el-button>
             </div>
@@ -152,7 +152,7 @@
             <div class="un-handle-item">
               <span class="font-medium">处理中</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="handleSpecificItemList(3)">
+                         class="color-danger" type="text" @click="handleSpecificItemList([4,5,6,7,8,9,13,14,15])">
                 ({{this.currentProcessingItemCount}})
               </el-button>
             </div>
@@ -163,7 +163,7 @@
             <div class="un-handle-item">
               <span class="font-medium">已发货</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="handleSpecificItemList(10)">
+                         class="color-danger" type="text" @click="handleSpecificItemList([10,16])">
                 ({{this.currentSentItemCount}})
               </el-button>
             </div>
@@ -172,7 +172,7 @@
             <div class="un-handle-item">
               <span class="font-medium">寄存中</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="handleSpecificItemList(11)">
+                         class="color-danger" type="text" @click="handleSpecificItemList([11,17])">
                 ({{this.currentStorageItemCount}})
               </el-button>
             </div>
@@ -360,16 +360,16 @@ export default {
       this.$router.push({
         path: '/user/item',
         query: {
-          itemStatus: 19,
+          itemStatuses: [19],
           userSn: ""
         }
       })
     },
-    handleSpecificItemList(itemStatus) {
+    handleSpecificItemList(itemStatuses) {
       this.$router.push({
         path: '/user/item',
         query: {
-          itemStatus: itemStatus
+          itemStatuses: itemStatuses
         }
       })
     },
@@ -383,7 +383,7 @@ export default {
       let inBoundOption = {
         dayOffset: 0,
         userSn: this.userInfo.userSn,
-        statusRange: "1,9"
+        statusRange: "1,18"
       }
       let outBoundOption = {
         dayOffset: 0,
@@ -399,7 +399,7 @@ export default {
       let totalInBoundOption = {
         dayOffset: 7,
         userSn: this.userInfo.userSn,
-        statusRange: "1,9"
+        statusRange: "1,18"
       };
       let totalOutBoundOption = {
         dayOffset: 7,
@@ -423,14 +423,14 @@ export default {
       });
       let currentInboundOption = {
         userSn: this.userInfo.userSn,
-        statusRange: "1"
+        statusRange: "0"
       };
       fetchItemCount(currentInboundOption).then((response) => {
         this.currentInboundItemCount = response.data;
       });
       let needToPayOption = {
         userSn: this.userInfo.userSn,
-        statusRange: "2"
+        statusRange: "3"
       };
       fetchItemCount(needToPayOption).then((response) => {
         this.currentNeedToPayItemCount = response.data;

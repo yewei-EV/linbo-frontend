@@ -50,6 +50,9 @@
               </el-option>
             </el-select>
           </el-form-item>
+          <el-form-item label="存放位置: ">
+            <el-input v-model="listQuery.positionInfo" class="input-width" placeholder="存放位置" clearable></el-input>
+          </el-form-item>
           <el-form-item label="状态：">
             <el-select v-model="listQuery.itemStatus" placeholder="全部" clearable style="width: 177px">
               <el-option v-for="item in statusOptions"
@@ -73,8 +76,9 @@
     </el-card>
     <el-card class="operate-container" shadow="never">
       <i class="el-icon-tickets"></i>
-      <span>数据列表</span>
-      <el-button size="mini" type="danger" class="btn-add" @click="handleAdd()" style="margin-left: 20px">录入包裹</el-button>
+      <span>包裹列表</span>
+      <el-button size="small" class="btn-add" type="primary" style="margin-left: 20px" @click="refreshData()">刷新</el-button>
+      <el-button size="mini" type="danger" class="btn-add" @click="handleAdd()" style="margin-left: 20px">包裹入库</el-button>
     </el-card>
     <div class="table-container">
       <el-table ref="itemTable"
@@ -87,13 +91,7 @@
           <template slot-scope="scope">{{scope.row.deliverySn}}</template>
         </el-table-column>
         <el-table-column label="识别码" min-width="100" align="center">
-          <template slot-scope="scope">
-            <el-button size="mini"
-                       type="text"
-                       @click="showDiscordIdByUserSn(scope.row.userSn)">
-              {{scope.row.userSn}}
-            </el-button>
-          </template>
+          <template slot-scope="scope">{{scope.row.userSn}}</template>
         </el-table-column>
         <el-table-column label="地点" min-width="50" align="center">
           <template slot-scope="scope">{{scope.row.location}}</template>
@@ -101,14 +99,14 @@
         <el-table-column label="添加时间" min-width="140" align="center">
           <template slot-scope="scope">{{scope.row.createTime | formatDateTime}}</template>
         </el-table-column>
+        <el-table-column label="存放位置" min-width="100" align="center">
+          <template slot-scope="scope">{{scope.row.positionInfo}}</template>
+        </el-table-column>
         <el-table-column label="SKU" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.sku}}</template>
         </el-table-column>
         <el-table-column label="尺寸" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.size}}</template>
-        </el-table-column>
-        <el-table-column label="物流单号" min-width="100" align="center">
-          <template slot-scope="scope">{{scope.row.note}}</template>
         </el-table-column>
         <el-table-column label="最新操作" min-width="100" align="center">
           <template slot-scope="scope">
@@ -119,7 +117,7 @@
             </el-button>
           </template>
         </el-table-column>
-        <el-table-column label="状态" min-width="80" align="center">
+        <el-table-column label="状态" min-width="100" align="center">
           <template slot-scope="scope">{{statusOptions[scope.row.itemStatus].label}}</template>
         </el-table-column>
         <el-table-column label="支付状态" min-width="100" align="center">
@@ -161,6 +159,9 @@
                        @click="handleDelete(scope.$index, scope.row)">删除
             </el-button>
           </template>
+        </el-table-column>
+        <el-table-column label="物流单号" min-width="100" align="center">
+          <template slot-scope="scope">{{scope.row.note}}</template>
         </el-table-column>
       </el-table>
     </div>
@@ -254,6 +255,33 @@
       </span>
     </el-dialog>
     <el-dialog
+      :title="'批量入库/出库'"
+      :visible.sync="inOutBoundDialogVisible"
+      width="80%">
+      <el-form :inline="true" label-width="180px" size="small">
+        <div class="optionalDivider">
+          <div class="tableTitle">
+            <span class="midText">
+              包裹数量: {{this.multipleSelection.length===0?1:this.multipleSelection.length}}
+            </span>
+          </div>
+        </div>
+        <el-form-item label="存放位置：">
+          <el-input v-model="packagePositionInfo" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item v-if="this.operateType===3" label="物流单号：">
+          <el-input v-model="packageNote"
+                    type="textarea"
+                    :rows="1"
+                    style="width: 250px"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="inOutBoundDialogVisible = false" size="small">取 消</el-button>
+        <el-button type="primary" @click="inOutBoundPackages()" size="small">确 定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
       :title="'订单详情'"
       :visible.sync="orderDialogVisible"
       width="80%">
@@ -273,7 +301,13 @@
           <el-input v-model="order.weight" style="width: 250px"></el-input>
         </el-form-item>
         <el-form-item label="重量单位：">
-          <el-input v-model="order.weightUnit" style="width: 250px"></el-input>
+          <el-select v-model="order.weightUnit" clearable style="width: 250px">
+            <el-option v-for="status in weightUnitOptions"
+                       :key="status.value"
+                       :label="status.label"
+                       :value="status.value">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="数量：">
           <el-input v-model="order.amount" style="width: 250px"></el-input>
@@ -283,7 +317,7 @@
         </el-form-item>
         <el-form-item label="支付状态：">
           <el-select v-model="order.orderStatus" clearable style="width: 250px">
-            <el-option v-for="status in statusOptions"
+            <el-option v-for="status in orderStatusOptions"
                        :key="status.value"
                        :label="status.label"
                        :value="status.value">
@@ -319,7 +353,7 @@ import {
   defaultItem,
   defaultOrder,
   actionOptions,
-  formatOrderStatus, sizeOptions
+  formatOrderStatus, sizeOptions, operateOptions, orderStatusOptions
 } from '../../../dto/options';
   import {
     allocOrder,
@@ -366,6 +400,8 @@ import {
         sizeOptions: sizeOptions,
         weightUnitOptions: weightUnitOptions,
         multipleSelection: [],
+        packagePositionInfo: null,
+        packageNote: null,
         list: null,
         total: null,
         listLoading: false,
@@ -377,19 +413,21 @@ import {
         isFinish: false,
         orderDialogVisible: false,
         operateType: null,
+        inOutBoundDialogVisible: false,
+        orderStatusOptions: orderStatusOptions,
         operateOptions: [
           {
-            label: "批量付款",
+            label: "批量入库",
             value: 1
           },
           {
             label: "批量发货",
-            value: 2
-          },
-          {
-            label: "批量关闭",
             value: 3
           },
+          // {
+          //   label: "批量关闭",
+          //   value: 4
+          // },
         ]
       }
     },
@@ -584,6 +622,23 @@ import {
           }
         })
       },
+      inOutBoundPackages() {
+        for(let i=0;i<this.multipleSelection.length;i++) {
+          this.multipleSelection[i].note = this.packageNote;
+          this.multipleSelection[i].positionInfo = this.packagePositionInfo;
+          updateItemStatus(this.multipleSelection[i], this.multipleSelection[i].orders[0].orderAction).then(() => {
+            this.$message({
+              message: '修改成功！',
+              type: 'success'
+            });
+            this.inOutBoundDialogVisible = false;
+            this.getList();
+          }).catch(() => {
+            this.inOutBoundDialogVisible = false;
+            this.getList();
+          });
+        }
+      },
       handleBatchOperate(){
         if(this.multipleSelection==null||this.multipleSelection.length<1){
           this.$message({
@@ -594,42 +649,11 @@ import {
           return;
         }
         if(this.operateType===1){
-          //批量付款
-          for(let i=0;i<this.multipleSelection.length;i++) {
-            this.multipleSelection[i].orders[0].orderStatus = 2;
-            this.multipleSelection[i].orders[0].paymentTime = Date.now();
-            updateOrder(this.multipleSelection[i].orders[0]).then(() => {
-              this.$message({
-                message: '修改成功！',
-                type: 'success'
-              });
-              this.getList();
-            });
-          }
-        }else if(this.operateType===2){
-          //批量发货
-          for(let i=0;i<this.multipleSelection.length;i++) {
-            this.multipleSelection[i].orders[0].orderStatus = 3;
-            updateOrder(this.multipleSelection[i].orders[0]).then(() => {
-              this.$message({
-                message: '修改成功！',
-                type: 'success'
-              });
-              this.getList();
-            });
-          }
+          //批量入库
+          this.inOutBoundDialogVisible = true;
         }else if(this.operateType===3){
-          //批量关闭
-          for(let i=0;i<this.multipleSelection.length;i++) {
-            this.multipleSelection[i].orders[0].orderStatus = 4;
-            updateOrder(this.multipleSelection[i].orders[0]).then(() => {
-              this.$message({
-                message: '关闭成功！',
-                type: 'success'
-              });
-              this.getList();
-            });
-          }
+          //批量发货
+          this.inOutBoundDialogVisible = true;
         }
       },
       async createOrderWithItem(itemRes) {
@@ -693,6 +717,9 @@ import {
         }
         return row.itemStatus === 10 && (row.orders[0].orderAction === "0" || row.orders[0].orderAction === "6"
           || row.orders[0].orderAction === "7");
+      },
+      refreshData() {
+        this.getList();
       }
     }
   }

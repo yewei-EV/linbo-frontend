@@ -24,7 +24,7 @@
             <el-input v-model="listQuery.id" class="input-width" placeholder="ID" clearable></el-input>
           </el-form-item>
           <el-form-item label="订单操作：">
-            <el-select v-model="listQuery.orderAction" placeholder="全部" clearable class="input-width">
+            <el-select v-model="listQuery.orderAction" placeholder="全部" clearable style="width: 177px">
               <el-option v-for="action in actionOptions"
                          :key="action.value"
                          :label="action.label"
@@ -40,7 +40,7 @@
           </el-form-item>
           <el-form-item label="创建时间：">
             <el-date-picker
-              class="input-width"
+              style="width: 177px"
               v-model="listQuery.createTime"
               value-format="yyyy-MM-dd"
               type="date"
@@ -48,7 +48,7 @@
             </el-date-picker>
           </el-form-item>
           <el-form-item label="支付状态：">
-            <el-select v-model="listQuery.orderStatus" placeholder="全部" clearable class="input-width">
+            <el-select v-model="listQuery.orderStatus" placeholder="全部" clearable style="width: 177px">
               <el-option v-for="item in orderStatusOptions"
                          :key="item.value"
                          :label="item.label"
@@ -58,23 +58,24 @@
           </el-form-item>
           <el-form-item label="支付时间：">
             <el-date-picker
-              class="input-width"
+              style="width: 177px"
               v-model="listQuery.paymentTime"
               value-format="yyyy-MM-dd"
               type="date"
               placeholder="请选择时间">
             </el-date-picker>
           </el-form-item>
-          <el-form-item label="备注：">
-            <el-input v-model="listQuery.note" class="input-width" placeholder="备注" clearable></el-input>
+          <el-form-item label="付款备注：">
+            <el-input v-model="listQuery.note" class="input-width" placeholder="付款备注" clearable></el-input>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card class="operate-container" shadow="never">
       <i class="el-icon-tickets"></i>
-      <span>数据列表</span>
-      <el-button size="mini" type="danger" class="btn-add" @click="handleAdd()" style="margin-left: 20px">添加订单</el-button>
+      <span>订单列表</span>
+      <el-button size="small" class="btn-add" type="primary" @click="refreshData()">刷新</el-button>
+      <!--      <el-button size="mini" type="danger" class="btn-add" @click="handleAdd()" style="margin-left: 20px">添加订单</el-button>-->
     </el-card>
     <div class="table-container">
       <el-table ref="orderTable"
@@ -96,11 +97,8 @@
           <template slot-scope="scope">{{scope.row.weight}}</template>
         </el-table-column>
         <el-table-column label="重量单位" min-width="60" align="center">
-          <template slot-scope="scope">{{scope.row.weightUnit}}</template>
+          <template slot-scope="scope">{{scope.row.weightUnit | formatWeightUnit}}</template>
         </el-table-column>
-<!--        <el-table-column label="数量" min-width="50" align="center">-->
-<!--          <template slot-scope="scope">{{scope.row.amount}}</template>-->
-<!--        </el-table-column>-->
         <el-table-column label="运单号" min-width="160" align="center">
           <template slot-scope="scope">{{scope.row.deliverySn}}</template>
         </el-table-column>
@@ -141,7 +139,7 @@
 <!--            </el-button>-->
           </template>
         </el-table-column>
-        <el-table-column label="备注" min-width="100" align="center">
+        <el-table-column label="付款备注" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.note}}</template>
         </el-table-column>
         <el-table-column label="支付成功时间" min-width="120" align="center">
@@ -215,7 +213,7 @@
         <el-form-item label="价格：">
           <el-input v-model="order.price" style="width: 250px"></el-input>
         </el-form-item>
-        <el-form-item label="备注：">
+        <el-form-item label="付款备注：">
           <el-input v-model="order.note"
                     type="textarea"
                     :rows="1"
@@ -228,19 +226,20 @@
       </span>
     </el-dialog>
     <el-dialog
-      title="关闭订单"
-      :visible.sync="closeOrder.dialogVisible" width="30%">
-      <span style="vertical-align: top">操作备注：</span>
-      <el-input
-        style="width: 80%"
-        type="textarea"
-        :rows="5"
-        placeholder="请输入内容"
-        v-model="closeOrder.content">
-      </el-input>
+      :title="'付款详情'"
+      :visible.sync="paymentDialogVisible"
+      width="80%">
+      <el-form :inline="true" label-width="180px" size="small">
+        <el-form-item label="付款备注：">
+          <el-input v-model="paymentNote"
+                    type="textarea"
+                    :rows="1"
+                    style="width: 250px"></el-input>
+        </el-form-item>
+      </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="closeOrder.dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="">确 定</el-button>
+        <el-button @click="paymentDialogVisible = false" size="small">取 消</el-button>
+        <el-button type="primary" @click="processPayment()" size="small">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -261,7 +260,7 @@ import {
   formatDateTime,
   formatAction,
   defaultItem,
-  defaultOrder, actionOptions
+  defaultOrder, actionOptions, formatWeightUnit
 } from '../../../dto/options';
 const defaultListQuery = {
   pageNum: 1,
@@ -288,25 +287,14 @@ export default {
       list: null,
       total: null,
       dialogVisible: false,
+      paymentDialogVisible: false,
       operateType: null,
       multipleSelection: [],
-      closeOrder:{
-        dialogVisible:false,
-        content:null,
-        orderIds:[]
-      },
+      paymentNote: null,
       actionOptions: actionOptions,
       weightUnitOptions: weightUnitOptions,
       orderStatusOptions: orderStatusOptions,
       operateOptions: [
-        {
-          label: "批量发货",
-          value: 1
-        },
-        {
-          label: "关闭订单",
-          value: 2
-        },
         {
           label: "删除订单",
           value: 3
@@ -323,7 +311,8 @@ export default {
   },
   filters: {
     formatDateTime: formatDateTime,
-    formatAction: formatAction
+    formatAction: formatAction,
+    formatWeightUnit: formatWeightUnit
   },
   methods: {
     handleResetSearch() {
@@ -335,10 +324,6 @@ export default {
     },
     handleSelectionChange(val){
       this.multipleSelection = val;
-    },
-    handleCloseOrder(index, row){
-      this.closeOrder.dialogVisible=true;
-      this.closeOrder.orderIds=[row.id];
     },
     handleDeleteOrder(index, row){
       let ids=[];
@@ -354,30 +339,7 @@ export default {
         });
         return;
       }
-      if(this.operateType===1){
-        //批量发货
-        let list=[];
-        for(let i=0;i<this.multipleSelection.length;i++){
-          if(this.multipleSelection[i].orderStatus===1){
-            list.push(this.covertOrder(this.multipleSelection[i]));
-          }
-        }
-        if(list.length===0){
-          this.$message({
-            message: '选中订单中没有可以发货的订单',
-            type: 'warning',
-            duration: 1000
-          });
-          return;
-        }
-      }else if(this.operateType===2){
-        //关闭订单
-        this.closeOrder.orderIds=[];
-        for(let i=0;i<this.multipleSelection.length;i++){
-          this.closeOrder.orderIds.push(this.multipleSelection[i].id);
-        }
-        this.closeOrder.dialogVisible=true;
-      }else if(this.operateType===3){
+      if(this.operateType===3){
         //删除订单
         let ids=[];
         for(let i=0;i<this.multipleSelection.length;i++){
@@ -416,24 +378,9 @@ export default {
       this.order = Object.assign({},row);
     },
     handlePayment(row) {
-      this.$confirm('是否要确认?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.order = Object.assign({}, row);
-        this.order.orderStatus = 2;
-        this.order.paymentTime = Date.now();
-        updateOrder(this.order).then(() => {
-          updateItemStatusByOrder(this.order).then(() => {
-            this.$message({
-              type: 'success',
-              message: '修改成功!'
-            });
-            this.getList();
-          })
-        });
-      });
+      this.paymentNote = row.note;
+      this.order = Object.assign({}, row);
+      this.paymentDialogVisible = true;
     },
     handleDialogConfirm() {
       this.$confirm('是否要确认?', '提示', {
@@ -496,13 +443,37 @@ export default {
           this.getList();
         });
       })
+    },
+    processPayment() {
+      this.$confirm('是否要确认?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.order.note = this.paymentNote;
+        this.order.orderStatus = 2;
+        this.order.paymentTime = Date.now();
+        updateOrder(this.order).then(() => {
+          updateItemStatusByOrder(this.order).then(() => {
+            this.$message({
+              type: 'success',
+              message: '修改成功!'
+            });
+            this.paymentDialogVisible = false;
+            this.getList();
+          })
+        });
+      });
+    },
+    refreshData() {
+      this.getList();
     }
   }
 }
 </script>
 <style scoped>
 .input-width {
-  width: 203px;
+  width: 177px;
 }
 .text-danger {
   color: red;

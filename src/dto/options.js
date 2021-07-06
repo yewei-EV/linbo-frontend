@@ -110,27 +110,27 @@ export const regionOptions = [
 ]
 
 export const weightUnitOptions = [
-  {label:"lb", value:'0'},
-  {label:"kg", value:'1'}
+  {label:"lb", value:0},
+  {label:"kg", value:1}
 ]
 
 export const operateOptions = [
   {
-    label: "批量付款",
+    label: "批量入库",
     value: 1
   },
   {
-    label: "批量发货",
+    label: "批量打包",
     value: 2
   },
   {
-    label: "批量关闭",
+    label: "批量发货",
     value: 3
   },
-  {
-    label: "批量打包",
-    value: 4
-  },
+  // {
+  //   label: "批量关闭",
+  //   value: 4
+  // },
 ]
 
 export function formatDateTime(time) {

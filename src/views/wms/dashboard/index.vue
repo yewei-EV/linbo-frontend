@@ -307,7 +307,7 @@
         let inBoundOption = {
           dayOffset: 0,
           location: this.warehouseLocation,
-          statusRange: "1,9"
+          statusRange: "1,18"
         }
         let outBoundOption = {
           dayOffset: 0,

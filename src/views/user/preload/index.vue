@@ -130,21 +130,7 @@ export default {
       order: Object.assign({}, defaultOrder),
       allocGroup: Object.assign({}, defaultAllocGroup),
       orderDialogVisible: false,
-      operateType: null,
-      operateOptions: [
-        {
-          label: "批量付款",
-          value: 1
-        },
-        {
-          label: "批量发货",
-          value: 2
-        },
-        {
-          label: "批量关闭",
-          value: 3
-        },
-      ]
+      operateType: null
     }
   },
   created() {

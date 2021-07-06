@@ -33,7 +33,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="状态：">
-            <el-select v-model="listQuery.itemStatus" placeholder="全部" clearable style="width: 177px">
+            <el-select multiple v-model="listQuery.itemStatuses" placeholder="全部" clearable style="width: 177px">
               <el-option v-for="item in statusOptions"
                          :key="item.value"
                          :label="item.label"
@@ -47,6 +47,7 @@
     <el-card class="operate-container" shadow="never">
       <i class="el-icon-tickets"></i>
       <span>包裹列表</span>
+      <el-button size="small" class="btn-add" type="primary" @click="refreshData()">刷新</el-button>
     </el-card>
     <div class="table-container">
       <el-table ref="itemTable"
@@ -94,7 +95,7 @@
             </el-button>
           </template>
         </el-table-column>
-        <el-table-column label="操作" min-width="160" align="center" v-if="this.listQuery.userSn">
+        <el-table-column label="操作" min-width="100" align="center" v-if="this.listQuery.userSn">
           <template slot-scope="scope">
             <el-button size="mini"
                        type="danger"
@@ -111,6 +112,26 @@
           </template>
         </el-table-column>
       </el-table>
+    </div>
+    <div class="batch-operate-container" style="visibility: hidden;">
+      <el-select
+        size="small"
+        v-model="operateType" placeholder="批量操作">
+        <el-option
+          v-for="item in operateOptions"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value">
+        </el-option>
+      </el-select>
+      <el-button
+        style="margin-left: 20px"
+        class="search-button"
+        @click=""
+        type="primary"
+        size="small">
+        确定
+      </el-button>
     </div>
     <div class="pagination-container">
       <el-pagination
@@ -268,7 +289,7 @@
     formatDateTime,
     formatAction,
     formatWeightUnit,
-    formatOrderStatus,
+    formatOrderStatus, operateOptions,
   } from '../../../dto/options';
   import {
     allocOrder,
@@ -286,7 +307,7 @@
     location: null,
     note: null,
     createTime: null,
-    itemStatus: null,
+    itemStatuses: [],
     positionInfo: null,
     orders: []
   };
@@ -320,14 +341,17 @@
         orderAttachmentDialogVisible: false,
         orderDialogVisible: false,
         operateType: null,
+        operateOptions: operateOptions
       }
     },
     created() {
       getInfo().then(response => {
         this.userInfo = response.data;
         this.listQuery.userSn = this.$route.query.userSn;
-        this.listQuery.itemStatus = this.$route.query.itemStatus;
-        if (!this.listQuery.userSn && !this.listQuery.itemStatus) {
+        if (this.$route.query.itemStatuses) {
+          this.listQuery.itemStatuses = this.$route.query.itemStatuses;
+        }
+        if (!this.listQuery.userSn && (!this.listQuery.itemStatus || !this.listQuery.itemStatuses)) {
           this.listQuery.userSn = response.data.userSn;
         }
         this.getList();
@@ -458,16 +482,8 @@
           })
         });
       },
-      getRoleListByAdmin(adminId) {
-        getRoleByAdmin(adminId).then(response => {
-          let allocRoleList = response.data;
-          this.allocRoleIds=[];
-          if(allocRoleList!=null&&allocRoleList.length>0){
-            for(let i=0;i<allocRoleList.length;i++){
-              this.allocRoleIds.push(allocRoleList[i].id);
-            }
-          }
-        });
+      refreshData() {
+        this.getList();
       },
       getButtonByAction(currentAction) {
         switch (currentAction) {

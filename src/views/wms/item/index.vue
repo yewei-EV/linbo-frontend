@@ -64,7 +64,8 @@
     </el-card>
     <el-card class="operate-container" shadow="never">
       <i class="el-icon-tickets"></i>
-      <span>数据列表</span>
+      <span>包裹列表</span>
+      <el-button size="small" class="btn-add" type="primary" style="margin-left: 20px" @click="refreshData()">刷新</el-button>
       <el-button size="small" class="btn-add" type="danger" @click="handleAdd()">包裹入库</el-button>
     </el-card>
     <div class="table-container">
@@ -254,7 +255,13 @@
           <el-input v-model="order.weight" style="width: 250px"></el-input>
         </el-form-item>
         <el-form-item label="重量单位：">
-          <el-input v-model="order.weightUnit" style="width: 250px"></el-input>
+          <el-select v-model="order.weightUnit" clearable style="width: 250px">
+            <el-option v-for="status in weightUnitOptions"
+                       :key="status.value"
+                       :label="status.label"
+                       :value="status.value">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="数量：">
           <el-input v-model="order.amount" style="width: 250px"></el-input>
@@ -284,6 +291,33 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="orderDialogVisible = false" size="small">取 消</el-button>
         <el-button type="primary" @click="gotoOrderPage(order)" size="small">进入订单</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
+      :title="'批量入库/出库'"
+      :visible.sync="inOutBoundDialogVisible"
+      width="80%">
+      <el-form :inline="true" label-width="180px" size="small">
+        <div class="optionalDivider">
+          <div class="tableTitle">
+            <span class="midText">
+              包裹数量: {{this.multipleSelection.length===0?1:this.multipleSelection.length}}
+            </span>
+          </div>
+        </div>
+        <el-form-item label="存放位置：">
+          <el-input v-model="packagePositionInfo" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item v-if="this.operateType===3" label="物流单号：">
+          <el-input v-model="packageNote"
+                    type="textarea"
+                    :rows="1"
+                    style="width: 250px"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="inOutBoundDialogVisible = false" size="small">取 消</el-button>
+        <el-button type="primary" @click="inOutBoundPackages()" size="small">确 定</el-button>
       </span>
     </el-dialog>
     <el-dialog
@@ -407,6 +441,7 @@
         isFinish: false,
         orderDialogVisible: false,
         packageDialogVisible: false,
+        inOutBoundDialogVisible: false,
         operateType: null,
         orderStatusOptions: orderStatusOptions,
         statusOptions: statusOptions,
@@ -680,6 +715,23 @@
           }
         }
       },
+      inOutBoundPackages() {
+        for(let i=0;i<this.multipleSelection.length;i++) {
+          this.multipleSelection[i].note = this.packageNote;
+          this.multipleSelection[i].positionInfo = this.packagePositionInfo;
+          updateItemStatus(this.multipleSelection[i], this.multipleSelection[i].orders[0].orderAction).then(() => {
+            this.$message({
+              message: '修改成功！',
+              type: 'success'
+            });
+            this.inOutBoundDialogVisible = false;
+            this.getList();
+          }).catch(() => {
+            this.inOutBoundDialogVisible = false;
+            this.getList();
+          });
+        }
+      },
       handleBatchOperate() {
         if(this.multipleSelection==null||this.multipleSelection.length<1){
           this.$message({
@@ -690,45 +742,16 @@
           return;
         }
         if(this.operateType===1){
-          //批量付款
-          for(let i=0;i<this.multipleSelection.length;i++) {
-            this.multipleSelection[i].orders[0].orderStatus = 2;
-            this.multipleSelection[i].orders[0].paymentTime = Date.now();
-            updateOrder(this.multipleSelection[i].orders[0]).then(() => {
-              this.$message({
-                message: '修改成功！',
-                type: 'success'
-              });
-              this.getList();
-            });
-          }
+          //批量入库
+          this.inOutBoundDialogVisible = true;
         }else if(this.operateType===2){
-          //批量发货
-          for(let i=0;i<this.multipleSelection.length;i++) {
-            this.multipleSelection[i].orders[0].orderStatus = 3;
-            updateOrder(this.multipleSelection[i].orders[0]).then(() => {
-              this.$message({
-                message: '修改成功！',
-                type: 'success'
-              });
-              this.getList();
-            });
-          }
-        }else if(this.operateType===3){
-          //批量关闭
-          for(let i=0;i<this.multipleSelection.length;i++) {
-            this.multipleSelection[i].orders[0].orderStatus = 4;
-            updateOrder(this.multipleSelection[i].orders[0]).then(() => {
-              this.$message({
-                message: '关闭成功！',
-                type: 'success'
-              });
-              this.getList();
-            });
-          }
-        }else if(this.operateType===4){
           //批量打包
           this.packageDialogVisible = true;
+        }else if(this.operateType===3){
+          //批量发货
+          this.inOutBoundDialogVisible = true;
+        }else if(this.operateType===4){
+          //批量关闭
         }
       },
       async createOrderWithItem(itemRes) {
@@ -772,16 +795,8 @@
           })
         });
       },
-      getRoleListByAdmin(adminId) {
-        getRoleByAdmin(adminId).then(response => {
-          let allocRoleList = response.data;
-          this.allocRoleIds=[];
-          if(allocRoleList!=null&&allocRoleList.length>0){
-            for(let i=0;i<allocRoleList.length;i++){
-              this.allocRoleIds.push(allocRoleList[i].id);
-            }
-          }
-        });
+      refreshData() {
+        this.getList();
       },
       showNextButton(currentStatus) {
         switch (currentStatus) {

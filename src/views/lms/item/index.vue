@@ -91,7 +91,13 @@
           <template slot-scope="scope">{{scope.row.deliverySn}}</template>
         </el-table-column>
         <el-table-column label="识别码" min-width="100" align="center">
-          <template slot-scope="scope">{{scope.row.userSn}}</template>
+          <template slot-scope="scope">
+            <el-button size="mini"
+                       type="text"
+                       @click="showDiscordIdByUserSn(scope.row.userSn)">
+              {{scope.row.userSn}}
+            </el-button>
+          </template>
         </el-table-column>
         <el-table-column label="地点" min-width="50" align="center">
           <template slot-scope="scope">{{scope.row.location}}</template>
@@ -333,6 +339,10 @@
                     :rows="1"
                     style="width: 250px"></el-input>
         </el-form-item>
+        <div style="padding: 10px;" v-if="order.attachment">
+          <span class="font-title-large">附件 ：</span>
+          <img style="height: 80px" :src="order.attachment">
+        </div>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="orderDialogVisible = false" size="small">取 消</el-button>
@@ -548,9 +558,11 @@ import {
                 type: 'success'
               });
               this.dialogVisible = false;
+              this.isFinish = false;
               this.getList();
             }).catch(() => {
               this.dialogVisible = false;
+              this.isFinish = false;
               this.getList();
             });
           } else if (this.isEdit) {
@@ -561,6 +573,7 @@ import {
                   type: 'success'
                 });
                 this.dialogVisible = false;
+                this.isEdit = false;
                 this.getList();
               })
             })

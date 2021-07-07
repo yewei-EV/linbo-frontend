@@ -393,11 +393,6 @@
         this.order = Object.assign({}, row.orders[0]);
         this.item = Object.assign({}, row);
       },
-      handleUpdate(row) {
-        this.dialogVisible = true;
-        this.isEdit = true;
-        this.item = Object.assign({},row);
-      },
       handleDialogConfirm() {
         this.$confirm('是否要确认?', '提示', {
           confirmButtonText: '确定',
@@ -489,6 +484,8 @@
         switch (currentAction) {
           case "-1":
             return "选择操作";
+          case "2":
+            return "上传回执";
           case "5":
             return "上传回执";
         }

@@ -103,7 +103,13 @@
           <template slot-scope="scope">{{scope.row.deliverySn}}</template>
         </el-table-column>
         <el-table-column label="识别码" min-width="100" align="center">
-          <template slot-scope="scope">{{scope.row.userSn}}</template>
+          <template slot-scope="scope">
+            <el-button size="mini"
+                       type="text"
+                       @click="showDiscordIdByUserSn(scope.row.userSn)">
+              {{scope.row.userSn}}
+            </el-button>
+          </template>
         </el-table-column>
         <el-table-column label="地址" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.destination}}</template>
@@ -262,6 +268,7 @@ import {
   defaultItem,
   defaultOrder, actionOptions, formatWeightUnit
 } from '../../../dto/options';
+import {getAdminByUserSn} from "../../../api/login";
 const defaultListQuery = {
   pageNum: 1,
   pageSize: 10,
@@ -467,6 +474,14 @@ export default {
     },
     refreshData() {
       this.getList();
+    },
+    showDiscordIdByUserSn(userSn) {
+      getAdminByUserSn(userSn).then((response) => {
+        this.$alert('用户Discord ID: ' + response.data.discordId, '提示', {
+          confirmButtonText: '确定',
+          type: 'info'
+        })
+      });
     }
   }
 }

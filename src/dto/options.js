@@ -103,8 +103,8 @@ export const statusOptions = [
 ]
 
 export const regionOptions = [
-  {label:"美国1", value:'US1'},
-  {label:"美国2", value:'US2'},
+  {label:"新泽西", value:'US1'},
+  {label:"洛杉矶", value:'US2'},
   {label:"西班牙", value:'SP'},
   {label:"欧洲", value:'EU'}
 ]

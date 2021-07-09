@@ -106,7 +106,12 @@ export const regionOptions = [
   {label:"新泽西", value:'US1'},
   {label:"洛杉矶", value:'US2'},
   {label:"西班牙", value:'SP'},
-  {label:"欧洲", value:'EU'}
+  {label:"意大利", value:'IT'},
+  {label:"荷兰", value:'NL'},
+  {label:"德国", value:'DE'},
+  {label:"英国", value:'EN'},
+  {label:"日本", value:'JP'},
+  {label:"澳大利亚", value:'AU'}
 ]
 
 export const weightUnitOptions = [
@@ -183,6 +188,29 @@ export function formatOrderStatus(orderStatus) {
       return "已付款";
     case 3:
       return "已完成";
+  }
+}
+
+export function formatLocation(location) {
+  switch (location) {
+    case 'US1':
+      return "新泽西";
+    case 'US2':
+      return "洛杉矶";
+    case 'SP':
+      return "西班牙";
+    case 'IT':
+      return "意大利";
+    case 'NL':
+      return "荷兰";
+    case 'DE':
+      return "德国";
+    case 'EN':
+      return "英国";
+    case 'JP':
+      return "日本";
+    case 'AU':
+      return "澳大利亚";
   }
 }
 

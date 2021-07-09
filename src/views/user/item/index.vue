@@ -60,7 +60,7 @@
           <template slot-scope="scope">{{scope.row.deliverySn}}</template>
         </el-table-column>
         <el-table-column label="地点" min-width="50" align="center">
-          <template slot-scope="scope">{{scope.row.location}}</template>
+          <template slot-scope="scope">{{scope.row.location | formatLocation}}</template>
         </el-table-column>
         <el-table-column label="添加时间" min-width="110" align="center">
           <template slot-scope="scope">{{scope.row.createTime | formatDateTime}}</template>
@@ -289,7 +289,7 @@
     formatDateTime,
     formatAction,
     formatWeightUnit,
-    formatOrderStatus, operateOptions,
+    formatOrderStatus, operateOptions, formatLocation,
   } from '../../../dto/options';
   import {
     allocOrder,
@@ -361,7 +361,8 @@
       formatDateTime: formatDateTime,
       formatAction: formatAction,
       formatWeightUnit: formatWeightUnit,
-      formatOrderStatus: formatOrderStatus
+      formatOrderStatus: formatOrderStatus,
+      formatLocation: formatLocation
     },
     methods: {
       handleResetSearch() {

@@ -99,8 +99,8 @@
             </el-button>
           </template>
         </el-table-column>
-        <el-table-column label="地点" min-width="50" align="center">
-          <template slot-scope="scope">{{scope.row.location}}</template>
+        <el-table-column label="地点" min-width="60" align="center">
+          <template slot-scope="scope">{{scope.row.location | formatLocation}}</template>
         </el-table-column>
         <el-table-column label="添加时间" min-width="140" align="center">
           <template slot-scope="scope">{{scope.row.createTime | formatDateTime}}</template>
@@ -363,7 +363,7 @@ import {
   defaultItem,
   defaultOrder,
   actionOptions,
-  formatOrderStatus, sizeOptions, operateOptions, orderStatusOptions
+  formatOrderStatus, sizeOptions, operateOptions, orderStatusOptions, formatLocation
 } from '../../../dto/options';
   import {
     allocOrder,
@@ -458,7 +458,8 @@ import {
       },
       formatDateTime: formatDateTime,
       formatAction: formatAction,
-      formatOrderStatus: formatOrderStatus
+      formatOrderStatus: formatOrderStatus,
+      formatLocation: formatLocation
     },
     methods: {
       handleResetSearch() {
@@ -526,21 +527,23 @@ import {
           pageSize: 10,
           deliverySn: this.item.deliverySn,
           userSn: this.item.userSn,
+          location: this.item.location,
         };
         fetchPreciseItemList(query).then(response => {
           if (response.data.list.length > 0) {
             this.dialogVisible = false;
             this.listQuery.deliverySn = query.deliverySn;
             this.listQuery.userSn = query.userSn;
+            this.listQuery.location = query.location;
             this.handleSearchList();
             this.$message({
               type: 'success',
-              message: '货物已预录!'
+              message: '货物已登记!'
             });
           } else {
             this.$message({
               type: 'warning',
-              message: '没有搜索到已预登记的包裹!'
+              message: '没有搜索到已登记的包裹!'
             });
           }
         });
@@ -580,10 +583,10 @@ import {
           } else {
             this.item.createTime = new Date();
             // find if item is preloaded or not
-            if (!this.item.deliverySn) {
+            if (!this.item.deliverySn || !this.item.userSn || !this.item.location) {
               this.$message({
                 type: 'error',
-                message: '请填写运单号!'
+                message: '运单号/识别码/入库地点为必填项!'
               });
               return;
             }
@@ -601,7 +604,7 @@ import {
                 this.handleSearchList();
                 this.$message({
                   type: 'success',
-                  message: '货物已预录!'
+                  message: '货物已登记!'
                 });
               } else {
                 this.item.itemStatus = 0;

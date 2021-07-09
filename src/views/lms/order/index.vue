@@ -90,6 +90,9 @@
         <el-table-column label="订单操作" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.orderAction | formatAction}}</template>
         </el-table-column>
+        <el-table-column label="地点" min-width="60" align="center">
+          <template slot-scope="scope">{{scope.row.location | formatLocation}}</template>
+        </el-table-column>
         <el-table-column label="价格" min-width="80" align="center">
           <template slot-scope="scope">￥{{scope.row.price?scope.row.price:0}}</template>
         </el-table-column>
@@ -266,7 +269,7 @@ import {
   formatDateTime,
   formatAction,
   defaultItem,
-  defaultOrder, actionOptions, formatWeightUnit
+  defaultOrder, actionOptions, formatWeightUnit, formatLocation
 } from '../../../dto/options';
 import {getAdminByUserSn} from "../../../api/login";
 const defaultListQuery = {
@@ -319,7 +322,8 @@ export default {
   filters: {
     formatDateTime: formatDateTime,
     formatAction: formatAction,
-    formatWeightUnit: formatWeightUnit
+    formatWeightUnit: formatWeightUnit,
+    formatLocation: formatLocation
   },
   methods: {
     handleResetSearch() {

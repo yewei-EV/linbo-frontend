@@ -277,7 +277,7 @@
 </template>
 <script>
   import {getInfo,getRoleByAdmin} from "../../../api/login";
-  import SingleUpload from '@/components/Upload/singleUpload'
+  import SingleUpload from '../../../components/Upload/singleUpload'
   import {
     orderStatusOptions,
     statusOptions,

@@ -150,6 +150,13 @@
         <el-table-column label="物流单号" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.note}}</template>
         </el-table-column>
+        <el-table-column label="入库图片" min-width="100" align="center">
+          <template slot-scope="scope">
+            <img @click="enlargePhoto(scope.row)" style="width: 80px" :src=scope.row.photo alt="">
+          </template>
+        </el-table-column>
+
+
       </el-table>
     </div>
     <div class="batch-operate-container">
@@ -234,6 +241,9 @@
                     type="textarea"
                     :rows="1"
                     style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="入库图片：" prop="附件">
+          <single-upload v-model="item.photo"></single-upload>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -376,6 +386,21 @@
         <el-button type="primary" @click="tryCombinePackages()" size="small">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      :title="'入库图片'"
+      :visible.sync="photoDialogVisible"
+      width="40%">
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <div class="un-handle-item">
+            <img style="height: 500px" :src="item.photo">
+          </div>
+        </el-col>
+      </el-row>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="photoDialogVisible = false" size="small">关 闭</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -452,6 +477,7 @@
         isFinish: false,
         orderDialogVisible: false,
         packageDialogVisible: false,
+        photoDialogVisible: false,
         inOutBoundDialogVisible: false,
         operateType: null,
         orderStatusOptions: orderStatusOptions,
@@ -563,6 +589,10 @@
         this.isFinish = false;
         this.item = Object.assign({},row);
         this.order = Object.assign({},row.orders[0]);
+      },
+      enlargePhoto(row) {
+        this.item = Object.assign({},row);
+        this.photoDialogVisible = true;
       },
       checkIfPreload() {
         if (!this.item.deliverySn || !this.item.userSn) {

@@ -152,11 +152,9 @@
         </el-table-column>
         <el-table-column label="入库图片" min-width="100" align="center">
           <template slot-scope="scope">
-            <img @click="enlargePhoto(scope.row)" style="width: 80px" :src=scope.row.photo alt="">
+            <img @click="enlargePhoto(scope.row)" style="height: 50px" :src=scope.row.photo alt="">
           </template>
         </el-table-column>
-
-
       </el-table>
     </div>
     <div class="batch-operate-container">
@@ -389,7 +387,7 @@
     <el-dialog
       :title="'入库图片'"
       :visible.sync="photoDialogVisible"
-      width="40%">
+      width="50%">
       <el-row :gutter="20">
         <el-col :span="12">
           <div class="un-handle-item">

@@ -95,6 +95,11 @@
             </el-button>
           </template>
         </el-table-column>
+        <el-table-column label="入库图片" min-width="100" align="center">
+          <template slot-scope="scope">
+            <img @click="enlargePhoto(scope.row)" style="height: 50px" :src=scope.row.photo alt="">
+          </template>
+        </el-table-column>
         <el-table-column label="操作" min-width="100" align="center" v-if="this.listQuery.userSn">
           <template slot-scope="scope">
             <el-button size="mini"
@@ -273,6 +278,21 @@
         <el-button @click="orderDialogVisible = false" size="small">关 闭</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      :title="'入库图片'"
+      :visible.sync="photoDialogVisible"
+      width="50%">
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <div class="un-handle-item">
+            <img style="height: 500px" :src="item.photo">
+          </div>
+        </el-col>
+      </el-row>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="photoDialogVisible = false" size="small">关 闭</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -333,6 +353,7 @@
         total: null,
         listLoading: false,
         dialogVisible: false,
+        photoDialogVisible: false,
         item: Object.assign({}, defaultItem),
         order: Object.assign({}, defaultOrder),
         allocGroup: Object.assign({}, defaultAllocGroup),
@@ -426,6 +447,10 @@
       handleOrderDetail(order) {
         this.order = order;
         this.orderDialogVisible = true;
+      },
+      enlargePhoto(row) {
+        this.item = Object.assign({},row);
+        this.photoDialogVisible = true;
       },
       gotoOrderPage(order) {
         this.$router.push({

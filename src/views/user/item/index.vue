@@ -47,7 +47,7 @@
     <el-card class="operate-container" shadow="never">
       <i class="el-icon-tickets"></i>
       <span>包裹列表</span>
-      <el-button size="small" class="btn-add" type="primary" @click="refreshData()">刷新</el-button>
+      <el-button size="mini" class="btn-add" type="primary" @click="refreshData()">刷新</el-button>
     </el-card>
     <div class="table-container">
       <el-table ref="itemTable"

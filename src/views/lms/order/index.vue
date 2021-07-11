@@ -74,7 +74,8 @@
     <el-card class="operate-container" shadow="never">
       <i class="el-icon-tickets"></i>
       <span>订单列表</span>
-      <el-button size="small" class="btn-add" type="primary" @click="refreshData()">刷新</el-button>
+      <el-button size="mini" class="btn-add" type="primary" @click="refreshData()" style="margin-left: 20px">刷新</el-button>
+      <el-button size="mini" type="success" class="btn-add" @click="getExportList()">导出</el-button>
       <!--      <el-button size="mini" type="danger" class="btn-add" @click="handleAdd()" style="margin-left: 20px">添加订单</el-button>-->
     </el-card>
     <div class="table-container">
@@ -147,6 +148,49 @@
 <!--                       @click="handleDelete(scope.$index, scope.row)">删除-->
 <!--            </el-button>-->
           </template>
+        </el-table-column>
+        <el-table-column label="付款备注" min-width="100" align="center">
+          <template slot-scope="scope">{{scope.row.note}}</template>
+        </el-table-column>
+        <el-table-column label="支付成功时间" min-width="120" align="center">
+          <template slot-scope="scope">{{scope.row.paymentTime | formatDateTime}}</template>
+        </el-table-column>
+      </el-table>
+      <el-table id="exportTable"
+                :data="exportData" border
+                style="display: none">
+        <el-table-column label="id" min-width="160" align="center">
+          <template slot-scope="scope">{{scope.row.id}}</template>
+        </el-table-column>
+        <el-table-column label="订单操作" min-width="100" align="center">
+          <template slot-scope="scope">{{scope.row.orderAction | formatAction}}</template>
+        </el-table-column>
+        <el-table-column label="地点" min-width="60" align="center">
+          <template slot-scope="scope">{{scope.row.location | formatLocation}}</template>
+        </el-table-column>
+        <el-table-column label="价格" min-width="80" align="center">
+          <template slot-scope="scope">￥{{scope.row.price?scope.row.price:0}}</template>
+        </el-table-column>
+        <el-table-column label="重量" min-width="60" align="center">
+          <template slot-scope="scope">{{scope.row.weight}}</template>
+        </el-table-column>
+        <el-table-column label="重量单位" min-width="60" align="center">
+          <template slot-scope="scope">{{scope.row.weightUnit | formatWeightUnit}}</template>
+        </el-table-column>
+        <el-table-column label="运单号" min-width="160" align="center">
+          <template slot-scope="scope">{{scope.row.deliverySn}}</template>
+        </el-table-column>
+        <el-table-column label="识别码" min-width="100" align="center">
+          <template slot-scope="scope">{{scope.row.userSn}}</template>
+        </el-table-column>
+        <el-table-column label="地址" min-width="60" align="center">
+          <template slot-scope="scope">{{scope.row.destination}}</template>
+        </el-table-column>
+        <el-table-column label="创建时间" min-width="80" align="center">
+          <template slot-scope="scope">{{scope.row.createTime | formatDateTime}}</template>
+        </el-table-column>
+        <el-table-column label="支付状态" min-width="80" align="center">
+          <template slot-scope="scope">{{orderStatusOptions[scope.row.orderStatus].label}}</template>
         </el-table-column>
         <el-table-column label="付款备注" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.note}}</template>
@@ -258,7 +302,7 @@ import {
   fetchOrderList,
   updateOrder,
   createOrder,
-  deleteOrder, updateItemStatus, updateItemStatusByOrder,
+  deleteOrder, updateItemStatus, updateItemStatusByOrder, fetchItemList,
 } from '../../../api/warehouse';
 import {
   orderStatusOptions,
@@ -271,7 +315,10 @@ import {
   defaultItem,
   defaultOrder, actionOptions, formatWeightUnit, formatLocation
 } from '../../../dto/options';
+import FileSaver from 'file-saver'
+import XLSX from 'xlsx'
 import {getAdminByUserSn} from "../../../api/login";
+
 const defaultListQuery = {
   pageNum: 1,
   pageSize: 10,
@@ -304,6 +351,7 @@ export default {
       actionOptions: actionOptions,
       weightUnitOptions: weightUnitOptions,
       orderStatusOptions: orderStatusOptions,
+      exportData: null,
       operateOptions: [
         {
           label: "删除订单",
@@ -479,6 +527,20 @@ export default {
     refreshData() {
       this.getList();
     },
+    exportExcelData(excelName) {
+      try {
+        /* generate workbook object from table */
+        let wb = XLSX.utils.table_to_book(document.querySelector('#exportTable'))
+        /* get binary string as output */
+        let wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'array' })
+        try {
+          FileSaver.saveAs(new Blob([wbout], { type: 'application/octet-stream' }), excelName + '.xlsx')
+        } catch (e) { if (typeof console !== 'undefined') console.log(e, wbout) }
+        return wbout
+      } catch (e) {
+        if (typeof console !== 'undefined') console.error(e);
+      }
+    },
     showDiscordIdByUserSn(userSn) {
       getAdminByUserSn(userSn).then((response) => {
         this.$alert('用户Discord ID: ' + response.data.discordId, '提示', {
@@ -486,7 +548,17 @@ export default {
           type: 'info'
         })
       });
-    }
+    },
+    getExportList() {
+      this.listLoading = true;
+      this.listQuery.pageSize = 10000;
+      fetchOrderList(this.listQuery).then(response => {
+        this.exportData = response.data.list;
+        this.listLoading = false;
+      }).then(() => {
+        this.exportExcelData('orders');
+      });
+    },
   }
 }
 </script>

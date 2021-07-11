@@ -347,7 +347,13 @@
                ref="orderForm"
                label-width="180px" size="small">
         <el-form-item label="订单操作：">
-          <el-input v-model="order.orderAction" style="width: 250px"></el-input>
+          <el-select v-model="order.orderAction" clearable style="width: 250px">
+            <el-option v-for="status in actionOptions"
+                       :key="status.value"
+                       :label="status.label"
+                       :value="status.value">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="运单号：">
           <el-input v-model="order.deliverySn" style="width: 250px"></el-input>

@@ -302,17 +302,13 @@ import {
   fetchOrderList,
   updateOrder,
   createOrder,
-  deleteOrder, updateItemStatus, updateItemStatusByOrder, fetchItemList,
+  deleteOrder, updateItemStatusByOrder,
 } from '../../../api/warehouse';
 import {
   orderStatusOptions,
-  statusOptions,
-  regionOptions,
   weightUnitOptions,
-  operateOptions,
   formatDateTime,
   formatAction,
-  defaultItem,
   defaultOrder, actionOptions, formatWeightUnit, formatLocation
 } from '../../../dto/options';
 import FileSaver from 'file-saver'

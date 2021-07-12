@@ -95,6 +95,18 @@ export function updateOrder(data) {
   })
 }
 
+export function updateOrderByUser(data) {
+  return request({
+    url: '/order/updateAction/' + data.id,
+    method: 'post',
+    params: {
+      'orderAction': data.orderAction?data.orderAction:'',
+      'destination': data.destination?data.destination:'',
+      'attachment': data.attachment?data.attachment:''
+    }
+  })
+}
+
 export function deleteOrder(id) {
   return request({
     url: '/order/delete/',

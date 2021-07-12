@@ -172,6 +172,27 @@ export const asyncRouterMap = [
       }
     ]
   },
+  {
+    path:'/setting',
+    component: Layout,
+    redirect: '/setting/address',
+    name: 'setting',
+    meta: {title: '设置', icon: 'order'},
+    children: [
+      {
+        path: 'address',
+        name: 'address',
+        component: () => import('@/views/setting/address/index'),
+        meta: {title: '地址管理', icon: 'product-add'},
+      },
+      {
+        path: 'profile',
+        name: 'profile',
+        component: () => import('@/views/setting/profile/index'),
+        meta: {title: '个人资料', icon: 'ums-role'}
+      }
+    ]
+  },
   {path: '*', redirect: '/404', hidden: true}
 ]
 

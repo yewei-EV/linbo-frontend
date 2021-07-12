@@ -214,6 +214,18 @@ export function formatLocation(location) {
   }
 }
 
+export var defaultAddressInfo = {
+  name: null,
+  phoneNumber: null,
+  address: null
+}
+
+export var defaultProfile = {
+  email: null,
+  discordId: null,
+  icon: null
+}
+
 export var defaultItem = {
   id: null,
   deliverySn: null,

@@ -31,6 +31,22 @@ export function getInfo() {
   })
 }
 
+export function updateAddressInfo(id, params) {
+  return request({
+    url: '/admin/updateAddressInfo/' + id,
+    method: 'post',
+    params: {name: params.name, phoneNumber: params.phoneNumber, address: params.address}
+  })
+}
+
+export function updateProfileInfo(id, params) {
+  return request({
+    url: '/admin/updateProfileInfo/' + id,
+    method: 'post',
+    params: {name: params.name, email: params.email, discordId: params.discordId, icon: params.icon}
+  })
+}
+
 export function logout() {
   return request({
     url: '/admin/logout',

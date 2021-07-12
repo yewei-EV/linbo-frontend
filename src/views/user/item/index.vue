@@ -175,7 +175,7 @@
         <el-form-item v-if="order.orderAction==='0'||order.orderAction==='1'||order.orderAction==='3'" label="地址：">
           <el-input v-model="order.destination"
                     type="textarea"
-                    :rows="1"
+                    :rows="2"
                     style="width: 250px"></el-input>
         </el-form-item>
       </el-form>
@@ -314,9 +314,9 @@
   import {
     allocOrder,
     createOrder,
-    updateOrder,
+    updateOrderByUser,
     fetchItemList,
-    fetchItemOrders, updateItemStatus
+    fetchItemOrders, updateItemStatus,
   } from '../../../api/warehouse';
 
   const defaultListQuery = {
@@ -413,6 +413,7 @@
       chooseActionByUser(index, row) {
         this.orderActionDialogVisible = true;
         this.order = Object.assign({}, row.orders[0]);
+        this.order.destination = this.userInfo.address + ',' + this.userInfo.name + ',' + this.userInfo.phoneNumber;
         this.item = Object.assign({}, row);
       },
       handleDialogConfirm() {
@@ -421,9 +422,9 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          if (this.order.orderAction) {
+          if (this.orderActionDialogVisible) {
             updateItemStatus(this.item, this.order.orderAction).then(() => {
-              updateOrder(this.order).then(() => {
+              updateOrderByUser(this.order).then(() => {
                 this.$message({
                   message: '选择成功！',
                   type: 'success'
@@ -432,8 +433,8 @@
                 this.getList();
               })
             });
-          } else if (this.order.attachment) {
-            updateOrder(this.order).then(() => {
+          } else if (this.orderAttachmentDialogVisible) {
+            updateOrderByUser(this.order).then(() => {
               this.$message({
                 message: '上传成功！',
                 type: 'success'

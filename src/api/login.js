@@ -62,6 +62,22 @@ export function fetchList(params) {
   })
 }
 
+export function createAdmin(data) {
+  return request({
+    url: '/admin/register',
+    method: 'post',
+    data: data
+  })
+}
+
+export function updateAdmin(id, data) {
+  return request({
+    url: '/admin/update/' + id,
+    method: 'post',
+    data: data
+  })
+}
+
 export function updateStatus(id, params) {
   return request({
     url: '/admin/updateStatus/' + id,

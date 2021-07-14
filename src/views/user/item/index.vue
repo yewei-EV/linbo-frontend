@@ -413,7 +413,9 @@
       chooseActionByUser(index, row) {
         this.orderActionDialogVisible = true;
         this.order = Object.assign({}, row.orders[0]);
-        this.order.destination = this.userInfo.address + ',' + this.userInfo.name + ',' + this.userInfo.phoneNumber;
+        if (this.userInfo.address && this.userInfo.name && this.userInfo.phoneNumber) {
+          this.order.destination = this.userInfo.address + ',' + this.userInfo.name + ',' + this.userInfo.phoneNumber;
+        }
         this.item = Object.assign({}, row);
       },
       handleDialogConfirm() {

@@ -808,6 +808,7 @@
         this.order.createTime = new Date();
         this.order.userSn = this.item.userSn;
         this.order.deliverySn = this.item.deliverySn;
+        this.order.location = this.item.location;
         this.order.note = this.item.note;
         this.order.orderStatus = 0;
         this.order.orderAction = -1;

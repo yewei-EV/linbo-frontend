@@ -453,37 +453,6 @@
         this.item = Object.assign({},row);
         this.photoDialogVisible = true;
       },
-      gotoOrderPage(order) {
-        this.$router.push({
-          path: '/lms/order',
-          query: {
-            id: order.id,
-            deliverySn: order.deliverySn,
-            userSn: order.userSn
-          }
-        })
-      },
-      async createOrderWithItem(itemRes) {
-        this.order.createTime = new Date();
-        this.order.userSn = this.item.userSn;
-        this.order.deliverySn = this.item.deliverySn;
-        this.order.note = this.item.note;
-        this.order.orderStatus = 0;
-        this.order.orderAction = -1;
-        createOrder(this.order).then((orderRes) => {
-          this.allocateOrderToItem(itemRes, orderRes);
-        })
-      },
-      async allocateOrderToItem(itemRes, orderRes) {
-        allocOrder(itemRes.data, orderRes.data).then(()=>{
-          this.$message({
-            message: '添加成功！',
-            type: 'success'
-          });
-          this.dialogVisible = false;
-          this.getList();
-        });
-      },
       async getListOrder(response) {
         for (const item of response.data.list) {
           await fetchItemOrders(item.id).then(response => {

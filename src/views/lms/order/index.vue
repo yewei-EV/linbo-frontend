@@ -348,12 +348,7 @@ export default {
       weightUnitOptions: weightUnitOptions,
       orderStatusOptions: orderStatusOptions,
       exportData: null,
-      operateOptions: [
-        {
-          label: "删除订单",
-          value: 3
-        }
-      ]
+      operateOptions: []
     }
   },
   created() {
@@ -447,13 +442,15 @@ export default {
           if (this.order.price) {
             this.order.orderStatus = 1;
           }
-          updateOrder(this.order).then(response => {
-            this.$message({
-              message: '修改成功！',
-              type: 'success'
+          updateOrder(this.order).then(() => {
+            updateItemStatusByOrder(this.order).then(() => {
+              this.$message({
+                message: '修改成功！',
+                type: 'success'
+              });
+              this.dialogVisible = false;
+              this.getList();
             });
-            this.dialogVisible = false;
-            this.getList();
           })
         } else {
             this.order.createTime = new Date();

@@ -185,16 +185,6 @@ export default {
         this.order = Object.assign({}, defaultOrder);
       });
     },
-    async getListOrder(response) {
-      for (const item of response.data.list) {
-        await fetchItemOrders(item.id).then(response => {
-          if (response.data) {
-            item.orders = response.data;
-          }
-        });
-      }
-      return response;
-    },
     getUserInfo() {
       getInfo().then(response => {
         this.userInfo = response.data;

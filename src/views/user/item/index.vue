@@ -454,13 +454,16 @@
         this.photoDialogVisible = true;
       },
       async getListOrder(response) {
+        let promiseArray = [];
         for (const item of response.data.list) {
-          await fetchItemOrders(item.id).then(response => {
+          let promise = fetchItemOrders(item.id).then(response => {
             if (response.data) {
               item.orders = response.data;
             }
           });
+          promiseArray.push(promise)
         }
+        await Promise.all(promiseArray);
         return response;
       },
       getList() {

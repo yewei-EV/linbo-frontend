@@ -138,11 +138,3 @@ export function fetchSalesCount(params) {
     params: params
   })
 }
-
-export function modifyItemStatus(params) {
-  return request({
-    url: '/item/modifyStatus',
-    method: 'get',
-    params: params
-  })
-}

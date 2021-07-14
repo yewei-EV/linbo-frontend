@@ -134,6 +134,12 @@
           <template slot-scope="scope">
             <el-button size="mini"
                        type="danger"
+                       v-if="scope.row.orderAction==='-1'"
+                       @click="chooseActionByUser(scope.$index, scope.row)">
+              选择操作
+            </el-button>
+            <el-button size="mini"
+                       type="danger"
                        v-if="scope.row.orderStatus===1 && scope.row.price"
                        @click="handlePayment(scope.row)">已付
             </el-button>
@@ -154,6 +160,12 @@
         </el-table-column>
         <el-table-column label="支付成功时间" min-width="120" align="center">
           <template slot-scope="scope">{{scope.row.paymentTime | formatDateTime}}</template>
+        </el-table-column>
+        <el-table-column label="寄存地点" min-width="80" align="center">
+          <template slot-scope="scope">{{scope.row.storageLocation | formatLocation}}</template>
+        </el-table-column>
+        <el-table-column label="寄存天数" min-width="80" align="center">
+          <template slot-scope="scope">{{scope.row.storageDays?scope.row.storageDays:0}}</template>
         </el-table-column>
       </el-table>
       <el-table id="exportTable"
@@ -272,6 +284,18 @@
                     :rows="1"
                     style="width: 250px"></el-input>
         </el-form-item>
+        <el-form-item label="寄存天数：">
+          <el-input v-model="order.storageDays" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="寄存地点：">
+          <el-select v-model="order.storageLocation" clearable style="width: 250px">
+            <el-option v-for="unit in regionOptions"
+                       :key="unit.value"
+                       :label="unit.label"
+                       :value="unit.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false" size="small">取 消</el-button>
@@ -295,6 +319,40 @@
         <el-button type="primary" @click="processPayment()" size="small">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      :visible.sync="orderActionDialogVisible"
+      width="80%">
+      <el-form :inline="true" :model="order"
+               ref="orderForm"
+               label-width="180px" size="small">
+        <div class="optionalDivider">
+          <div class="tableTitle">
+            <span class="midText">
+              选择操作：
+            </span>
+          </div>
+        </div>
+        <el-form-item label="操作：">
+          <el-select v-model="order.orderAction" clearable style="width: 250px">
+            <el-option v-for="order in actionOptions"
+                       :key="order.value"
+                       :label="order.label"
+                       :value="order.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='0'||order.orderAction==='1'||order.orderAction==='3'" label="地址：">
+          <el-input v-model="order.destination"
+                    type="textarea"
+                    :rows="2"
+                    style="width: 250px"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="orderActionDialogVisible = false" size="small">取 消</el-button>
+        <el-button type="primary" @click="handleActionDialogConfirm()" size="small">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -302,14 +360,14 @@ import {
   fetchOrderList,
   updateOrder,
   createOrder,
-  deleteOrder, updateItemStatusByOrder,
+  deleteOrder, updateItemStatusByOrder, updateItemStatus, updateOrderByUser,
 } from '../../../api/warehouse';
 import {
   orderStatusOptions,
   weightUnitOptions,
   formatDateTime,
   formatAction,
-  defaultOrder, actionOptions, formatWeightUnit, formatLocation
+  defaultOrder, actionOptions, formatWeightUnit, formatLocation, regionOptions
 } from '../../../dto/options';
 import FileSaver from 'file-saver'
 import XLSX from 'xlsx'
@@ -341,12 +399,14 @@ export default {
       total: null,
       dialogVisible: false,
       paymentDialogVisible: false,
+      orderActionDialogVisible: false,
       operateType: null,
       multipleSelection: [],
       paymentNote: null,
       actionOptions: actionOptions,
       weightUnitOptions: weightUnitOptions,
       orderStatusOptions: orderStatusOptions,
+      regionOptions: regionOptions,
       exportData: null,
       operateOptions: []
     }
@@ -432,6 +492,10 @@ export default {
       this.order = Object.assign({}, row);
       this.paymentDialogVisible = true;
     },
+    chooseActionByUser(index, row) {
+      this.orderActionDialogVisible = true;
+      this.order = Object.assign({}, row);
+    },
     handleDialogConfirm() {
       this.$confirm('是否要确认?', '提示', {
         confirmButtonText: '确定',
@@ -443,14 +507,12 @@ export default {
             this.order.orderStatus = 1;
           }
           updateOrder(this.order).then(() => {
-            updateItemStatusByOrder(this.order).then(() => {
-              this.$message({
-                message: '修改成功！',
-                type: 'success'
-              });
-              this.dialogVisible = false;
-              this.getList();
+            this.$message({
+              message: '修改成功！',
+              type: 'success'
             });
+            this.dialogVisible = false;
+            this.getList();
           })
         } else {
             this.order.createTime = new Date();
@@ -514,6 +576,24 @@ export default {
             this.paymentDialogVisible = false;
             this.getList();
           })
+        });
+      });
+    },
+    handleActionDialogConfirm() {
+      this.$confirm('是否要确认?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        updateOrderByUser(this.order).then(() => {
+          updateItemStatusByOrder(this.order).then(() => {
+            this.$message({
+              message: '修改成功！',
+              type: 'success'
+            });
+            this.orderActionDialogVisible = false;
+            this.getList();
+          });
         });
       });
     },

@@ -102,7 +102,7 @@
         <el-table-column label="尺寸" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.size}}</template>
         </el-table-column>
-        <el-table-column label="最新操作" min-width="100" align="center">
+        <el-table-column label="操作" min-width="100" align="center">
           <template slot-scope="scope">
             <el-button size="mini"
                        type="text"
@@ -690,7 +690,7 @@
                 this.listQuery.location = query.location;
                 this.handleSearchList();
                 this.$message({
-                  type: 'success',
+                  type: 'warning',
                   message: '货物已登记!'
                 });
               } else {
@@ -744,6 +744,10 @@
           message: '打包成功！',
           type: 'success'
         });
+        this.packageWeightUnit = null;
+        this.packageWeight = null;
+        this.packageNote = null;
+        this.packagePositionInfo = null;
         this.packageDialogVisible = false;
         this.getList();
       },

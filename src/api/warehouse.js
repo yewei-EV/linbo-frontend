@@ -102,7 +102,9 @@ export function updateOrderByUser(data) {
     params: {
       'orderAction': data.orderAction?data.orderAction:'',
       'destination': data.destination?data.destination:'',
-      'attachment': data.attachment?data.attachment:''
+      'attachment': data.attachment?data.attachment:'',
+      'storageDays': data.storageDays?data.storageDays:'',
+      'storageLocation': data.storageLocation?data.storageLocation:'',
     }
   })
 }

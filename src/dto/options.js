@@ -111,7 +111,8 @@ export const regionOptions = [
   {label:"德国", value:'DE'},
   {label:"英国", value:'EN'},
   {label:"日本", value:'JP'},
-  {label:"澳大利亚", value:'AU'}
+  {label:"澳大利亚", value:'AU'},
+  {label:"中国", value:'CN'},
 ]
 
 export const weightUnitOptions = [
@@ -257,7 +258,9 @@ export var defaultOrder = {
   paymentTime: null,
   newDeliverySn: null,
   attachment: null,
-  price: null
+  price: null,
+  storageDays: null,
+  storageLocation: null
 }
 
 export const actionOptions = [

@@ -115,7 +115,7 @@
         <el-table-column label="尺寸" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.size}}</template>
         </el-table-column>
-        <el-table-column label="最新操作" min-width="100" align="center">
+        <el-table-column label="操作" min-width="100" align="center">
           <template slot-scope="scope">
             <el-button size="mini"
                        type="text"
@@ -147,6 +147,13 @@
                        v-if="showInboundButton(scope.row)"
                        @click="handleFinish(scope.row)">
               入库
+            </el-button>
+            <el-button size="mini"
+                       type="success"
+                       style="margin-left:0;"
+                       v-if="showEndStorageButton(scope.row)"
+                       @click="handleEndStorage(scope.row)">
+              结束寄存
             </el-button>
             <el-button size="mini"
                        type="success"
@@ -422,6 +429,40 @@
         <el-button @click="photoDialogVisible = false" size="small">关 闭</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      :visible.sync="dialogEndStorageVisible"
+      width="80%">
+      <el-form :inline="true" :model="order"
+               ref="orderForm"
+               label-width="180px" size="small">
+        <div class="optionalDivider">
+          <div class="tableTitle">
+            <span class="midText">
+              选择操作：
+            </span>
+          </div>
+        </div>
+        <el-form-item label="操作：">
+          <el-select v-model="order.orderAction" clearable style="width: 250px">
+            <el-option v-for="order in actionOptionsAfterStorage"
+                       :key="order.value"
+                       :label="order.label"
+                       :value="order.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='0'||order.orderAction==='1'||order.orderAction==='3'" label="地址：">
+          <el-input v-model="order.destination"
+                    type="textarea"
+                    :rows="2"
+                    style="width: 250px"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogEndStorageVisible = false" size="small">取 消</el-button>
+        <el-button type="primary" @click="handleChooseNextActionConfirm()" size="small">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -440,18 +481,18 @@ import {
   actionOptions,
   formatOrderStatus, sizeOptions, orderStatusOptions, formatLocation
 } from '../../../dto/options';
-  import {
-    allocOrder,
-    createOrder,
-    updateOrder,
-    fetchItemList,
-    fetchItemOrders,
-    updateItem,
-    updateItemStatus,
-    fetchPreciseItemList,
-    createItem,
-    deleteItem
-  } from '../../../api/warehouse';
+import {
+  allocOrder,
+  createOrder,
+  updateOrder,
+  fetchItemList,
+  fetchItemOrders,
+  updateItem,
+  updateItemStatus,
+  fetchPreciseItemList,
+  createItem,
+  deleteItem, updateOrderByUser, updateItemStatusByOrder
+} from '../../../api/warehouse';
 
   const defaultListQuery = {
     pageNum: 1,
@@ -480,6 +521,7 @@ import {
         userSn: null,
         listQuery: Object.assign({}, defaultListQuery),
         actionOptions: actionOptions,
+        actionOptionsAfterStorage: null,
         statusOptions: statusOptions,
         regionOptions: regionOptions,
         sizeOptions: sizeOptions,
@@ -500,6 +542,7 @@ import {
         operateType: null,
         inOutBoundDialogVisible: false,
         photoDialogVisible: false,
+        dialogEndStorageVisible: false,
         orderStatusOptions: orderStatusOptions,
         exportData: null,
         operateOptions: [
@@ -586,8 +629,30 @@ import {
         this.isEdit = false;
         this.isFinish = true;
         this.dialogVisible = true;
-        this.item = Object.assign({},row);
+        this.item = Object.assign({}, row);
         this.order = this.item.orders[0];
+      },
+      handleEndStorage(row) {
+        this.item = Object.assign({}, row);
+        this.order = this.item.orders[0];
+        this.order.orderAction = '-1';
+        if (this.item.itemStatus === 11) {
+          this.actionOptionsAfterStorage = [
+            {label:"待确认", value:"-1"},
+            {label:"集运国内", value:"0"},
+            {label:"直邮国内", value:"1"},
+            {label:"快递海外", value:"3"},
+            {label:"StockX寄卖", value:"5"},
+            {label:"得物寄卖", value:"6"},
+          ];
+        } else if (this.item.itemStatus === 17) {
+          this.actionOptionsAfterStorage = [
+            {label:"待确认", value:"-1"},
+            {label:"直邮国内", value:"1"},
+            {label:"得物寄卖", value:"6"},
+          ];
+        }
+        this.dialogEndStorageVisible = true;
       },
       handleUpdate(row) {
         this.dialogVisible = true;
@@ -651,7 +716,7 @@ import {
             });
           } else if (this.isEdit) {
             updateItem(this.item).then(() => {
-              updateOrder(this.order).then(() => {
+              // updateOrder(this.order).then(() => {
                 this.$message({
                   message: '修改成功！',
                   type: 'success'
@@ -659,7 +724,7 @@ import {
                 this.dialogVisible = false;
                 this.isEdit = false;
                 this.getList();
-              })
+              // })
             })
           } else {
             this.item.createTime = new Date();
@@ -684,18 +749,40 @@ import {
                 this.listQuery.userSn = query.userSn;
                 this.handleSearchList();
                 this.$message({
-                  type: 'success',
+                  type: 'warning',
                   message: '货物已登记!'
                 });
               } else {
                 this.item.itemStatus = 0;
                 createItem(this.item).then((response) => {
-                  this.createOrderWithItem(response);
+                  this.createOrderWithItem(response.data);
                 })
               }
             });
           }
-        })
+        });
+      },
+      handleChooseNextActionConfirm () {
+        this.$confirm('是否要确认?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.order.storageDays = Math.ceil((Date.now() - Date.parse(this.item.createTime)) / (1000 * 3600 * 24));
+          this.order.storageLocation = this.item.itemStatus === 11?this.item.location:"CN";
+          console.log(this.order.storageLocation)
+          debugger
+          updateOrderByUser(this.order).then(() => {
+            updateItemStatusByOrder(this.order).then(() => {
+              this.$message({
+                message: '修改成功！',
+                type: 'success'
+              });
+              this.dialogEndStorageVisible = false;
+              this.getList();
+            });
+          });
+        });
       },
       handleOrderDetail(order) {
         this.orderDialogVisible = true;
@@ -753,22 +840,24 @@ import {
           this.inOutBoundDialogVisible = true;
         }
       },
-      async createOrderWithItem(itemRes) {
+      async createOrderWithItem(itemId) {
         this.order.createTime = new Date();
         this.order.userSn = this.item.userSn;
         this.order.deliverySn = this.item.deliverySn;
         this.order.location = this.item.location
         this.order.note = this.item.note;
-        this.order.orderStatus = 0;
+        if (!this.order.orderStatus) {
+          this.order.orderStatus = 0;
+        }
         if (!this.order.orderAction) {
           this.order.orderAction = -1;
         }
         createOrder(this.order).then((orderRes) => {
-          this.allocateOrderToItem(itemRes, orderRes);
+          this.allocateOrderToItem(itemId, orderRes.data);
         })
       },
-      async allocateOrderToItem(itemRes, orderRes) {
-        allocOrder(itemRes.data, orderRes.data).then(()=>{
+      async allocateOrderToItem(itemId, orderId) {
+        allocOrder(itemId, orderId).then(()=>{
           this.$message({
             message: '添加成功！',
             type: 'success'
@@ -830,6 +919,12 @@ import {
         }
         return row.itemStatus === 10 && (row.orders[0].orderAction === "0" || row.orders[0].orderAction === "6"
           || row.orders[0].orderAction === "7");
+      },
+      showEndStorageButton(row) {
+        if (row.orders.length < 1) {
+          return false;
+        }
+        return row.itemStatus === 11 || row.itemStatus === 17;
       },
       refreshData() {
         this.getList();

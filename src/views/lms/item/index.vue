@@ -119,6 +119,7 @@
           <template slot-scope="scope">
             <el-button size="mini"
                        type="text"
+                       v-if="scope.row.orders.length>0"
                        @click="handleOrderDetail(scope.row.orders[0])">
               {{ scope.row.orders[0].orderAction | formatAction }}
             </el-button>
@@ -131,6 +132,7 @@
           <template slot-scope="scope">
             <el-button size="mini"
                        type="text"
+                       v-if="scope.row.orders.length>0"
                        v-bind:class="{'text-warning': scope.row.orders[0].orderStatus===0,
                        'text-danger': scope.row.orders[0].orderStatus===1,
                        'text-success': scope.row.orders[0].orderStatus===2}"
@@ -770,8 +772,6 @@ import {
         }).then(() => {
           this.order.storageDays = Math.ceil((Date.now() - Date.parse(this.item.createTime)) / (1000 * 3600 * 24));
           this.order.storageLocation = this.item.itemStatus === 11?this.item.location:"CN";
-          console.log(this.order.storageLocation)
-          debugger
           updateOrderByUser(this.order).then(() => {
             updateItemStatusByOrder(this.order).then(() => {
               this.$message({

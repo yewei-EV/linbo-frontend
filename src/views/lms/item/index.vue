@@ -119,7 +119,7 @@
           <template slot-scope="scope">
             <el-button size="mini"
                        type="text"
-                       v-if="scope.row.orders.length>0"
+                       v-if="scope.row.orders"
                        @click="handleOrderDetail(scope.row.orders[0])">
               {{ scope.row.orders[0].orderAction | formatAction }}
             </el-button>
@@ -132,7 +132,7 @@
           <template slot-scope="scope">
             <el-button size="mini"
                        type="text"
-                       v-if="scope.row.orders.length>0"
+                       v-if="scope.row.orders"
                        v-bind:class="{'text-warning': scope.row.orders[0].orderStatus===0,
                        'text-danger': scope.row.orders[0].orderStatus===1,
                        'text-success': scope.row.orders[0].orderStatus===2}"
@@ -870,10 +870,12 @@ import {
         let promiseArray = [];
         for (const item of response.data.list) {
           let promise = fetchItemOrders(item.id).then(response => {
-              if (response.data) {
-                item.orders = response.data;
-              }
-            });
+            if (response.data && response.data.length > 0 && response.data[0]) {
+              item.orders = response.data;
+            } else {
+              item.orders = null;
+            }
+          });
           promiseArray.push(promise)
         }
         await Promise.all(promiseArray);
@@ -908,20 +910,20 @@ import {
         });
       },
       showNextButton(row) {
-        if (row.orders.length < 1) {
+        if (!row.orders || row.orders.length < 1) {
           return false;
         }
         return row.itemStatus === 13 || row.itemStatus === 14 || row.itemStatus === 15;
       },
       showInboundButton(row) {
-        if (row.orders.length < 1) {
+        if (!row.orders || row.orders.length < 1 ) {
           return false;
         }
         return row.itemStatus === 10 && (row.orders[0].orderAction === "0" || row.orders[0].orderAction === "6"
           || row.orders[0].orderAction === "7");
       },
       showEndStorageButton(row) {
-        if (row.orders.length < 1) {
+        if (!row.orders || row.orders.length < 1) {
           return false;
         }
         return row.itemStatus === 11 || row.itemStatus === 17;

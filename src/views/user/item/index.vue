@@ -75,7 +75,7 @@
           <template slot-scope="scope">
             <el-button size="mini"
                        type="text"
-                       v-if="scope.row.orders.length>0"
+                       v-if="scope.row.orders"
                        @click="handleOrderDetail(scope.row.orders[0])">
               {{ scope.row.orders[0].orderAction | formatAction }}
             </el-button>
@@ -88,7 +88,7 @@
           <template slot-scope="scope">
             <el-button size="mini"
                        type="text"
-                       v-if="scope.row.orders.length>0"
+                       v-if="scope.row.orders"
                        v-bind:class="{'text-warning': scope.row.orders[0].orderStatus===0,
                        'text-danger': scope.row.orders[0].orderStatus===1,
                        'text-success': scope.row.orders[0].orderStatus===2}"
@@ -106,13 +106,13 @@
           <template slot-scope="scope">
             <el-button size="mini"
                        type="danger"
-                       v-if="scope.row.orders.length>0 && getButtonByAction(scope.row.orders[0].orderAction)==='选择操作'"
+                       v-if="scope.row.orders && getButtonByAction(scope.row.orders[0].orderAction)==='选择操作'"
                        @click="chooseActionByUser(scope.$index, scope.row)">
               选择操作
             </el-button>
             <el-button size="mini"
                        type="warning"
-                       v-if="scope.row.orders.length>0 && getButtonByAction(scope.row.orders[0].orderAction)==='上传回执'"
+                       v-if="scope.row.orders && getButtonByAction(scope.row.orders[0].orderAction)==='上传回执'"
                        @click="uploadAttachment(scope.$index, scope.row)">
               上传回执
             </el-button>
@@ -461,8 +461,10 @@
         let promiseArray = [];
         for (const item of response.data.list) {
           let promise = fetchItemOrders(item.id).then(response => {
-            if (response.data) {
+            if (response.data && response.data.length > 0 && response.data[0]) {
               item.orders = response.data;
+            } else {
+              item.orders = null;
             }
           });
           promiseArray.push(promise)

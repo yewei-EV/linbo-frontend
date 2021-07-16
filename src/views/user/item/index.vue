@@ -99,7 +99,12 @@
         </el-table-column>
         <el-table-column label="入库图片" min-width="100" align="center">
           <template slot-scope="scope">
-            <img @click="enlargePhoto(scope.row)" style="height: 50px" :src=scope.row.photo alt="">
+            <el-button size="mini"
+                       type="info"
+                       v-if="scope.row.photo"
+                       style="margin-left:0;margin-top:10px;"
+                       @click="enlargePhoto(scope.row)">显示
+            </el-button>
           </template>
         </el-table-column>
         <el-table-column label="操作" min-width="100" align="center" v-if="this.listQuery.userSn">

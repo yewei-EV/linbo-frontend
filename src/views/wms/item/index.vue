@@ -69,7 +69,7 @@
       <i class="el-icon-tickets"></i>
       <span>包裹列表</span>
       <el-button size="mini" class="btn-add" type="primary" style="margin-left: 20px" @click="refreshData()">刷新</el-button>
-      <el-button size="mini" class="btn-add" type="danger" @click="handleAdd()">包裹入库</el-button>
+      <el-button size="mini" class="btn-add" type="danger" style="margin-left: 20px" @click="handleAdd()">包裹入库</el-button>
       <el-button size="mini" type="success" class="btn-add" @click="getExportList()">导出</el-button>
     </el-card>
     <div class="table-container">
@@ -161,7 +161,12 @@
         </el-table-column>
         <el-table-column label="入库图片" min-width="100" align="center">
           <template slot-scope="scope">
-            <img @click="enlargePhoto(scope.row)" style="height: 50px" :src=scope.row.photo alt="">
+            <el-button size="mini"
+                       type="info"
+                       v-if="scope.row.photo"
+                       style="margin-left:0;margin-top:10px;"
+                       @click="enlargePhoto(scope.row)">显示
+            </el-button>
           </template>
         </el-table-column>
       </el-table>

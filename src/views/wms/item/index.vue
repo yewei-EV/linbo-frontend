@@ -70,6 +70,7 @@
       <span>包裹列表</span>
       <el-button size="mini" class="btn-add" type="primary" style="margin-left: 20px" @click="refreshData()">刷新</el-button>
       <el-button size="mini" class="btn-add" type="danger" @click="handleAdd()">包裹入库</el-button>
+      <el-button size="mini" type="success" class="btn-add" @click="getExportList()">导出</el-button>
     </el-card>
     <div class="table-container">
       <el-table ref="itemTable"
@@ -162,6 +163,52 @@
           <template slot-scope="scope">
             <img @click="enlargePhoto(scope.row)" style="height: 50px" :src=scope.row.photo alt="">
           </template>
+        </el-table-column>
+      </el-table>
+      <el-table id="exportTable"
+                :data="exportData" border
+                style="display: none">
+        <el-table-column label="id" min-width="160" align="center">
+          <template slot-scope="scope">{{scope.row.id}}</template>
+        </el-table-column>
+        <el-table-column label="运单号" min-width="160" align="center">
+          <template slot-scope="scope">{{scope.row.deliverySn}}</template>
+        </el-table-column>
+        <el-table-column label="识别码" min-width="100" align="center">
+          <template slot-scope="scope">{{scope.row.userSn}}</template>
+        </el-table-column>
+        <el-table-column label="地点" min-width="60" align="center">
+          <template slot-scope="scope">{{scope.row.location | formatLocation}}</template>
+        </el-table-column>
+        <el-table-column label="添加时间" min-width="140" align="center">
+          <template slot-scope="scope">{{scope.row.createTime | formatDateTime}}</template>
+        </el-table-column>
+        <el-table-column label="存放位置" min-width="100" align="center">
+          <template slot-scope="scope">{{scope.row.positionInfo}}</template>
+        </el-table-column>
+        <el-table-column label="SKU" min-width="60" align="center">
+          <template slot-scope="scope">{{scope.row.sku}}</template>
+        </el-table-column>
+        <el-table-column label="尺寸" min-width="60" align="center">
+          <template slot-scope="scope">{{scope.row.size}}</template>
+        </el-table-column>
+        <el-table-column label="最新操作" min-width="100" align="center">
+          <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].orderAction:"" | formatAction}}</template>
+        </el-table-column>
+        <el-table-column label="状态" min-width="100" align="center">
+          <template slot-scope="scope">{{statusOptions[scope.row.itemStatus].label}}</template>
+        </el-table-column>
+        <el-table-column label="支付状态" min-width="100" align="center">
+          <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].orderStatus:"" | formatOrderStatus}}</template>
+        </el-table-column>
+        <el-table-column label="物流单号" min-width="100" align="center">
+          <template slot-scope="scope">{{scope.row.note}}</template>
+        </el-table-column>
+        <el-table-column label="订单ID" min-width="100" align="center">
+          <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].id:""}}</template>
+        </el-table-column>
+        <el-table-column label="备注" min-width="100" align="center">
+          <template slot-scope="scope">{{scope.row.remark}}</template>
         </el-table-column>
       </el-table>
     </div>
@@ -434,8 +481,7 @@
   import SingleUpload from '../../../components/Upload/singleUpload'
   import {
     getAdminByUserSn,
-    getInfo,
-    getRoleByAdmin
+    getInfo
   } from "../../../api/login";
   import {
     orderStatusOptions,
@@ -449,6 +495,8 @@
     formatAction,
     formatOrderStatus, sizeOptions, formatLocation, actionOptions
   } from '../../../dto/options';
+  import FileSaver from 'file-saver'
+  import XLSX from 'xlsx'
 
   const defaultListQuery = {
     pageNum: 1,
@@ -502,7 +550,8 @@
         sizeOptions: sizeOptions,
         weightUnitOptions: weightUnitOptions,
         operateOptions: operateOptions,
-        actionOptions: actionOptions
+        actionOptions: actionOptions,
+        exportData: null
       }
     },
     created() {
@@ -867,6 +916,18 @@
           })
         });
       },
+      getExportList() {
+        this.listLoading = true;
+        this.listQuery.pageSize = 10000;
+        fetchItemList(this.listQuery).then(response => {
+          this.getListOrder(response).then(response => {
+            this.exportData = response.data.list;
+            this.listLoading = false;
+          }).then(() => {
+            this.exportExcelData('items');
+          })
+        });
+      },
       refreshData() {
         this.getList();
       },
@@ -899,6 +960,20 @@
             type: 'info'
           })
         });
+      },
+      exportExcelData(excelName) {
+        try {
+          /* generate workbook object from table */
+          let wb = XLSX.utils.table_to_book(document.querySelector('#exportTable'))
+          /* get binary string as output */
+          let wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'array' })
+          try {
+            FileSaver.saveAs(new Blob([wbout], { type: 'application/octet-stream' }), excelName + '.xlsx')
+          } catch (e) { if (typeof console !== 'undefined') console.log(e, wbout) }
+          return wbout
+        } catch (e) {
+          if (typeof console !== 'undefined') console.error(e);
+        }
       }
     },
   }

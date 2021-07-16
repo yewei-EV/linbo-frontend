@@ -219,19 +219,19 @@
           <template slot-scope="scope">{{scope.row.size}}</template>
         </el-table-column>
         <el-table-column label="最新操作" min-width="100" align="center">
-          <template slot-scope="scope">{{scope.row.orders[0].orderAction | formatAction}}</template>
+          <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].orderAction:"" | formatAction}}</template>
         </el-table-column>
         <el-table-column label="状态" min-width="100" align="center">
           <template slot-scope="scope">{{statusOptions[scope.row.itemStatus].label}}</template>
         </el-table-column>
         <el-table-column label="支付状态" min-width="100" align="center">
-          <template slot-scope="scope">{{scope.row.orders[0].orderStatus | formatOrderStatus}}</template>
+          <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].orderStatus:"" | formatOrderStatus}}</template>
         </el-table-column>
         <el-table-column label="物流单号" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.note}}</template>
         </el-table-column>
         <el-table-column label="订单ID" min-width="100" align="center">
-          <template slot-scope="scope">{{scope.row.orders[0].id}}</template>
+          <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].id:""}}</template>
         </el-table-column>
         <el-table-column label="备注" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.remark}}</template>

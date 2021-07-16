@@ -53,6 +53,9 @@
           <el-form-item label="存放位置: ">
             <el-input v-model="listQuery.positionInfo" class="input-width" placeholder="存放位置" clearable></el-input>
           </el-form-item>
+          <el-form-item label="备注：">
+            <el-input v-model="listQuery.remark" class="input-width" placeholder="备注" clearable></el-input>
+          </el-form-item>
           <el-form-item label="状态：">
             <el-select v-model="listQuery.itemStatus" placeholder="全部" clearable style="width: 177px">
               <el-option v-for="item in statusOptions"
@@ -179,6 +182,9 @@
         <el-table-column label="物流单号" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.note}}</template>
         </el-table-column>
+        <el-table-column label="备注" min-width="100" align="center">
+          <template slot-scope="scope">{{scope.row.remark}}</template>
+        </el-table-column>
         <el-table-column label="入库图片" min-width="100" align="center">
           <template slot-scope="scope">
             <img @click="enlargePhoto(scope.row)" style="height: 50px" :src=scope.row.photo alt="">
@@ -227,8 +233,8 @@
         <el-table-column label="订单ID" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.orders[0].id}}</template>
         </el-table-column>
-        <el-table-column label="入库图片" min-width="100" align="center">
-          <template slot-scope="scope">{{scope.row.photo}}</template>
+        <el-table-column label="备注" min-width="100" align="center">
+          <template slot-scope="scope">{{scope.row.remark}}</template>
         </el-table-column>
       </el-table>
     </div>
@@ -314,6 +320,12 @@
                     type="textarea"
                     :rows="1"
                     style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="备注：">
+          <el-input v-model="item.remark" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="入库图片：" prop="附件">
+          <single-upload v-model="item.photo"></single-upload>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -508,7 +520,8 @@ import {
     size: null,
     itemStatus: null,
     positionInfo: null,
-    orders: []
+    orders: [],
+    remark: null
   };
   const defaultAllocGroup = {
     itemId: null,

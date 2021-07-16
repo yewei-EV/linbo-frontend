@@ -239,7 +239,8 @@ export var defaultItem = {
   itemStatus: null,
   positionInfo: null,
   orders: [],
-  photo: null
+  photo: null,
+  remark: null
 }
 
 export var defaultOrder = {

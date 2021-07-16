@@ -749,7 +749,7 @@ import {
           } else {
             this.item.createTime = new Date();
             // find if item is preloaded or not
-            if (!this.item.deliverySn || !this.item.userSn || !this.item.location) {
+            if (!this.item.deliverySn || !this.item.location) {
               this.$message({
                 type: 'error',
                 message: '运单号/识别码/入库地点为必填项!'
@@ -773,9 +773,24 @@ import {
                   message: '货物已登记!'
                 });
               } else {
-                this.item.itemStatus = 0;
-                createItem(this.item).then((response) => {
-                  this.createOrderWithItem(response.data);
+                if (!this.item.userSn) {
+                  this.item.itemStatus = 19;
+                } else {
+                  this.item.itemStatus = 1;
+                }
+                this.order.createTime = new Date();
+                this.order.userSn = this.item.userSn;
+                this.order.deliverySn = this.item.deliverySn;
+                this.order.location = this.item.location
+                this.order.note = this.item.note;
+                if (!this.order.orderStatus) {
+                  this.order.orderStatus = 0;
+                }
+                if (!this.order.orderAction) {
+                  this.order.orderAction = -1;
+                }
+                createOrder(this.order).then((orderRes) => {
+                  this.createItemWithOrder(orderRes.data);
                 })
               }
             });
@@ -858,20 +873,9 @@ import {
           this.inOutBoundDialogVisible = true;
         }
       },
-      async createOrderWithItem(itemId) {
-        this.order.createTime = new Date();
-        this.order.userSn = this.item.userSn;
-        this.order.deliverySn = this.item.deliverySn;
-        this.order.location = this.item.location
-        this.order.note = this.item.note;
-        if (!this.order.orderStatus) {
-          this.order.orderStatus = 0;
-        }
-        if (!this.order.orderAction) {
-          this.order.orderAction = -1;
-        }
-        createOrder(this.order).then((orderRes) => {
-          this.allocateOrderToItem(itemId, orderRes.data);
+      async createItemWithOrder(orderId) {
+        createItem(this.item).then((itemRes) => {
+          this.allocateOrderToItem(itemRes.data, orderId);
         })
       },
       async allocateOrderToItem(itemId, orderId) {

@@ -2,6 +2,7 @@
   <div>
     <el-upload
       :action="useOss?ossUploadUrl:minioUploadUrl"
+      drag
       :data="useOss?dataObj:null"
       list-type="picture"
       :multiple="false" :show-file-list="showFileList"
@@ -10,7 +11,7 @@
       :on-remove="handleRemove"
       :on-success="handleUploadSuccess"
       :on-preview="handlePreview">
-      <el-button size="small" type="primary">点击上传</el-button>
+      <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
       <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过10MB</div>
     </el-upload>
     <el-dialog :visible.sync="dialogVisible">
@@ -115,7 +116,10 @@
   }
 </script>
 <style>
-
+  .el-upload-dragger {
+    width: 250px !important;
+    height: 100px !important;
+  }
 </style>
 
 

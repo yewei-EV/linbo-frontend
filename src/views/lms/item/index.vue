@@ -789,8 +789,15 @@ import {
                 if (!this.order.orderAction) {
                   this.order.orderAction = -1;
                 }
-                createOrder(this.order).then((orderRes) => {
-                  this.createItemWithOrder(orderRes.data);
+                createOrder(this.order).then(() => {
+                  createItem(this.item).then(() => {
+                    this.$message({
+                      message: '添加成功！',
+                      type: 'success'
+                    });
+                    this.dialogVisible = false;
+                    this.getList();
+                  })
                 })
               }
             });
@@ -872,21 +879,6 @@ import {
           //批量发货
           this.inOutBoundDialogVisible = true;
         }
-      },
-      async createItemWithOrder(orderId) {
-        createItem(this.item).then((itemRes) => {
-          this.allocateOrderToItem(itemRes.data, orderId);
-        })
-      },
-      async allocateOrderToItem(itemId, orderId) {
-        allocOrder(itemId, orderId).then(()=>{
-          this.$message({
-            message: '添加成功！',
-            type: 'success'
-          });
-          this.dialogVisible = false;
-          this.getList();
-        });
       },
       async getListOrder(response) {
         let promiseArray = [];

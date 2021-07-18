@@ -659,16 +659,16 @@ import {
         if (this.item.itemStatus === 11) {
           this.actionOptionsAfterStorage = [
             {label:"待确认", value:"-1"},
-            {label:"集运国内", value:"0"},
-            {label:"直邮国内", value:"1"},
-            {label:"快递海外", value:"3"},
+            {label:"集运linbo国内仓", value:"0"},
+            {label:"直邮国内到手", value:"1"},
+            {label:"转寄其他地区", value:"3"},
             {label:"StockX寄卖", value:"5"},
             {label:"得物寄卖", value:"6"},
           ];
         } else if (this.item.itemStatus === 17) {
           this.actionOptionsAfterStorage = [
             {label:"待确认", value:"-1"},
-            {label:"直邮国内", value:"1"},
+            {label:"直邮国内到手", value:"1"},
             {label:"得物寄卖", value:"6"},
           ];
         }

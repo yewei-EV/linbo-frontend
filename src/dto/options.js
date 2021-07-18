@@ -37,11 +37,11 @@ export const statusOptions = [
     value: 3
   },
   {
-    label: '待集运国内',
+    label: '待集运linbo国内仓',
     value: 4
   },
   {
-    label: '待直邮国内',
+    label: '待直邮国内到手',
     value: 5
   },
   {
@@ -49,7 +49,7 @@ export const statusOptions = [
     value: 6
   },
   {
-    label: '待直邮海外',
+    label: '待转寄其他地区',
     value: 7
   },
   {
@@ -150,13 +150,13 @@ export function formatDateTime(time) {
 export function formatAction(actionCode) {
   switch (actionCode) {
     case "0":
-      return "集运国内";
+      return "集运linbo国内仓";
     case "1":
-      return "直邮国内";
+      return "直邮国内到手";
     case "2":
       return "退货";
     case "3":
-      return "快递海外";
+      return "转寄其他地区";
     case "4":
       return "海外寄存";
     case "5":
@@ -266,10 +266,10 @@ export var defaultOrder = {
 
 export const actionOptions = [
   {label:"待确认", value:"-1"},
-  {label:"集运国内", value:"0"},
-  {label:"直邮国内", value:"1"},
+  {label:"集运linbo国内仓", value:"0"},
+  {label:"直邮国内到手", value:"1"},
   {label:"退货", value:"2"},
-  {label:"快递海外", value:"3"},
+  {label:"转寄其他地区", value:"3"},
   {label:"海外寄存", value:"4"},
   {label:"StockX寄卖", value:"5"},
   {label:"得物寄卖", value:"6"},

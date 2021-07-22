@@ -214,6 +214,12 @@ export function formatLocation(location) {
       return "日本";
     case 'AU':
       return "澳大利亚";
+    case 'CN':
+      return "中国";
+    case 'HK':
+      return "香港";
+    case 'CA':
+      return "加拿大";
   }
 }
 

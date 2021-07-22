@@ -106,7 +106,7 @@
         <el-table-column label="尺寸" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.size}}</template>
         </el-table-column>
-        <el-table-column label="操作" min-width="100" align="center">
+        <el-table-column label="操作" min-width="140" align="center">
           <template slot-scope="scope">
             <el-button size="mini"
                        type="text"

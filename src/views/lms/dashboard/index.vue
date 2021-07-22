@@ -24,7 +24,7 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <div class="un-handle-item">
-              <span class="font-medium">待得物寄卖</span>
+              <span class="font-medium">待集运linbo国内仓-代卖</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
                          class="color-danger" type="text" @click="directToSpecificItemList(13)">
                 ({{this.duOrderCount}})
@@ -44,7 +44,7 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <div class="un-handle-item">
-              <span class="font-medium">待国内寄存</span>
+              <span class="font-medium">待集运linbo国内仓-寄存</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
                          class="color-danger" type="text" @click="directToSpecificItemList(15)">
                 ({{this.localStorageCount}})

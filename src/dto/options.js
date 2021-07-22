@@ -41,7 +41,7 @@ export const statusOptions = [
     value: 4
   },
   {
-    label: '待直邮国内到手',
+    label: '待直邮国内用户手上',
     value: 5
   },
   {
@@ -49,7 +49,7 @@ export const statusOptions = [
     value: 6
   },
   {
-    label: '待转寄其他地区',
+    label: '待转寄海外其他地址',
     value: 7
   },
   {
@@ -57,7 +57,7 @@ export const statusOptions = [
     value: 8
   },
   {
-    label: '待StockX寄卖',
+    label: '待转寄stockx',
     value: 9
   },
   {
@@ -73,7 +73,7 @@ export const statusOptions = [
     value: 12
   },
   {
-    label: '待得物寄卖',
+    label: '待集运linbo国内仓-代卖',
     value: 13
   },
   {
@@ -81,7 +81,7 @@ export const statusOptions = [
     value: 14
   },
   {
-    label: '待国内寄存',
+    label: '待集运linbo国内仓-寄存',
     value: 15
   },
   {
@@ -113,6 +113,8 @@ export const regionOptions = [
   {label:"日本", value:'JP'},
   {label:"澳大利亚", value:'AU'},
   {label:"中国", value:'CN'},
+  {label:"香港", value:'HK'},
+  {label:"加拿大", value:'CA'},
 ]
 
 export const weightUnitOptions = [
@@ -152,19 +154,19 @@ export function formatAction(actionCode) {
     case "0":
       return "集运linbo国内仓";
     case "1":
-      return "直邮国内到手";
+      return "直邮国内用户手上";
     case "2":
       return "退货";
     case "3":
-      return "转寄其他地区";
+      return "转寄海外其他地址";
     case "4":
       return "海外寄存";
     case "5":
-      return "StockX寄卖";
+      return "转寄stockx";
     case "6":
-      return "得物寄卖";
+      return "集运linbo国内仓-代卖";
     case "7":
-      return "国内寄存";
+      return "集运linbo国内仓-寄存";
     default:
       return "待用户选择";
   }
@@ -267,13 +269,13 @@ export var defaultOrder = {
 export const actionOptions = [
   {label:"待确认", value:"-1"},
   {label:"集运linbo国内仓", value:"0"},
-  {label:"直邮国内到手", value:"1"},
+  {label:"直邮国内用户手上", value:"1"},
   {label:"退货", value:"2"},
-  {label:"转寄其他地区", value:"3"},
+  {label:"转寄海外其他地址", value:"3"},
   {label:"海外寄存", value:"4"},
-  {label:"StockX寄卖", value:"5"},
-  {label:"得物寄卖", value:"6"},
-  {label:"国内寄存", value:"7"}
+  {label:"转寄stockx", value:"5"},
+  {label:"集运linbo国内仓-代卖", value:"6"},
+  {label:"集运linbo国内仓-寄存", value:"7"}
 ]
 
 export const sizeOptions = [

@@ -118,7 +118,7 @@
         <el-table-column label="尺寸" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.size}}</template>
         </el-table-column>
-        <el-table-column label="操作" min-width="100" align="center">
+        <el-table-column label="操作" min-width="140" align="center">
           <template slot-scope="scope">
             <el-button size="mini"
                        type="text"
@@ -660,16 +660,16 @@ import {
           this.actionOptionsAfterStorage = [
             {label:"待确认", value:"-1"},
             {label:"集运linbo国内仓", value:"0"},
-            {label:"直邮国内到手", value:"1"},
-            {label:"转寄其他地区", value:"3"},
-            {label:"StockX寄卖", value:"5"},
-            {label:"得物寄卖", value:"6"},
+            {label:"直邮国内用户手上", value:"1"},
+            {label:"转寄海外其他地址", value:"3"},
+            {label:"转寄stockx", value:"5"},
+            {label:"集运linbo国内仓-代卖", value:"6"},
           ];
         } else if (this.item.itemStatus === 17) {
           this.actionOptionsAfterStorage = [
             {label:"待确认", value:"-1"},
-            {label:"直邮国内到手", value:"1"},
-            {label:"得物寄卖", value:"6"},
+            {label:"直邮国内用户手上", value:"1"},
+            {label:"集运linbo国内仓-代卖", value:"6"},
           ];
         }
         this.dialogEndStorageVisible = true;

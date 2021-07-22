@@ -70,7 +70,7 @@
           </el-col>
           <el-col :span="12">
             <div class="un-handle-item">
-              <span class="font-medium">待直邮国内到手</span>
+              <span class="font-medium">待直邮国内用户手上</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
                          class="color-danger" type="text" @click="directToSpecificItemList(5)">
                 ({{this.directDeliveryCount}})
@@ -90,7 +90,7 @@
           </el-col>
           <el-col :span="12">
             <div class="un-handle-item">
-              <span class="font-medium">待转寄其他地区</span>
+              <span class="font-medium">待转寄海外其他地址</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
                          class="color-danger" type="text" @click="directToSpecificItemList(7)">
                 ({{this.localDeliveryCount}})
@@ -110,7 +110,7 @@
           </el-col>
           <el-col :span="12">
             <div class="un-handle-item">
-              <span class="font-medium">待StockX寄卖</span>
+              <span class="font-medium">待转寄stockx</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
                          class="color-danger" type="text" @click="directToSpecificItemList(9)">
                 ({{this.stockxOrderCount}})

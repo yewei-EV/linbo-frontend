@@ -43,12 +43,6 @@ export const asyncRouterMap = [
     meta: {title: '包裹管理', icon: 'order'},
     children: [
       {
-        path: 'preload',
-        name: 'preload',
-        component: () => import('@/views/user/preload/index'),
-        meta: {title: '预登记', icon: 'product-add'},
-      },
-      {
         path: 'item',
         name: 'item',
         component: () => import('@/views/user/item/index'),

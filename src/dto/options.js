@@ -16,6 +16,10 @@ export var orderStatusOptions = [
   {
     label: '已完成',
     value: 3
+  },
+  {
+    label: '未定价',
+    value: 4
   }
 ]
 
@@ -73,15 +77,15 @@ export const statusOptions = [
     value: 12
   },
   {
-    label: '待集运linbo国内仓-代卖',
+    label: '待国内仓代卖',
     value: 13
   },
   {
-    label: '待快递国内',
+    label: '待顺丰快递',
     value: 14
   },
   {
-    label: '待集运linbo国内仓-寄存',
+    label: '待国内仓寄存',
     value: 15
   },
   {
@@ -97,8 +101,8 @@ export const statusOptions = [
     value: 18
   },
   {
-    label: '待认领',
-    value: 19
+    label: '待代卖stockx',
+    value: 20
   }
 ]
 
@@ -164,9 +168,13 @@ export function formatAction(actionCode) {
     case "5":
       return "转寄stockx";
     case "6":
-      return "集运linbo国内仓-代卖";
+      return "国内仓代卖";
     case "7":
-      return "集运linbo国内仓-寄存";
+      return "国内仓寄存";
+    case "8":
+      return "代卖stockx";
+    case "9":
+      return "顺丰直邮";
     default:
       return "待用户选择";
   }
@@ -191,6 +199,8 @@ export function formatOrderStatus(orderStatus) {
       return "已付款";
     case 3:
       return "已完成";
+    case 4:
+      return "未定价";
   }
 }
 
@@ -273,15 +283,17 @@ export var defaultOrder = {
 }
 
 export const actionOptions = [
-  {label:"待确认", value:"-1"},
+  {label:"待用户选择", value:"-1"},
   {label:"集运linbo国内仓", value:"0"},
   {label:"直邮国内用户手上", value:"1"},
   {label:"退货", value:"2"},
   {label:"转寄海外其他地址", value:"3"},
   {label:"海外寄存", value:"4"},
   {label:"转寄stockx", value:"5"},
-  {label:"集运linbo国内仓-代卖", value:"6"},
-  {label:"集运linbo国内仓-寄存", value:"7"}
+  {label:"国内仓代卖", value:"6"},
+  {label:"国内仓寄存", value:"7"},
+  {label:"代卖stockx", value:"8"},
+  {label:"顺丰直邮", value:"9"}
 ]
 
 export const sizeOptions = [

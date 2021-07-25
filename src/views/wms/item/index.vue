@@ -136,6 +136,14 @@
           <template slot-scope="scope">
             <el-button size="mini"
                        type="success"
+                       style="margin-left:0;"
+                       v-if="showEndStorageButton(scope.row)"
+                       @click="handleEndStorage(scope.row)">
+              结束寄存
+            </el-button>
+            <el-button size="mini"
+                       type="success"
+                       style="margin-left:0;"
                        v-if="showNextButton(scope.row.itemStatus)"
                        @click="handleFinish(scope.row)">
               {{scope.row.itemStatus | formatNextButton}}
@@ -149,7 +157,8 @@
             <el-button size="mini"
                        type="info"
                        style="margin-left:0;margin-top:10px;"
-                       @click="handleUpdate(scope.row)">编辑
+                       @click="handleUpdate(scope.row)">
+              编辑
             </el-button>
           </template>
         </el-table-column>
@@ -303,7 +312,7 @@
         <el-form-item label="备注：">
           <el-input v-model="item.remark" style="width: 250px"></el-input>
         </el-form-item>
-        <el-form-item label="入库图片：" prop="附件">
+        <el-form-item label="入库图片：" prop="图片">
           <single-upload v-model="item.photo"></single-upload>
         </el-form-item>
       </el-form>
@@ -370,14 +379,25 @@
                     :rows="1"
                     style="width: 250px"></el-input>
         </el-form-item>
-        <div style="padding: 10px;" v-if="order.attachment">
-          <span class="font-title-large">附件 ：</span>
-          <img style="height: 80px" :src="order.attachment">
-        </div>
+        <el-form-item label="寄存天数：">
+          <el-input v-model="order.storageDays" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="寄存地点：">
+          <el-select v-model="order.storageLocation" clearable style="width: 250px">
+            <el-option v-for="unit in regionOptions"
+                       :key="unit.value"
+                       :label="unit.label"
+                       :value="unit.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Label：">
+          <img style="width: 250px" :src="order.attachment">
+        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="orderDialogVisible = false" size="small">取 消</el-button>
-        <el-button type="primary" @click="gotoOrderPage(order)" size="small">进入订单</el-button>
+<!--        <el-button type="primary" @click="gotoOrderPage(order)" size="small">进入订单</el-button>-->
       </span>
     </el-dialog>
     <el-dialog
@@ -468,21 +488,58 @@
         <el-button @click="photoDialogVisible = false" size="small">关 闭</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      :visible.sync="dialogEndStorageVisible"
+      width="80%">
+      <el-form :inline="true" :model="order"
+               ref="orderForm"
+               label-width="180px" size="small">
+        <div class="optionalDivider">
+          <div class="tableTitle">
+            <span class="midText">
+              选择操作：
+            </span>
+          </div>
+        </div>
+        <el-form-item label="操作：">
+          <el-select v-model="order.orderAction" clearable style="width: 250px">
+            <el-option v-for="order in actionOptionsAfterStorage"
+                       :key="order.value"
+                       :label="order.label"
+                       :value="order.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='1'||order.orderAction==='3'||order.orderAction==='9'" label="地址：">
+          <el-input v-model="order.destination"
+                    type="textarea"
+                    :rows="2"
+                    style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='2'||order.orderAction==='5'" label="Label：" prop="附件">
+          <single-upload v-model="order.attachment"></single-upload>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogEndStorageVisible = false" size="small">取 消</el-button>
+        <el-button type="primary" @click="handleChooseNextActionConfirm()" size="small">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
-  import {
-    createItem,
-    deleteItem,
-    allocOrder,
-    updateItem,
-    createOrder,
-    updateOrder,
-    updateItemStatus,
-    fetchItemList,
-    fetchPreciseItemList,
-    fetchItemOrders
-  } from '../../../api/warehouse';
+import {
+  createItem,
+  deleteItem,
+  allocOrder,
+  updateItem,
+  createOrder,
+  updateOrder,
+  updateItemStatus,
+  fetchItemList,
+  fetchPreciseItemList,
+  fetchItemOrders, updateOrderByUser, updateItemStatusByOrder
+} from '../../../api/warehouse';
   import SingleUpload from '../../../components/Upload/singleUpload'
   import {
     getAdminByUserSn,
@@ -532,8 +589,10 @@
         multipleSelection: [],
         list: null,
         total: null,
+        actionOptionsAfterStorage: null,
         listLoading: false,
         dialogVisible: false,
+        dialogEndStorageVisible: false,
         item: Object.assign({}, defaultItem),
         order: Object.assign({}, defaultOrder),
         packageWeight: null,
@@ -544,6 +603,7 @@
         allocGroup: Object.assign({}, defaultAllocGroup),
         isEdit: false,
         isFinish: false,
+        isInput: false,
         orderDialogVisible: false,
         packageDialogVisible: false,
         photoDialogVisible: false,
@@ -576,8 +636,6 @@
         switch (currentStatus) {
           case 0:
             return "入库";
-          case 2:
-            return "打包";
           case 4:
             return "发货";
           case 5:
@@ -589,6 +647,8 @@
           case 8:
             return "寄存";
           case 9:
+            return "发货";
+          case 20:
             return "发货";
           default:
             return "待定";
@@ -620,11 +680,12 @@
         this.getList();
       },
       handleAdd() {
-        this.dialogVisible = true;
-        this.isEdit = false;
-        this.isFinish = false;
         this.item = Object.assign({}, defaultItem);
         this.item.location = this.warehouseLocation;
+        this.order = Object.assign({}, defaultOrder);
+        this.isEdit = false;
+        this.isFinish = false;
+        this.dialogVisible = true;
       },
       handleDelete(index, row) {
         this.$confirm('是否要删除该货物?', '提示', {
@@ -653,6 +714,25 @@
         this.packagePositionInfo = row.positionInfo;
         this.packageNote = row.note;
         this.packageDialogVisible = true;
+      },
+      handleEndStorage(row) {
+        this.item = Object.assign({}, row);
+        this.order = this.item.orders[0];
+        this.order.orderAction = '-1';
+        if (this.item.itemStatus === 11) {
+          this.actionOptionsAfterStorage = [
+            {label:"待用户选择", value:"-1"},
+            {label:"集运linbo国内仓", value:"0"},
+            {label:"直邮国内用户手上", value:"1"},
+            {label:"转寄海外其他地址", value:"3"},
+            {label:"转寄stockx", value:"5"},
+            {label:"代卖stockx", value:"8"}
+          ];
+        }
+        if (this.userInfo.address && this.userInfo.name && this.userInfo.phoneNumber) {
+          this.order.destination = this.userInfo.address + ',' + this.userInfo.name + ',' + this.userInfo.phoneNumber;
+        }
+        this.dialogEndStorageVisible = true;
       },
       handleUpdate(row) {
         this.dialogVisible = true;
@@ -708,7 +788,7 @@
           if (this.isFinish) {
             updateItemStatus(this.item, this.order.orderAction).then(() => {
               this.$message({
-                message: '发货成功！',
+                message: '操作成功！',
                 type: 'success'
               });
               this.dialogVisible = false;
@@ -719,9 +799,37 @@
               this.isFinish = false;
               this.getList();
             });
+          } else if (this.isInput) {
+            updateItemStatus(this.item, this.order.orderAction).then(() => {
+              this.order.orderAction = "-1";
+              updateOrder(this.order).then(() => {
+                this.$message({
+                  message: '操作成功！',
+                  type: 'success'
+                });
+                this.dialogVisible = false;
+                this.isInput = false;
+                this.getList();
+              })
+            }).catch(() => {
+              this.dialogVisible = false;
+              this.isInput = false;
+              this.getList();
+            });
           } else if (this.isEdit) {
             updateItem(this.item).then(() => {
-              updateOrder(this.order).then(() => {
+              if (this.item.userSn !== this.order.userSn) {
+                this.order.userSn = this.item.userSn;
+                updateOrder(this.order).then(() => {
+                  this.$message({
+                    message: '修改成功！',
+                    type: 'success'
+                  });
+                  this.dialogVisible = false;
+                  this.isEdit = false;
+                  this.getList();
+                })
+              } else {
                 this.$message({
                   message: '修改成功！',
                   type: 'success'
@@ -729,12 +837,12 @@
                 this.dialogVisible = false;
                 this.isEdit = false;
                 this.getList();
-              })
+              }
             })
           } else {
             this.item.createTime = new Date();
             //find if item is preloaded or not
-            if (!this.item.deliverySn || !this.item.location) {
+            if (!this.item.deliverySn || !this.item.userSn || !this.item.location) {
               this.$message({
                 type: 'error',
                 message: '运单号/识别码/入库地点为必填项!'
@@ -771,7 +879,7 @@
                 this.order.location = this.item.location
                 this.order.note = this.item.note;
                 if (!this.order.orderStatus) {
-                  this.order.orderStatus = 0;
+                  this.order.orderStatus = 4;
                 }
                 if (!this.order.orderAction) {
                   this.order.orderAction = -1;
@@ -783,6 +891,8 @@
                       type: 'success'
                     });
                     this.dialogVisible = false;
+                    this.order = Object.assign({}, defaultOrder);
+                    this.item = Object.assign({}, defaultItem);
                     this.getList();
                   })
                 })
@@ -790,6 +900,26 @@
             });
           }
         })
+      },
+      handleChooseNextActionConfirm () {
+        this.$confirm('是否要确认?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.order.storageDays = Math.ceil((Date.now() - Date.parse(this.item.createTime)) / (1000 * 3600 * 24));
+          this.order.storageLocation = this.item.location;
+          updateOrderByUser(this.order).then(() => {
+            updateItemStatusByOrder(this.order).then(() => {
+              this.$message({
+                message: '修改成功！',
+                type: 'success'
+              });
+              this.dialogEndStorageVisible = false;
+              this.getList();
+            });
+          });
+        });
       },
       handleOrderDetail(order) {
         this.orderDialogVisible = true;
@@ -806,17 +936,26 @@
         })
       },
       async combinePackages(items) {
+        if (this.packageWeightUnit === null || this.packageWeight === null) {
+          this.$message({
+            type: 'error',
+            message: '重量/重量单位为必填!'
+          });
+          return;
+        }
         let mainOrder = null;
         for (const element of items) {
           if (!mainOrder) {
             mainOrder = element.orders[0];
             mainOrder.weightUnit = this.packageWeightUnit;
             mainOrder.weight = this.packageWeight;
+            // mainOrder.orderStatus = 0;
             await updateOrder(mainOrder);
           } else {
             await allocOrder(element.id, mainOrder.id).then(() => {
               mainOrder.deliverySn = mainOrder.deliverySn + "&" + element.deliverySn;
               mainOrder.amount++;
+              // mainOrder.orderStatus = 0;
               updateOrder(mainOrder);
             });
           }
@@ -929,6 +1068,12 @@
           })
         });
       },
+      showEndStorageButton(row) {
+        if (!row.orders || row.orders.length < 1) {
+          return false;
+        }
+        return row.itemStatus === 11;
+      },
       refreshData() {
         this.getList();
       },
@@ -941,6 +1086,7 @@
           case 7:
           case 8:
           case 9:
+          case 20:
             return true;
           default:
             return false;
@@ -956,10 +1102,18 @@
       },
       showDiscordIdByUserSn(userSn) {
         getAdminByUserSn(userSn).then((response) => {
-          this.$alert('用户Discord ID: ' + response.data.discordId, '提示', {
-            confirmButtonText: '确定',
-            type: 'info'
-          })
+          if (response.data) {
+            this.$alert('用户Discord ID: ' + response.data.discordId, '提示', {
+              confirmButtonText: '确定',
+              type: 'info'
+            })
+          } else {
+            this.$message({
+              message: '没有找到对应识别码的用户!',
+              type: 'error',
+              duration:1000
+            });
+          }
         });
       },
       exportExcelData(excelName) {

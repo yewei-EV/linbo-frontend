@@ -63,6 +63,14 @@ export function updateItemStatusByOrder(data) {
   })
 }
 
+export function refreshItemStatusByOrder(data) {
+  return request({
+    url: '/item/refreshItemStatusByOrder/' + data.id,
+    method: 'get',
+    params: {'orderAction': data.orderAction}
+  })
+}
+
 export function deleteItem(id) {
   return request({
     url: '/item/delete/',

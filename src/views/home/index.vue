@@ -360,8 +360,7 @@ export default {
       this.$router.push({
         path: '/user/item',
         query: {
-          itemStatuses: [19],
-          userSn: ""
+          userSn: "无识别码"
         }
       })
     },

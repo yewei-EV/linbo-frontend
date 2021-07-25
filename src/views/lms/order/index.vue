@@ -260,8 +260,11 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="地址：">
-          <el-input v-model="order.destination" style="width: 250px"></el-input>
+        <el-form-item label="运单号：">
+          <el-input v-model="order.deliverySn" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="识别码：">
+          <el-input v-model="order.userSn" style="width: 250px"></el-input>
         </el-form-item>
         <el-form-item label="重量：">
           <el-input v-model="order.weight" style="width: 250px"></el-input>
@@ -272,6 +275,21 @@
                        :key="unit.value"
                        :label="unit.label"
                        :value="unit.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="数量：">
+          <el-input v-model="order.amount" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="地址：">
+          <el-input v-model="order.destination" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="支付状态：">
+          <el-select v-model="order.orderStatus" clearable style="width: 250px">
+            <el-option v-for="status in orderStatusOptions"
+                       :key="status.value"
+                       :label="status.label"
+                       :value="status.value">
             </el-option>
           </el-select>
         </el-form-item>
@@ -295,6 +313,9 @@
                        :value="unit.value">
             </el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item label="Label：" prop="附件">
+          <single-upload v-model="order.attachment"></single-upload>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -341,11 +362,14 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item v-if="order.orderAction==='0'||order.orderAction==='1'||order.orderAction==='3'" label="地址：">
+        <el-form-item v-if="order.orderAction==='1'||order.orderAction==='3'||order.orderAction==='9'" label="地址：">
           <el-input v-model="order.destination"
                     type="textarea"
                     :rows="2"
                     style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='2'||order.orderAction==='5'" label="Label：" prop="附件">
+          <single-upload v-model="order.attachment"></single-upload>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -360,7 +384,7 @@ import {
   fetchOrderList,
   updateOrder,
   createOrder,
-  deleteOrder, updateItemStatusByOrder, updateItemStatus, updateOrderByUser,
+  deleteOrder, updateItemStatusByOrder, updateOrderByUser, refreshItemStatusByOrder,
 } from '../../../api/warehouse';
 import {
   orderStatusOptions,
@@ -372,6 +396,7 @@ import {
 import FileSaver from 'file-saver'
 import XLSX from 'xlsx'
 import {getAdminByUserSn} from "../../../api/login";
+import SingleUpload from "../../../components/Upload/singleUpload";
 
 const defaultListQuery = {
   pageNum: 1,
@@ -388,11 +413,12 @@ const defaultListQuery = {
 };
 export default {
   name: "orderList",
-  components:{},
+  components:{SingleUpload},
   data() {
     return {
       listQuery: Object.assign({}, defaultListQuery),
       order: Object.assign({}, defaultOrder),
+      currentOrderAction: null,
       isEdit: false,
       listLoading: true,
       list: null,
@@ -486,6 +512,7 @@ export default {
       this.dialogVisible = true;
       this.isEdit = true;
       this.order = Object.assign({},row);
+      this.currentOrderAction = this.order.orderAction;
     },
     handlePayment(row) {
       this.paymentNote = row.note;
@@ -503,19 +530,31 @@ export default {
         type: 'warning'
       }).then(() => {
         if (this.isEdit) {
-          if (this.order.price) {
+          if (this.order.price && this.order.orderStatus !== 2) {
             this.order.orderStatus = 1;
           }
           updateOrder(this.order).then(() => {
-            this.$message({
-              message: '修改成功！',
-              type: 'success'
-            });
-            this.dialogVisible = false;
-            this.getList();
+            if (this.order.orderAction !== this.currentOrderAction) {
+              refreshItemStatusByOrder(this.order).then(() => {
+                this.$message({
+                  message: '修改成功！',
+                  type: 'success'
+                });
+                this.dialogVisible = false;
+                this.getList();
+              });
+            } else {
+              this.$message({
+                message: '修改成功！',
+                type: 'success'
+              });
+              this.dialogVisible = false;
+              this.getList();
+            }
           })
         } else {
             this.order.createTime = new Date();
+            this.order.orderStatus = 4;
             createOrder(this.order).then(response => {
               this.$message({
                 message: '添加成功！',
@@ -616,10 +655,18 @@ export default {
     },
     showDiscordIdByUserSn(userSn) {
       getAdminByUserSn(userSn).then((response) => {
-        this.$alert('用户Discord ID: ' + response.data.discordId, '提示', {
-          confirmButtonText: '确定',
-          type: 'info'
-        })
+        if (response.data) {
+          this.$alert('用户Discord ID: ' + response.data.discordId, '提示', {
+            confirmButtonText: '确定',
+            type: 'info'
+          })
+        } else {
+          this.$message({
+            message: '没有找到对应识别码的用户!',
+            type: 'error',
+            duration:1000
+          });
+        }
       });
     },
     getExportList() {

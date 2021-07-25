@@ -267,7 +267,7 @@
       :title="'订单详情'"
       :visible.sync="orderDialogVisible"
       width="80%">
-      <el-row class="el-row" :gutter="20">
+      <el-row class="el-row-user" :gutter="20">
         <el-col :span="12">
           <div class="un-handle-item">
             <span class="font-title-large">订单操作：</span>
@@ -281,7 +281,7 @@
           </div>
         </el-col>
       </el-row>
-      <el-row class="el-row" :gutter="20">
+      <el-row class="el-row-user" :gutter="20">
         <el-col :span="12">
           <div class="un-handle-item">
             <span class="font-title-large">重量：</span>
@@ -295,7 +295,7 @@
           </div>
         </el-col>
       </el-row>
-      <el-row class="el-row" :gutter="20">
+      <el-row class="el-row-user" :gutter="20">
         <el-col :span="12">
           <div class="un-handle-item">
             <span class="font-title-large">数量：</span>
@@ -309,7 +309,7 @@
           </div>
         </el-col>
       </el-row>
-      <el-row class="el-row" :gutter="20">
+      <el-row class="el-row-user" :gutter="20">
         <el-col :span="12">
           <div class="un-handle-item">
             <span class="font-title-large">支付状态：</span>
@@ -323,7 +323,7 @@
           </div>
         </el-col>
       </el-row>
-      <el-row class="el-row" :gutter="20">
+      <el-row class="el-row-user" :gutter="20">
         <el-col :span="12">
           <div class="un-handle-item">
             <span class="font-title-large">寄存天数：</span>
@@ -337,7 +337,7 @@
           </div>
         </el-col>
       </el-row>
-      <el-row class="el-row" :gutter="20">
+      <el-row class="el-row-user" :gutter="20">
         <el-col :span="12">
           <div class="un-handle-item">
             <span class="font-title-large">附件：</span>
@@ -712,7 +712,7 @@
   margin-bottom: 36px;
   margin-top: 20px;
 }
-.el-row {
+.el-row-user {
   border-bottom: 1px solid #EBEEF5;
 }
 .un-handle-item {

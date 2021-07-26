@@ -729,9 +729,6 @@ import {
             {label:"代卖stockx", value:"8"}
           ];
         }
-        if (this.userInfo.address && this.userInfo.name && this.userInfo.phoneNumber) {
-          this.order.destination = this.userInfo.address + ',' + this.userInfo.name + ',' + this.userInfo.phoneNumber;
-        }
         this.dialogEndStorageVisible = true;
       },
       handleUpdate(row) {

@@ -193,10 +193,12 @@
           </el-select>
         </el-form-item>
         <el-form-item v-if="order.orderAction==='1'||order.orderAction==='3'||order.orderAction==='9'" label="地址：">
-          <el-input v-model="order.destination"
-                    type="textarea"
-                    :rows="2"
-                    style="width: 250px"></el-input>
+          <el-autocomplete
+            v-model="order.destination"
+            :fetch-suggestions="querySearch"
+            placeholder="请输入地址"
+            style="width: 600px">
+          </el-autocomplete>
         </el-form-item>
         <el-form-item v-if="order.orderAction==='2'||order.orderAction==='5'" label="Label：" prop="附件">
           <single-upload v-model="order.attachment"></single-upload>
@@ -230,10 +232,12 @@
           </el-select>
         </el-form-item>
         <el-form-item v-if="order.orderAction==='9'" label="地址：">
-          <el-input v-model="order.destination"
-                    type="textarea"
-                    :rows="2"
-                    style="width: 250px"></el-input>
+          <el-autocomplete
+            v-model="order.destination"
+            :fetch-suggestions="querySearch"
+            placeholder="请输入地址"
+            style="width: 600px">
+          </el-autocomplete>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -356,7 +360,7 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <div class="un-handle-item">
-            <img style="height: 500px" :src="item.photo">
+            <img style="height: 600px" :src="item.photo">
           </div>
         </el-col>
       </el-row>
@@ -387,10 +391,12 @@
           </el-select>
         </el-form-item>
         <el-form-item v-if="order.orderAction==='1'||order.orderAction==='3'||order.orderAction==='9'" label="地址：">
-          <el-input v-model="order.destination"
-                    type="textarea"
-                    :rows="2"
-                    style="width: 250px"></el-input>
+          <el-autocomplete
+            v-model="order.destination"
+            :fetch-suggestions="querySearch"
+            placeholder="请输入地址"
+            style="width: 600px">
+          </el-autocomplete>
         </el-form-item>
         <el-form-item v-if="order.orderAction==='2'||order.orderAction==='5'" label="Label：" prop="附件">
           <single-upload v-model="order.attachment"></single-upload>
@@ -471,6 +477,7 @@
           {label:"国内仓寄存", value:"7"},
           {label:"顺丰直邮", value:"9"}
         ],
+        addressOptions: [],
         actionOptionsAfterStorage: null,
         multipleSelection: [],
         list: null,
@@ -494,6 +501,14 @@
     created() {
       getInfo().then(response => {
         this.userInfo = response.data;
+        for (let key of Object.keys(response.data.addressList)) {
+          this.addressOptions.push(
+            {"value": "收件人: " + response.data.addressList[key].receiverName + ", "
+                + "电话: " + response.data.addressList[key].phoneNumber + ", "
+                + "地址: " + response.data.addressList[key].address
+            }
+          );
+        }
         this.listQuery.userSn = this.$route.query.userSn;
         if (this.$route.query.itemStatuses) {
           this.listQuery.itemStatuses = this.$route.query.itemStatuses;
@@ -514,6 +529,16 @@
     methods: {
       handleResetSearch() {
         this.listQuery = Object.assign({}, defaultListQuery);
+      },
+      querySearch(queryString, cb) {
+        let results = queryString ? this.addressOptions.filter(this.createFilter(queryString)) : this.addressOptions;
+        // 调用 callback 返回建议列表的数据
+        cb(results);
+      },
+      createFilter(queryString) {
+        return (addressOptions) => {
+          return (addressOptions.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+        };
       },
       handleSearchList() {
         this.listQuery.userSn = this.userInfo.userSn;
@@ -539,20 +564,24 @@
       chooseActionByUser(index, row) {
         this.orderActionDialogVisible = true;
         this.order = Object.assign({}, row.orders[0]);
-        if (this.userInfo.address && this.userInfo.name && this.userInfo.phoneNumber) {
-          this.order.destination = this.userInfo.address + ',' + this.userInfo.name + ',' + this.userInfo.phoneNumber;
-        }
         this.item = Object.assign({}, row);
       },
       chooseSecondActionByUser(index, row) {
         this.secondOrderActionDialogVisible = true;
         this.order = Object.assign({}, row.orders[0]);
-        if (this.userInfo.address && this.userInfo.name && this.userInfo.phoneNumber) {
-          this.order.destination = this.userInfo.address + ',' + this.userInfo.name + ',' + this.userInfo.phoneNumber;
-        }
         this.item = Object.assign({}, row);
       },
       chooseActionConfirm() {
+        if (this.order.destination) {
+          if (this.order.destination.split(',').length !== 3) {
+            this.$message({
+              type: 'error',
+              duration: 5000,
+              message: '地址的格式必须为"收件人: XXX, 电话: XXX, 地址: XXX"'
+            });
+            return;
+          }
+        }
         this.$confirm('是否要确认?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -649,12 +678,19 @@
             {label:"顺丰直邮", value:"9"}
           ];
         }
-        if (this.userInfo.address && this.userInfo.name && this.userInfo.phoneNumber) {
-          this.order.destination = this.userInfo.address + ',' + this.userInfo.name + ',' + this.userInfo.phoneNumber;
-        }
         this.dialogEndStorageVisible = true;
       },
       handleChooseNextActionConfirm () {
+        if (this.order.destination) {
+          if (this.order.destination.split(',').length !== 3) {
+            this.$message({
+              type: 'error',
+              duration: 5000,
+              message: '地址的格式必须为"收件人: XXX, 电话: XXX, 地址: XXX"'
+            });
+            return;
+          }
+        }
         this.$confirm('是否要确认?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',

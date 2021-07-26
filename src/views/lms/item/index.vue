@@ -699,10 +699,10 @@ import {
         this.dialogEndStorageVisible = true;
       },
       handleUpdate(row) {
-        this.dialogVisible = true;
         this.isEdit = true;
         this.item = Object.assign({},row);
         this.order = Object.assign({},row.orders[0]);
+        this.dialogVisible = true;
       },
       checkIfPreload() {
         if (!this.item.deliverySn || !this.item.userSn) {

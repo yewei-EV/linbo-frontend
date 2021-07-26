@@ -31,11 +31,41 @@ export function getInfo() {
   })
 }
 
-export function updateAddressInfo(id, params) {
+export function createAddress(data) {
   return request({
-    url: '/admin/updateAddressInfo/' + id,
+    url: '/address/create',
     method: 'post',
-    params: {name: params.name, phoneNumber: params.phoneNumber, address: params.address}
+    data: data
+  })
+}
+
+export function updateAddress(data) {
+  return request({
+    url: '/address/update/' + data.id,
+    method: 'post',
+    data: data
+  })
+}
+
+export function deleteAddress(id) {
+  return request({
+    url: '/address/delete/' + id,
+    method: 'post'
+  })
+}
+
+export function allocateAddress(adminId, addressId) {
+  return request({
+    url: '/admin/allocateAddress/update',
+    method: 'post',
+    data: {'adminId': adminId, 'addressId': addressId}
+  })
+}
+
+export function getAddressList(id) {
+  return request({
+    url: '/admin/address/' + id,
+    method: 'get',
   })
 }
 

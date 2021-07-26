@@ -234,7 +234,8 @@ export function formatLocation(location) {
 }
 
 export var defaultAddressInfo = {
-  name: null,
+  id: null,
+  receiverName: null,
   phoneNumber: null,
   address: null
 }

@@ -69,11 +69,10 @@ import {
   allocateAddress,
   createAddress,
   deleteAddress,
-  getAddressList,
   getInfo,
   updateAddress
 } from "../../../api/login";
-import {defaultAddressInfo, defaultItem, defaultOrder} from "../../../dto/options";
+import {defaultAddressInfo} from "../../../dto/options";
 
 export default {
   name: 'addressEdit',
@@ -155,12 +154,12 @@ export default {
       })
     },
     getUserInfo() {
+      this.listLoading = true;
       getInfo().then(response => {
         this.userInfo = response.data;
         this.userSn = response.data.userSn;
-        getAddressList(this.userInfo.id).then(result => {
-          this.addressList = result.data;
-        })
+        this.addressList = response.data.addressList;
+        this.listLoading = false;
       });
     },
     checkAllFieldsFilled() {

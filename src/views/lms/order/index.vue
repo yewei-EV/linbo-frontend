@@ -152,7 +152,7 @@
 <!--            </el-button>-->
           </template>
         </el-table-column>
-        <el-table-column label="地址" min-width="60" align="center">
+        <el-table-column label="地址" min-width="80" align="center">
           <template slot-scope="scope">
             <el-button size="mini"
                        type="info"
@@ -208,14 +208,8 @@
         <el-table-column label="支付状态" min-width="80" align="center">
           <template slot-scope="scope">{{orderStatusOptions[scope.row.orderStatus].label}}</template>
         </el-table-column>
-        <el-table-column label="收件人" min-width="60" align="center">
-          <template slot-scope="scope">{{scope.row.destination | formatReceiver}}</template>
-        </el-table-column>
-        <el-table-column label="电话" min-width="60" align="center">
-          <template slot-scope="scope">{{scope.row.destination | formatPhone}}</template>
-        </el-table-column>
-        <el-table-column label="地址" min-width="60" align="center">
-          <template slot-scope="scope">{{scope.row.destination | formatAddress}}</template>
+        <el-table-column label="收件地址" min-width="60" align="center">
+          <template slot-scope="scope">{{scope.row.destination}}</template>
         </el-table-column>
         <el-table-column label="付款备注" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.note}}</template>
@@ -394,23 +388,9 @@
       :visible.sync="addressDetailsDialogVisible"
       width="80%">
       <el-row class="el-row-address" :gutter="20">
-        <el-col :span="12">
-          <div class="un-handle-item">
-            <span class="font-title-large">收件人：</span>
-            {{this.receiverName}}
-          </div>
-        </el-col>
-        <el-col :span="12">
-          <div class="un-handle-item">
-            <span class="font-title-large">电话：</span>
-            {{this.phoneNumber}}
-          </div>
-        </el-col>
-      </el-row>
-      <el-row class="el-row-address" :gutter="20">
         <el-col :span="24">
           <div class="un-handle-item">
-            <span class="font-title-large">地址：</span>
+            <span class="font-title-large">收件地址：</span>
             {{this.address}}
           </div>
         </el-col>
@@ -465,8 +445,6 @@ export default {
       listLoading: true,
       list: null,
       total: null,
-      receiverName: null,
-      phoneNumber: null,
       address: null,
       dialogVisible: false,
       paymentDialogVisible: false,
@@ -494,28 +472,7 @@ export default {
     formatDateTime: formatDateTime,
     formatAction: formatAction,
     formatWeightUnit: formatWeightUnit,
-    formatLocation: formatLocation,
-    formatReceiver(value) {
-      if(!value || value.split(',').length !== 3) {
-        return "";
-      }
-      let receiver = value.split(',')[0];
-      return receiver.replace("收件人: ","");
-    },
-    formatPhone(value) {
-      if(!value || value.split(',').length !== 3) {
-        return "";
-      }
-      let phone = value.split(',')[1];
-      return phone.replace("电话: ","");
-    },
-    formatAddress(value) {
-      if(!value || value.split(',').length !== 3) {
-        return "";
-      }
-      let address = value.split(',')[2];
-      return address.replace("地址: ","");
-    },
+    formatLocation: formatLocation
   },
   methods: {
     handleResetSearch() {
@@ -704,17 +661,7 @@ export default {
       });
     },
     showAddressDetails(value) {
-      if(!value || value.split(',').length !== 3) {
-        this.$message({
-          message: '地址格式错误！',
-          duration: 2000,
-          type: 'error'
-        });
-        return;
-      }
-      this.receiverName = value.split(',')[0].replace("收件人: ","");
-      this.phoneNumber = value.split(',')[1].replace("电话: ","");
-      this.address = value.split(',')[2].replace("地址: ","");
+      this.address = value;
       this.addressDetailsDialogVisible = true;
     },
     refreshData() {

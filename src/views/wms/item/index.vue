@@ -29,15 +29,6 @@
           <el-form-item label="物流单号：">
             <el-input v-model="listQuery.note" class="input-width" placeholder="物流单号" clearable></el-input>
           </el-form-item>
-          <el-form-item label="地点：">
-            <el-select v-model="listQuery.location" placeholder="全部" clearable style="width: 177px">
-              <el-option v-for="item in regionOptions"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
           <el-form-item label="存放位置: ">
             <el-input v-model="listQuery.positionInfo" class="input-width" placeholder="存放位置" clearable></el-input>
           </el-form-item>

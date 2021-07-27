@@ -157,7 +157,7 @@
     statusOptions,
     regionOptions,
   } from '../../../dto/options';
-  import {fetchItemCount, fetchOrderCount, fetchSalesCount} from "../../../api/warehouse";
+  import {fetchItemCount, fetchOrderCount} from "../../../api/warehouse";
   import {getInfo} from "../../../api/login";
 
   const DATA_FROM_BACKEND = {
@@ -270,11 +270,11 @@
       fetchStatisticsInfo() {
         let inBoundOption = {
           dayOffset: 0,
-          statusRange: "12,18"
+          statuses: [12,13,14,15,16,17,18]
         }
         let outBoundOption = {
           dayOffset: 0,
-          statusRange: "16,18"
+          statuses: [16,18]
         }
         fetchItemCount(inBoundOption).then((response) => {
           this.inboundItemCount = response.data;
@@ -284,31 +284,31 @@
         });
 
         let duOrderCountOption = {
-          statusRange: "13"
+          statuses: [13]
         };
         fetchItemCount(duOrderCountOption).then((response) => {
           this.duOrderCount = response.data;
         });
         let directDeliveryOption = {
-          statusRange: "14"
+          statuses: [14]
         };
         fetchItemCount(directDeliveryOption).then((response) => {
           this.directDeliveryCount = response.data;
         });
         let localStorageOption = {
-          statusRange: "15"
+          statuses: [15]
         };
         fetchItemCount(localStorageOption).then((response) => {
           this.localStorageCount = response.data;
         });
         let needToPricingOption = {
-          statusRange: "0"
+          statuses: [0]
         };
         fetchOrderCount(needToPricingOption).then((response) => {
           this.needToPricingCount = response.data;
         });
         let needToPayOption = {
-          statusRange: "1"
+          statuses: [1]
         };
         fetchOrderCount(needToPayOption).then((response) => {
           this.needToPayCount = response.data;

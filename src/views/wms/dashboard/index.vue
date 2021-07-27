@@ -4,20 +4,21 @@
       <el-row :gutter="20">
         <el-col :span="60">
           <label>仓库地点：</label>
-          <el-select v-model="warehouseLocation" placeholder="全部" clearable style="width: 177px">
-            <el-option v-for="item in regionOptions"
-                       :key="item.value"
-                       :label="item.label"
-                       :value="item.value">
-            </el-option>
-          </el-select>
-          <el-button
-            style="margin-left: 15px"
-            type="primary"
-            @click="switchWarehouseLocation()"
-            size="large">
-            切换
-          </el-button>
+          {{this.warehouseLocation | formatLocation}}
+<!--          <el-select v-model="warehouseLocation" placeholder="全部" clearable style="width: 177px">-->
+<!--            <el-option v-for="item in regionOptions"-->
+<!--                       :key="item.value"-->
+<!--                       :label="item.label"-->
+<!--                       :value="item.value">-->
+<!--            </el-option>-->
+<!--          </el-select>-->
+<!--          <el-button-->
+<!--            style="margin-left: 15px"-->
+<!--            type="primary"-->
+<!--            @click="switchWarehouseLocation()"-->
+<!--            size="large">-->
+<!--            切换-->
+<!--          </el-button>-->
         </el-col>
       </el-row>
     </div>
@@ -118,6 +119,17 @@
             </div>
           </el-col>
         </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <div class="un-handle-item">
+              <span class="font-medium">待stockx代卖</span>
+              <el-button style="float: right; padding: 0; font-size: 20px"
+                         class="color-danger" type="text" @click="directToSpecificItemList(20)">
+                ({{this.stockxConsignmentCount}})
+              </el-button>
+            </div>
+          </el-col>
+        </el-row>
       </div>
     </div>
     <div class="statistics-layout">
@@ -196,7 +208,7 @@
   import img_home_yesterday_amount from '@/assets/images/home_yesterday_amount.png';
   import {
     statusOptions,
-    regionOptions,
+    regionOptions, formatLocation,
   } from '../../../dto/options';
   import {fetchItemCount, fetchSalesCount} from "../../../api/warehouse";
   import {getInfo} from "../../../api/login";
@@ -237,6 +249,7 @@
         localDeliveryCount: 0,
         localStorageCount: 0,
         stockxOrderCount: 0,
+        stockxConsignmentCount: 0,
         regionOptions: regionOptions,
         statusOptions: statusOptions,
         pickerOptions: {
@@ -307,12 +320,12 @@
         let inBoundOption = {
           dayOffset: 0,
           location: this.warehouseLocation,
-          statusRange: "1,18"
+          statuses: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,20]
         }
         let outBoundOption = {
           dayOffset: 0,
           location: this.warehouseLocation,
-          statusRange: "10,18"
+          statuses: [10,12,13,14,15,16,17,18]
         }
         fetchItemCount(inBoundOption).then((response) => {
           this.inboundItemCount = response.data;
@@ -338,45 +351,52 @@
 
         let totalDeliveryOption = {
           location: this.warehouseLocation,
-          statusRange: "4"
+          statuses: [4]
         };
         fetchItemCount(totalDeliveryOption).then((response) => {
           this.totalDeliveryCount = response.data;
         });
         let directDeliveryOption = {
           location: this.warehouseLocation,
-          statusRange: "5"
+          statuses: [5]
         };
         fetchItemCount(directDeliveryOption).then((response) => {
           this.directDeliveryCount = response.data;
         });
         let refundOption = {
           location: this.warehouseLocation,
-          statusRange: "6"
+          statuses: [6]
         };
         fetchItemCount(refundOption).then((response) => {
           this.refundCount = response.data;
         });
         let localDeliveryOption = {
           location: this.warehouseLocation,
-          statusRange: "7"
+          statuses: [7]
         };
         fetchItemCount(localDeliveryOption).then((response) => {
           this.localDeliveryCount = response.data;
         });
         let localStorageOption = {
           location: this.warehouseLocation,
-          statusRange: "8"
+          statuses: [8]
         };
         fetchItemCount(localStorageOption).then((response) => {
           this.localStorageCount = response.data;
         });
         let stockxOrderOption = {
           location: this.warehouseLocation,
-          statusRange: "9"
+          statuses: [9]
         };
         fetchItemCount(stockxOrderOption).then((response) => {
           this.stockxOrderCount = response.data;
+        });
+        let stockxConsignmentOption = {
+          location: this.warehouseLocation,
+          statuses: [20]
+        };
+        fetchItemCount(stockxConsignmentOption).then((response) => {
+          this.stockxConsignmentCount = response.data;
         });
       },
       switchWarehouseLocation() {
@@ -413,7 +433,10 @@
           this.loading = false
         }, 1000)
       }
-    }
+    },
+    filters: {
+      formatLocation: formatLocation
+    },
   }
 </script>
 

@@ -121,10 +121,10 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <div class="un-handle-item">
-              <span class="font-medium">已预录</span>
+              <span class="font-medium">待确认</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="handleSpecificItemList([0])">
-                ({{this.currentPreloadItemCount}})
+                         class="color-danger" type="text" @click="handleSpecificItemList([1])">
+                ({{this.currentNeedToConfirmItemCount}})
               </el-button>
             </div>
           </el-col>
@@ -132,8 +132,8 @@
             <div class="un-handle-item">
               <span class="font-medium">待打包</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="handleSpecificItemList([1,2])">
-                ({{this.currentInboundItemCount}})
+                         class="color-danger" type="text" @click="handleSpecificItemList([2,12])">
+                ({{this.currentNeedToPackageItemCount}})
               </el-button>
             </div>
           </el-col>
@@ -143,7 +143,7 @@
             <div class="un-handle-item">
               <span class="font-medium">待付款</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="handleSpecificItemList([2,12])">
+                         class="color-danger" type="text" @click="handleSpecificItemList([3,12])">
                 ({{this.currentNeedToPayItemCount}})
               </el-button>
             </div>
@@ -152,7 +152,7 @@
             <div class="un-handle-item">
               <span class="font-medium">处理中</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="handleSpecificItemList([4,5,6,7,8,9,13,14,15])">
+                         class="color-danger" type="text" @click="handleSpecificItemList([4,5,6,7,8,9,13,14,15,20])">
                 ({{this.currentProcessingItemCount}})
               </el-button>
             </div>
@@ -163,7 +163,7 @@
             <div class="un-handle-item">
               <span class="font-medium">已发货</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="handleSpecificItemList([10,16])">
+                         class="color-danger" type="text" @click="handleSpecificItemList([10,16,18])">
                 ({{this.currentSentItemCount}})
               </el-button>
             </div>
@@ -290,8 +290,8 @@ export default {
       todayOutboundItemCount: 0,
       totalInboundItemCount: 0,
       totalOutboundItemCount: 0,
-      currentPreloadItemCount: 0,
-      currentInboundItemCount: 0,
+      currentNeedToConfirmItemCount: 0,
+      currentNeedToPackageItemCount: 0,
       currentNeedToPayItemCount: 0,
       currentProcessingItemCount: 0,
       currentSentItemCount: 0,
@@ -382,12 +382,12 @@ export default {
       let inBoundOption = {
         dayOffset: 0,
         userSn: this.userInfo.userSn,
-        statusRange: "1,18"
+        statuses: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,20]
       }
       let outBoundOption = {
         dayOffset: 0,
         userSn: this.userInfo.userSn,
-        statusRange: "10,18"
+        statuses: [10,12,13,14,15,16,17,18]
       }
       fetchItemCount(inBoundOption).then((response) => {
         this.todayInboundItemCount = response.data;
@@ -398,12 +398,12 @@ export default {
       let totalInBoundOption = {
         dayOffset: 7,
         userSn: this.userInfo.userSn,
-        statusRange: "1,18"
+        statuses: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,20]
       };
       let totalOutBoundOption = {
         dayOffset: 7,
         userSn: this.userInfo.userSn,
-        statusRange: "10,18"
+        statuses: [10,12,13,14,15,16,17,18]
       };
       fetchItemCount(totalInBoundOption).then((response) => {
         this.totalInboundItemCount = response.data;
@@ -413,53 +413,47 @@ export default {
       });
 
       // user packages statistics info
-      let preloadOption = {
+      let alreadyInboundOption = {
         userSn: this.userInfo.userSn,
-        statusRange: "0"
+        statuses: [1]
       };
-      fetchItemCount(preloadOption).then((response) => {
-        this.currentPreloadItemCount = response.data;
+      fetchItemCount(alreadyInboundOption).then((response) => {
+        this.currentNeedToConfirmItemCount = response.data;
       });
       let currentInboundOption = {
         userSn: this.userInfo.userSn,
-        statusRange: "0"
+        statuses: [2,12]
       };
       fetchItemCount(currentInboundOption).then((response) => {
-        this.currentInboundItemCount = response.data;
+        this.currentNeedToPackageItemCount = response.data;
       });
       let needToPayOption = {
         userSn: this.userInfo.userSn,
-        statusRange: "3"
+        statuses: [3,12]
       };
       fetchItemCount(needToPayOption).then((response) => {
         this.currentNeedToPayItemCount = response.data;
       });
       let processingOption = {
         userSn: this.userInfo.userSn,
-        statusRange: "3,9"
+        statuses: [4,5,6,7,8,9,13,14,15,20]
       };
       fetchItemCount(processingOption).then((response) => {
         this.currentProcessingItemCount = response.data;
       });
       let sentOption = {
         userSn: this.userInfo.userSn,
-        statusRange: "10,18"
+        statuses: [10,16,18]
       };
       fetchItemCount(sentOption).then((response) => {
         this.currentSentItemCount = response.data;
       });
       let storageOption = {
         userSn: this.userInfo.userSn,
-        statusRange: "11"
-      };
-      let chinaStorageOption = {
-        userSn: this.userInfo.userSn,
-        statusRange: "17"
+        statuses: [11,17]
       };
       fetchItemCount(storageOption).then((response1) => {
-        fetchItemCount(chinaStorageOption).then((response2) => {
-          this.currentStorageItemCount = response1.data + response2.data;
-        });
+        this.currentStorageItemCount = response1.data;
       });
 
     },

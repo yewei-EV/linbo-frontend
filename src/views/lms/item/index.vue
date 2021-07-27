@@ -596,6 +596,10 @@ import {
       }
     },
     created() {
+      this.listQuery.itemStatus = this.$route.query.itemStatus;
+      this.listQuery.id = this.$route.query.id;
+      this.listQuery.deliverySn = this.$route.query.deliverySn;
+      this.listQuery.userSn = this.$route.query.userSn;
       this.getList();
       this.getUserInfo();
     },

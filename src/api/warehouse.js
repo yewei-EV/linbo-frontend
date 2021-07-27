@@ -125,19 +125,19 @@ export function deleteOrder(id) {
   })
 }
 
-export function fetchItemCount(params) {
+export function fetchItemCount(data) {
   return request({
     url: '/item/itemCount',
-    method: 'get',
-    params: params
+    method: 'post',
+    data: data
   })
 }
 
-export function fetchOrderCount(params) {
+export function fetchOrderCount(data) {
   return request({
     url: '/order/orderCount',
-    method: 'get',
-    params: params
+    method: 'post',
+    data: data
   })
 }
 

@@ -572,16 +572,6 @@
         this.item = Object.assign({}, row);
       },
       chooseActionConfirm() {
-        if (this.order.destination) {
-          if (this.order.destination.split(',').length !== 3) {
-            this.$message({
-              type: 'error',
-              duration: 5000,
-              message: '地址的格式必须为"收件人: XXX, 电话: XXX, 地址: XXX"'
-            });
-            return;
-          }
-        }
         this.$confirm('是否要确认?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -681,16 +671,6 @@
         this.dialogEndStorageVisible = true;
       },
       handleChooseNextActionConfirm () {
-        if (this.order.destination) {
-          if (this.order.destination.split(',').length !== 3) {
-            this.$message({
-              type: 'error',
-              duration: 5000,
-              message: '地址的格式必须为"收件人: XXX, 电话: XXX, 地址: XXX"'
-            });
-            return;
-          }
-        }
         this.$confirm('是否要确认?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',

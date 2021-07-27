@@ -8,9 +8,9 @@ export function fetchItemList(params) {
   })
 }
 
-export function fetchPreciseItemList(params) {
+export function checkIfItemExist(params) {
   return request({
-    url: '/item/listPrecise',
+    url: '/item/checkIfExist',
     method: 'get',
     params: params
   })

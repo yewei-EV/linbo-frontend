@@ -522,9 +522,8 @@ import {
   fetchItemOrders,
   updateItem,
   updateItemStatus,
-  fetchPreciseItemList,
   createItem,
-  deleteItem, updateOrderByUser, updateItemStatusByOrder
+  deleteItem, updateOrderByUser, updateItemStatusByOrder, checkIfItemExist
 } from '../../../api/warehouse';
 
   const defaultListQuery = {
@@ -705,22 +704,20 @@ import {
         this.dialogVisible = true;
       },
       checkIfPreload() {
-        if (!this.item.deliverySn || !this.item.userSn) {
+        if (!this.item.deliverySn || !this.item.userSn || !this.item.location) {
           this.$message({
             type: 'error',
-            message: '请填写运单号和识别码!'
+            message: '运单号/识别码/入库地点为必填项!'
           });
           return;
         }
         let query = {
-          pageNum: 1,
-          pageSize: 10,
           deliverySn: this.item.deliverySn,
           userSn: this.item.userSn,
           location: this.item.location,
         };
-        fetchPreciseItemList(query).then(response => {
-          if (response.data.list.length > 0) {
+        checkIfItemExist(query).then(response => {
+          if (response.data) {
             this.dialogVisible = false;
             this.listQuery.deliverySn = query.deliverySn;
             this.listQuery.userSn = query.userSn;
@@ -776,28 +773,53 @@ import {
               this.getList();
             });
           } else if (this.isEdit) {
-            updateItem(this.item).then(() => {
-              if (this.item.userSn !== this.order.userSn) {
-                this.order.userSn = this.item.userSn;
-                updateOrder(this.order).then(() => {
-                  this.$message({
-                    message: '修改成功！',
-                    type: 'success'
-                  });
-                  this.dialogVisible = false;
-                  this.isEdit = false;
-                  this.getList();
-                })
-              } else {
-                this.$message({
-                  message: '修改成功！',
-                  type: 'success'
-                });
+            if (!this.item.deliverySn || !this.item.userSn || !this.item.location) {
+              this.$message({
+                type: 'error',
+                message: '运单号/识别码/入库地点为必填项!'
+              });
+              return;
+            }
+            let query = {
+              deliverySn: this.item.deliverySn,
+              userSn: this.item.userSn,
+              location: this.item.location,
+            };
+            checkIfItemExist(query).then(response => {
+              if (response.data) {
                 this.dialogVisible = false;
-                this.isEdit = false;
-                this.getList();
+                this.listQuery.deliverySn = query.deliverySn;
+                this.listQuery.userSn = query.userSn;
+                this.handleSearchList();
+                this.$message({
+                  type: 'warning',
+                  message: '货物已登记!'
+                });
+              } else {
+                updateItem(this.item).then(() => {
+                  if (this.item.userSn !== this.order.userSn) {
+                    this.order.userSn = this.item.userSn;
+                    updateOrder(this.order).then(() => {
+                      this.$message({
+                        message: '修改成功！',
+                        type: 'success'
+                      });
+                      this.dialogVisible = false;
+                      this.isEdit = false;
+                      this.getList();
+                    })
+                  } else {
+                    this.$message({
+                      message: '修改成功！',
+                      type: 'success'
+                    });
+                    this.dialogVisible = false;
+                    this.isEdit = false;
+                    this.getList();
+                  }
+                });
               }
-            })
+            });
           } else {
             this.item.createTime = new Date();
             // find if item is preloaded or not
@@ -809,13 +831,12 @@ import {
               return;
             }
             let query = {
-              pageNum: 1,
-              pageSize: 10,
               deliverySn: this.item.deliverySn,
               userSn: this.item.userSn,
+              location: this.item.location
             };
-            fetchPreciseItemList(query).then(response => {
-              if (response.data.list.length > 0) {
+            checkIfItemExist(query).then(response => {
+              if (response.data) {
                 this.dialogVisible = false;
                 this.listQuery.deliverySn = query.deliverySn;
                 this.listQuery.userSn = query.userSn;

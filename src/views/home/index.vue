@@ -104,7 +104,7 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <div style="text-align: center;">
-            <el-button size="large" class="btn-add" type="success" @click="directToPreloadItemList()" style="margin-left: 20px">预登记包裹</el-button>
+            <el-button size="large" class="btn-add" type="success" @click="directToItemList()" style="margin-left: 20px">查看包裹列表</el-button>
           </div>
         </el-col>
         <el-col :span="12">
@@ -351,9 +351,9 @@ export default {
     this.getData();
   },
   methods:{
-    directToPreloadItemList() {
+    directToItemList() {
       this.$router.push({
-        path: '/user/preload'
+        path: '/user/item'
       })
     },
     directToUnknownItemList() {

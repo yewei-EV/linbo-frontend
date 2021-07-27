@@ -107,7 +107,7 @@
             </el-button>
           </template>
         </el-table-column>
-        <el-table-column label="操作" min-width="120" align="center" v-if="this.listQuery.userSn">
+        <el-table-column label="操作" min-width="120" align="center" v-if="this.listQuery.userSn !== '无识别码'">
           <template slot-scope="scope">
             <el-button size="mini"
                        type="success"

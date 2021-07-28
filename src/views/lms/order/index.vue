@@ -413,7 +413,7 @@ import {
   weightUnitOptions,
   formatDateTime,
   formatAction,
-  defaultOrder, actionOptions, formatWeightUnit, formatLocation, regionOptions
+  defaultOrder, actionOptions, formatWeightUnit, formatLocation, regionOptions, getActionOptionsByLocation
 } from '../../../dto/options';
 import FileSaver from 'file-saver'
 import XLSX from 'xlsx'
@@ -544,6 +544,7 @@ export default {
       this.paymentDialogVisible = true;
     },
     chooseActionByUser(index, row) {
+      this.actionOptions = getActionOptionsByLocation(row.location);
       this.orderActionDialogVisible = true;
       this.order = Object.assign({}, row);
     },

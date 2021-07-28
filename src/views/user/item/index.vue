@@ -410,7 +410,7 @@
   </div>
 </template>
 <script>
-  import {getInfo,getRoleByAdmin} from "../../../api/login";
+  import {getInfo} from "../../../api/login";
   import SingleUpload from '../../../components/Upload/singleUpload'
   import {
     orderStatusOptions,
@@ -419,18 +419,19 @@
     weightUnitOptions,
     defaultItem,
     defaultOrder,
-    actionOptions,
     formatDateTime,
     formatAction,
     formatWeightUnit,
-    formatOrderStatus, operateOptions, formatLocation,
+    formatOrderStatus,
+    operateOptions,
+    formatLocation,
+    getActionOptionsByLocation,
+    getActionOptionsAfterStorageByLocation,
   } from '../../../dto/options';
   import {
-    allocOrder,
-    createOrder,
     updateOrderByUser,
     fetchItemList,
-    fetchItemOrders, updateItemStatus, updateItemStatusByOrder, endStorageByOrder, refreshItemStatusByOrder,
+    fetchItemOrders, updateItemStatus, refreshItemStatusByOrder,
   } from '../../../api/warehouse';
 
   const defaultListQuery = {
@@ -562,6 +563,7 @@
         this.order = Object.assign({},row.orders[0]);
       },
       chooseActionByUser(index, row) {
+        this.actionOptions = getActionOptionsByLocation(row.location);
         this.orderActionDialogVisible = true;
         this.order = Object.assign({}, row.orders[0]);
         this.item = Object.assign({}, row);
@@ -653,14 +655,7 @@
         this.order = this.item.orders[0];
         this.order.orderAction = '-1';
         if (this.item.itemStatus === 11) {
-          this.actionOptionsAfterStorage = [
-            {label:"待用户选择", value:"-1"},
-            {label:"集运linbo国内仓", value:"0"},
-            {label:"直邮国内用户手上", value:"1"},
-            {label:"转寄海外其他地址", value:"3"},
-            {label:"转寄stockx", value:"5"},
-            {label:"代卖stockx", value:"8"}
-          ];
+          this.actionOptionsAfterStorage = getActionOptionsAfterStorageByLocation(row.location);
         } else if (this.item.itemStatus === 17) {
           this.actionOptionsAfterStorage = [
             {label:"待用户选择", value:"-1"},

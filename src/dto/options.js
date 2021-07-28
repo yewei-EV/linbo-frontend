@@ -297,6 +297,59 @@ export const actionOptions = [
   {label:"顺丰直邮", value:"9"}
 ]
 
+export function getActionOptionsByLocation(location) {
+  if (location === 'US1') {
+    return [
+      {label:"待用户选择", value:"-1"},
+      {label:"集运linbo国内仓", value:"0"},
+      {label:"直邮国内用户手上", value:"1"},
+      {label:"退货", value:"2"},
+      {label:"转寄海外其他地址", value:"3"},
+      {label:"海外寄存", value:"4"},
+      {label:"转寄stockx", value:"5"},
+      // {label:"代卖stockx", value:"8"}
+    ];
+  } else if (location === 'CA' || location === 'AU') {
+    return [
+      {label:"待用户选择", value:"-1"},
+      {label:"转寄stockx", value:"5"}
+    ];
+  } else if (location === 'EN') {
+    return [
+      {label:"待用户选择", value:"-1"},
+      {label:"集运linbo国内仓", value:"0"}
+    ];
+  } else {
+    return [
+      {label:"待用户选择", value:"-1"},
+      {label:"集运linbo国内仓", value:"0"},
+      {label:"退货", value:"2"},
+      {label:"转寄海外其他地址", value:"3"},
+      {label:"海外寄存", value:"4"},
+      {label:"转寄stockx", value:"5"},
+    ];
+  }
+}
+
+export function getActionOptionsAfterStorageByLocation(location) {
+  if (location === 'US1') {
+    return [
+      {label:"待用户选择", value:"-1"},
+      {label:"集运linbo国内仓", value:"0"},
+      {label:"直邮国内用户手上", value:"1"},
+      {label:"转寄海外其他地址", value:"3"},
+      {label:"转寄stockx", value:"5"},
+    ];
+  } else {
+    return [
+      {label:"待用户选择", value:"-1"},
+      {label:"集运linbo国内仓", value:"0"},
+      {label:"转寄海外其他地址", value:"3"},
+      {label:"转寄stockx", value:"5"},
+    ];
+  }
+}
+
 export const sizeOptions = [
   {label:"US4", value:"US4"},
   {label:"US4.5", value:"US4.5"},

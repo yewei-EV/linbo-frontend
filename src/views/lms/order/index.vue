@@ -38,6 +38,15 @@
           <el-form-item label="识别码：">
             <el-input v-model="listQuery.userSn" class="input-width" placeholder="识别码" clearable></el-input>
           </el-form-item>
+          <el-form-item label="地点：">
+            <el-select v-model="listQuery.location" placeholder="全部" clearable style="width: 177px">
+              <el-option v-for="region in regionOptions"
+                         :key="region.value"
+                         :label="region.label"
+                         :value="region.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
           <el-form-item label="创建时间：">
             <el-date-picker
               style="width: 177px"
@@ -428,6 +437,7 @@ const defaultListQuery = {
   deliverySn: null,
   userSn: null,
   destination: null,
+  location: null,
   note: null,
   createTime: null,
   orderStatus: null,

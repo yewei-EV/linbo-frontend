@@ -18,10 +18,16 @@
           重置
         </el-button>
       </div>
-      <div style="margin-top: 15px">
+      <div style="margin-top: 40px">
         <el-form :inline="true" :model="listQuery" size="small" label-width="140px">
-          <el-form-item label="输入搜索：">
-            <el-input v-model="listQuery.keyword" class="input-width" placeholder="帐号/姓名" clearable></el-input>
+          <el-form-item label="用户名：">
+            <el-input v-model="listQuery.keyword" class="input-width" placeholder="帐号名" clearable></el-input>
+          </el-form-item>
+          <el-form-item label="识别码：">
+            <el-input v-model="listQuery.userSn" class="input-width" placeholder="识别码" clearable></el-input>
+          </el-form-item>
+          <el-form-item label="Discord ID：">
+            <el-input v-model="listQuery.discordId" class="input-width" placeholder="Discord Id" clearable></el-input>
           </el-form-item>
         </el-form>
       </div>
@@ -36,25 +42,22 @@
                 :data="list"
                 style="width: 100%;"
                 v-loading="listLoading" border>
-        <el-table-column label="编号" width="100" align="center">
+        <el-table-column label="编号" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.id}}</template>
         </el-table-column>
-        <el-table-column label="帐号" align="center">
+        <el-table-column label="帐号" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.username}}</template>
         </el-table-column>
-        <el-table-column label="姓名" align="center">
+        <el-table-column label="识别码" min-width="100" align="center">
+          <template slot-scope="scope">{{scope.row.userSn}}</template>
+        </el-table-column>
+        <el-table-column label="Discord ID" min-width="120" align="center">
           <template slot-scope="scope">{{scope.row.discordId}}</template>
         </el-table-column>
-        <el-table-column label="邮箱" align="center">
+        <el-table-column label="邮箱" min-width="120" align="center">
           <template slot-scope="scope">{{scope.row.email}}</template>
         </el-table-column>
-        <el-table-column label="添加时间" width="160" align="center">
-          <template slot-scope="scope">{{scope.row.createTime | formatDateTime}}</template>
-        </el-table-column>
-        <el-table-column label="最后登录" width="160" align="center">
-          <template slot-scope="scope">{{scope.row.loginTime | formatDateTime}}</template>
-        </el-table-column>
-        <el-table-column label="是否启用" width="140" align="center">
+        <el-table-column label="是否启用" min-width="60" align="center">
           <template slot-scope="scope">
             <el-switch
               @change="handleStatusChange(scope.$index, scope.row)"
@@ -64,7 +67,7 @@
             </el-switch>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="180" align="center">
+        <el-table-column label="操作" min-width="120" align="center">
           <template slot-scope="scope">
             <el-button size="mini"
                        type="text"
@@ -105,7 +108,7 @@
         <el-form-item label="帐号：">
           <el-input v-model="admin.username" style="width: 250px"></el-input>
         </el-form-item>
-        <el-form-item label="姓名：">
+        <el-form-item label="Discord Id：">
           <el-input v-model="admin.discordId" style="width: 250px"></el-input>
         </el-form-item>
         <el-form-item label="邮箱：">
@@ -159,7 +162,9 @@
   const defaultListQuery = {
     pageNum: 1,
     pageSize: 10,
-    keyword: null
+    keyword: null,
+    userSn: null,
+    discordId: null
   };
   const defaultAdmin = {
     id: null,
@@ -168,6 +173,7 @@
     discordId: null,
     email: null,
     note: null,
+    userSn: null,
     status: 1
   };
   export default {
@@ -269,7 +275,7 @@
           type: 'warning'
         }).then(() => {
           if (this.isEdit) {
-            updateAdmin(this.admin.id,this.admin).then(response => {
+            updateAdmin(this.admin.id, this.admin).then(response => {
               this.$message({
                 message: '修改成功！',
                 type: 'success'

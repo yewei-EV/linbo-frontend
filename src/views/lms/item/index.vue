@@ -842,11 +842,6 @@ import {
                   message: '货物已登记!'
                 });
               } else {
-                if (!this.item.userSn) {
-                  this.item.itemStatus = 19;
-                } else {
-                  this.item.itemStatus = 1;
-                }
                 this.order.createTime = new Date();
                 this.order.userSn = this.item.userSn;
                 this.order.deliverySn = this.item.deliverySn;
@@ -1028,9 +1023,9 @@ import {
           /* generate workbook object from table */
           let wb = XLSX.utils.table_to_book(document.querySelector('#exportTable'))
           /* get binary string as output */
-          let wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'array' })
+          let wbout = XLSX.write(wb, { bookType: 'csv', bookSST: true, type: 'array' })
           try {
-            FileSaver.saveAs(new Blob([wbout], { type: 'application/octet-stream' }), excelName + '.xlsx')
+            FileSaver.saveAs(new Blob([wbout], { type: 'application/octet-stream' }), excelName + '.csv')
           } catch (e) { if (typeof console !== 'undefined') console.log(e, wbout) }
           return wbout
         } catch (e) {

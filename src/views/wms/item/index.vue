@@ -869,6 +869,7 @@ import {
                   message: '货物已登记!'
                 });
               } else {
+                this.item.itemStatus = 1;
                 this.order.createTime = new Date();
                 this.order.userSn = this.item.userSn;
                 this.order.deliverySn = this.item.deliverySn;
@@ -1115,7 +1116,7 @@ import {
       exportExcelData(excelName) {
         try {
           /* generate workbook object from table */
-          let wb = XLSX.utils.table_to_book(document.querySelector('#exportTable'))
+          let wb = XLSX.utils.table_to_book(document.querySelector('#exportTable'), { raw: true })
           /* get binary string as output */
           let wbout = XLSX.write(wb, { bookType: 'csv', bookSST: true, type: 'array' })
           try {

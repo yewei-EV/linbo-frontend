@@ -681,7 +681,7 @@ export default {
     exportExcelData(excelName) {
       try {
         /* generate workbook object from table */
-        let wb = XLSX.utils.table_to_book(document.querySelector('#exportTable'))
+        let wb = XLSX.utils.table_to_book(document.querySelector('#exportTable'), { raw: true })
         /* get binary string as output */
         let wbout = XLSX.write(wb, { bookType: 'csv', bookSST: true, type: 'array' })
         try {

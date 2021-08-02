@@ -138,7 +138,7 @@
         </el-table-column>
       </el-table>
     </div>
-    <div class="batch-operate-container" style="visibility: hidden;">
+    <div class="batch-operate-container">
       <el-select
         size="small"
         v-model="operateType" placeholder="批量操作">
@@ -152,7 +152,7 @@
       <el-button
         style="margin-left: 20px"
         class="search-button"
-        @click=""
+        @click="handleBatchOperate()"
         type="primary"
         size="small">
         确定
@@ -193,12 +193,19 @@
           </el-select>
         </el-form-item>
         <el-form-item v-if="order.orderAction==='1'||order.orderAction==='3'||order.orderAction==='9'" label="地址：">
-          <el-autocomplete
-            v-model="order.destination"
-            :fetch-suggestions="querySearch"
-            placeholder="请输入地址"
-            style="width: 600px">
-          </el-autocomplete>
+<!--          <el-autocomplete-->
+<!--            v-model="order.destination"-->
+<!--            :fetch-suggestions="querySearch"-->
+<!--            placeholder="请输入地址"-->
+<!--            style="width: 600px">-->
+<!--          </el-autocomplete>-->
+          <el-select no-data-text="请至地址管理中添加地址" v-model="order.destination" clearable style="width: 600px">
+            <el-option v-for="address in addressOptions"
+                       :key="address.value"
+                       :label="address.label"
+                       :value="address.value">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item v-if="order.orderAction==='2'||order.orderAction==='5'" label="Label：" prop="附件">
           <single-upload v-model="order.attachment"></single-upload>
@@ -207,6 +214,32 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="orderActionDialogVisible = false" size="small">取 消</el-button>
         <el-button type="primary" @click="chooseActionConfirm()" size="small">确 定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
+      :visible.sync="directDeliveryDialogVisible"
+      width="80%">
+      <el-form :inline="true" label-width="180px" size="small">
+        <div class="optionalDivider">
+          <div class="tableTitle">
+            <span class="midText">
+              直邮包裹数量: {{this.multipleSelection.length===0?1:this.multipleSelection.length}}
+            </span>
+          </div>
+        </div>
+        <el-form-item label="地址：">
+          <el-select no-data-text="请至地址管理中添加地址" v-model="directDestination" clearable style="width: 600px">
+            <el-option v-for="address in addressOptions"
+                       :key="address.value"
+                       :label="address.label"
+                       :value="address.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="directDeliveryDialogVisible = false" size="small">取 消</el-button>
+        <el-button type="primary" @click="directDeliveryConfirm()" size="small">确 定</el-button>
       </span>
     </el-dialog>
     <el-dialog
@@ -232,12 +265,13 @@
           </el-select>
         </el-form-item>
         <el-form-item v-if="order.orderAction==='9'" label="地址：">
-          <el-autocomplete
-            v-model="order.destination"
-            :fetch-suggestions="querySearch"
-            placeholder="请输入地址"
-            style="width: 600px">
-          </el-autocomplete>
+          <el-select no-data-text="请至地址管理中添加地址" v-model="order.destination" clearable style="width: 600px">
+            <el-option v-for="address in addressOptions"
+                       :key="address.value"
+                       :label="address.label"
+                       :value="address.value">
+            </el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -259,7 +293,7 @@
           </div>
         </div>
         <el-form-item label="Label：" prop="附件">
-          <single-upload v-model="order.attachment"></single-upload>
+          <pdf-upload v-model="order.attachment"></pdf-upload>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -344,8 +378,10 @@
       <el-row class="el-row-user" :gutter="20">
         <el-col :span="12">
           <div class="un-handle-item">
-            <span class="font-title-large">附件：</span>
-            <img style="width: 250px" :src="order.attachment">
+            <span class="font-title-large">Label：</span>
+            <a :href="order.attachment" target="_blank" download>
+              <el-button v-if="order.attachment" size="small">下载</el-button>
+            </a>
           </div>
         </el-col>
       </el-row>
@@ -391,12 +427,13 @@
           </el-select>
         </el-form-item>
         <el-form-item v-if="order.orderAction==='1'||order.orderAction==='3'||order.orderAction==='9'" label="地址：">
-          <el-autocomplete
-            v-model="order.destination"
-            :fetch-suggestions="querySearch"
-            placeholder="请输入地址"
-            style="width: 600px">
-          </el-autocomplete>
+          <el-select no-data-text="请至地址管理中添加地址" v-model="order.destination" clearable style="width: 600px">
+            <el-option v-for="address in addressOptions"
+                       :key="address.value"
+                       :label="address.label"
+                       :value="address.value">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item v-if="order.orderAction==='2'||order.orderAction==='5'" label="Label：" prop="附件">
           <single-upload v-model="order.attachment"></single-upload>
@@ -412,6 +449,7 @@
 <script>
   import {getInfo} from "../../../api/login";
   import SingleUpload from '../../../components/Upload/singleUpload'
+  import PdfUpload from '../../../components/Upload/pdfUpload'
   import {
     orderStatusOptions,
     statusOptions,
@@ -452,7 +490,7 @@
   };
   export default {
     name: 'itemList',
-    components:{SingleUpload},
+    components:{SingleUpload,PdfUpload},
     data() {
       return {
         processButton: '完成',
@@ -492,11 +530,18 @@
         allocGroup: Object.assign({}, defaultAllocGroup),
         isEdit: false,
         orderActionDialogVisible: false,
+        directDeliveryDialogVisible: false,
         secondOrderActionDialogVisible: false,
         orderAttachmentDialogVisible: false,
         orderDialogVisible: false,
         operateType: null,
-        operateOptions: operateOptions
+        directDestination: null,
+        operateOptions: [
+          {
+            label: "批量选择直邮",
+            value: 1
+          }
+        ]
       }
     },
     created() {
@@ -590,6 +635,28 @@
               this.getList();
             })
           });
+        })
+      },
+      directDeliveryConfirm() {
+        this.$confirm('是否要确认?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          for (let item of this.multipleSelection) {
+            item.orders[0].orderAction = "1";
+            item.orders[0].destination = this.directDestination;
+            updateItemStatus(item, "1").then(() => {
+              updateOrderByUser(item.orders[0]).then(() => {
+                this.$message({
+                  message: '选择成功！',
+                  type: 'success'
+                });
+                this.directDeliveryDialogVisible = false;
+                this.getList();
+              })
+            });
+          }
         })
       },
       uploadAttachmentConfirm() {
@@ -696,6 +763,35 @@
             return "上传Label";
           case "5":
             return "上传Label";
+        }
+      },
+      handleBatchOperate(){
+        if(this.multipleSelection==null||this.multipleSelection.length<1){
+          this.$message({
+            message: '请选择要操作的包裹',
+            type: 'warning',
+            duration: 1000
+          });
+          return;
+        } else if(this.multipleSelection.length<3){
+          this.$message({
+            message: '至少三件包裹才能选择直邮',
+            type: 'warning',
+            duration: 5000
+          });
+          return;
+        }
+        if (this.multipleSelection.map(value => value.orders[0].orderAction).every(value => value === "-1")) {
+          if(this.operateType===1){
+            //批量选择操作
+            this.directDeliveryDialogVisible = true;
+          }
+        } else {
+          this.$message({
+            message: '请选择未处理的包裹',
+            type: 'error',
+            duration: 3000
+          });
         }
       },
     },

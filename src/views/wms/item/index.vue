@@ -383,9 +383,9 @@
           </el-select>
         </el-form-item>
         <el-form-item label="Label：">
-          <el-button v-if="order.attachment" size="small">
-            <a :href="order.attachment" target="_blank" download>下载</a>
-          </el-button>
+          <a :href="order.attachment" target="_blank" download>
+            <el-button v-if="order.attachment" size="small">下载</el-button>
+          </a>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -1011,7 +1011,7 @@ import {
       handleBatchOperate() {
         if(this.multipleSelection==null||this.multipleSelection.length<1){
           this.$message({
-            message: '请选择要操作的订单',
+            message: '请选择要操作的包裹',
             type: 'warning',
             duration: 1000
           });

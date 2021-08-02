@@ -503,7 +503,7 @@ export default {
     handleBatchOperate(){
       if(this.multipleSelection==null||this.multipleSelection.length<1){
         this.$message({
-          message: '请选择要操作的订单',
+          message: '请选择要操作的包裹',
           type: 'warning',
           duration: 1000
         });

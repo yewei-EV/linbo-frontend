@@ -5,7 +5,7 @@
       drag
       :data="useOss?dataObj:null"
       list-type="file"
-      accept=".jpg, .png"
+      accept=".png"
       :multiple="false" :show-file-list="showFileList"
       :file-list="fileList"
       :before-upload="beforeUpload"
@@ -13,7 +13,7 @@
       :on-success="handleUploadSuccess"
       :on-preview="handlePreview">
       <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-      <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过10MB</div>
+      <div slot="tip" class="el-upload__tip">只能上传pdf文件，且不超过10MB</div>
     </el-upload>
     <el-dialog :visible.sync="dialogVisible">
       <img width="100%" :src="fileList[0].url" alt="">
@@ -24,7 +24,7 @@
   import {policy} from '@/api/oss'
 
   export default {
-    name: 'singleUpload',
+    name: 'pdfUpload',
     props: {
       value: String
     },

@@ -503,7 +503,6 @@
         actionOptions:  [
           {label:"待用户选择", value:"-1"},
           {label:"集运linbo国内仓", value:"0"},
-          {label:"直邮国内用户手上", value:"1"},
           {label:"退货", value:"2"},
           {label:"转寄海外其他地址", value:"3"},
           {label:"海外寄存", value:"4"},
@@ -540,6 +539,10 @@
           {
             label: "批量选择直邮",
             value: 1
+          },
+          {
+            label: "批量结束寄存并直邮",
+            value: 2
           }
         ]
       }
@@ -643,19 +646,38 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          for (let item of this.multipleSelection) {
-            item.orders[0].orderAction = "1";
-            item.orders[0].destination = this.directDestination;
-            updateItemStatus(item, "1").then(() => {
+          if (this.operateType===1) {
+            for (let item of this.multipleSelection) {
+              item.orders[0].orderAction = "1";
+              item.orders[0].destination = this.directDestination;
+              updateItemStatus(item, "1").then(() => {
+                updateOrderByUser(item.orders[0]).then(() => {
+                  this.$message({
+                    message: '选择成功！',
+                    type: 'success'
+                  });
+                  this.directDeliveryDialogVisible = false;
+                  this.getList();
+                })
+              });
+            }
+          } else if (this.operateType===2) {
+            for (let item of this.multipleSelection) {
+              item.orders[0].orderAction = "1";
+              item.orders[0].destination = this.directDestination;
+              item.orders[0].storageDays = Math.ceil((Date.now() - Date.parse(item.createTime)) / (1000 * 3600 * 24));
+              item.orders[0].storageLocation = item.itemStatus === 11?item.location:"CN";
               updateOrderByUser(item.orders[0]).then(() => {
-                this.$message({
-                  message: '选择成功！',
-                  type: 'success'
+                refreshItemStatusByOrder(item.orders[0]).then(() => {
+                  this.$message({
+                    message: '修改成功！',
+                    type: 'success'
+                  });
+                  this.directDeliveryDialogVisible = false;
+                  this.getList();
                 });
-                this.directDeliveryDialogVisible = false;
-                this.getList();
-              })
-            });
+              });
+            }
           }
         })
       },
@@ -756,9 +778,10 @@
         if (currentAction === "-1" && currentStatus === 12) {
           return "选择操作(国内仓)";
         }
+        if (currentAction === "-1" && currentStatus !== 11) {
+          return "选择操作";
+        }
         switch (currentAction) {
-          case "-1":
-            return "选择操作";
           case "2":
             return "上传Label";
           case "5":
@@ -781,8 +804,8 @@
           });
           return;
         }
-        if (this.multipleSelection.map(value => value.orders[0].orderAction).every(value => value === "-1")) {
-          if(this.operateType===1){
+        if (this.multipleSelection.map(value => value.orders[0].orderAction).every(value => value === "-1"||value === "4")) {
+          if(this.operateType===1 || this.operateType===2){
             //批量选择操作
             this.directDeliveryDialogVisible = true;
           }

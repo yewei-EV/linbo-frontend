@@ -302,7 +302,7 @@ export function getActionOptionsByLocation(location) {
     return [
       {label:"待用户选择", value:"-1"},
       {label:"集运linbo国内仓", value:"0"},
-      {label:"直邮国内用户手上", value:"1"},
+      // {label:"直邮国内用户手上", value:"1"},
       {label:"退货", value:"2"},
       {label:"转寄海外其他地址", value:"3"},
       {label:"海外寄存", value:"4"},
@@ -336,7 +336,7 @@ export function getActionOptionsAfterStorageByLocation(location) {
     return [
       {label:"待用户选择", value:"-1"},
       {label:"集运linbo国内仓", value:"0"},
-      {label:"直邮国内用户手上", value:"1"},
+      // {label:"直邮国内用户手上", value:"1"},
       {label:"转寄海外其他地址", value:"3"},
       {label:"转寄stockx", value:"5"},
     ];

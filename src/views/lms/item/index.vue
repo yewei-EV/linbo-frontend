@@ -436,7 +436,9 @@
           </el-select>
         </el-form-item>
         <el-form-item label="Label：">
-          <img style="width: 250px" :src="order.attachment">
+          <el-button v-if="order.attachment" size="small">
+            <a :href="order.attachment" target="_blank" download>下载</a>
+          </el-button>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">

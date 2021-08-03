@@ -77,6 +77,14 @@ export function updateProfileInfo(id, params) {
   })
 }
 
+export function updatePassword(data) {
+  return request({
+    url: '/admin/updatePassword/',
+    method: 'post',
+    data: data
+  })
+}
+
 export function logout() {
   return request({
     url: '/admin/logout',

@@ -30,10 +30,29 @@
         <el-button type="primary" @click="handleDialogConfirm()" size="large" style="width: 80px">保 存</el-button>
       </el-col>
     </el-row>
+    <el-row :gutter="20">
+      <el-col :span="24" style="text-align: center; margin-top: 40px">
+        <el-button type="info" @click="handleChangePassword()" size="large" style="width: 120px">更改密码</el-button>
+      </el-col>
+    </el-row>
+    <el-dialog :title="'更改密码'" :visible.sync="changePasswordDialogVisible" width="40%">
+      <el-form ref="passwordForm" label-width="150px" size="small">
+        <el-form-item label="旧密码：">
+          <el-input v-model="oldPassword" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="新密码：">
+          <el-input v-model="newPassword" style="width: 250px"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="changePasswordDialogVisible = false" size="small">取 消</el-button>
+        <el-button type="primary" @click="handlePasswordDialogConfirm()" size="small">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
-import {getInfo, updateProfileInfo} from "../../../api/login";
+import {getInfo, updateProfileInfo, updatePassword} from "../../../api/login";
 import {defaultProfile} from "../../../dto/options";
 import SingleUpload from '../../../components/Upload/singleUpload';
 
@@ -43,7 +62,10 @@ export default {
   data() {
     return {
       userInfo: null,
-      profile: Object.assign({}, defaultProfile)
+      profile: Object.assign({}, defaultProfile),
+      changePasswordDialogVisible: false,
+      newPassword: null,
+      oldPassword: null
     }
   },
   created() {
@@ -61,6 +83,30 @@ export default {
             type: 'success',
             message: '保存成功!'
           });
+        });
+      })
+    },
+    handleChangePassword() {
+      this.changePasswordDialogVisible = true;
+    },
+    handlePasswordDialogConfirm() {
+      this.$confirm('是否要确认?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        updatePassword(
+          {
+            "newPassword": this.newPassword,
+            "oldPassword": this.oldPassword,
+            "username": this.userInfo.username
+          }
+        ).then(() => {
+          this.$message({
+            type: 'success',
+            message: '更改成功!'
+          });
+          this.changePasswordDialogVisible = false;
         });
       })
     },

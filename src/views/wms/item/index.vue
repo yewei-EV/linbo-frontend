@@ -250,7 +250,7 @@
       </el-pagination>
     </div>
     <el-dialog
-      :title="isEdit?'编辑包裹':'添加包裹'"
+      :title="isEdit||isFinish?'编辑包裹':'添加包裹'"
       :visible.sync="dialogVisible"
       width="80%">
       <el-form :inline="true" :model="item"
@@ -259,7 +259,7 @@
         <div class="optionalDivider">
           <div class="tableTitle">
             <span class="midText">
-              包裹信息：
+              包裹信息({{item.location | formatLocation}})：
             </span>
           </div>
         </div>
@@ -270,15 +270,6 @@
           <el-input v-model="item.userSn" style="width: 250px"></el-input>
         </el-form-item>
         <el-button type="warning" @click="checkIfPreload()" size="mini" v-if="!this.isEdit&&!this.isFinish">查询预录</el-button>
-        <el-form-item label="地点：">
-          <el-select v-model="item.location" placeholder="全部" clearable class="input-width" style="width: 250px">
-            <el-option v-for="item in regionOptions"
-                       :key="item.value"
-                       :label="item.label"
-                       :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
         <el-form-item label="SKU：">
           <el-input v-model="item.sku" style="width: 250px"></el-input>
         </el-form-item>
@@ -370,6 +361,12 @@
                     :rows="1"
                     style="width: 250px"></el-input>
         </el-form-item>
+        <el-form-item label="Label单号：">
+          <el-input v-model="order.labelNumber" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="用户备注：">
+          <el-input v-model="order.userRemark" style="width: 250px"></el-input>
+        </el-form-item>
         <el-form-item label="寄存天数：">
           <el-input v-model="order.storageDays" style="width: 250px"></el-input>
         </el-form-item>
@@ -386,6 +383,9 @@
           <a :href="order.attachment" target="_blank" download>
             <el-button v-if="order.attachment" size="small">下载</el-button>
           </a>
+        </el-form-item>
+        <el-form-item v-if="order.overtimeDate" label="超时时间：">
+          {{order.overtimeDate | formatDateTime}}
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -459,6 +459,9 @@
         </el-form-item>
         <el-form-item label="重量：">
           <el-input v-model="packageWeight" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="价格：">
+          <el-input v-model="packagePrice" style="width: 250px"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -588,6 +591,7 @@ import {
         item: Object.assign({}, defaultItem),
         order: Object.assign({}, defaultOrder),
         packageWeight: null,
+        packagePrice: null,
         packageWeightUnit: null,
         packagePositionInfo: null,
         packageNote: null,
@@ -948,6 +952,7 @@ import {
             mainOrder = element.orders[0];
             mainOrder.weightUnit = this.packageWeightUnit;
             mainOrder.weight = this.packageWeight;
+            mainOrder.price = this.packagePrice;
             // mainOrder.orderStatus = 0;
             await updateOrder(mainOrder);
           } else {
@@ -968,6 +973,7 @@ import {
         });
         this.packageWeightUnit = null;
         this.packageWeight = null;
+        this.packagePrice = null;
         this.packageNote = null;
         this.packagePositionInfo = null;
         this.packageDialogVisible = false;

@@ -5,7 +5,7 @@
       drag
       :data="useOss?dataObj:null"
       list-type="file"
-      accept=".png"
+      accept=".pdf"
       :multiple="false" :show-file-list="showFileList"
       :file-list="fileList"
       :before-upload="beforeUpload"

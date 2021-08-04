@@ -276,7 +276,7 @@
       </el-pagination>
     </div>
     <el-dialog
-      :title="isEdit?'编辑包裹':'添加包裹'"
+      :title="isEdit||isFinish?'编辑包裹':'添加包裹'"
       :visible.sync="dialogVisible"
       width="80%">
       <el-form :inline="true" :model="item"
@@ -423,6 +423,12 @@
                     :rows="1"
                     style="width: 250px"></el-input>
         </el-form-item>
+        <el-form-item label="Label单号：">
+          <el-input v-model="order.labelNumber" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="用户备注：">
+          <el-input v-model="order.userRemark" style="width: 250px"></el-input>
+        </el-form-item>
         <el-form-item label="寄存天数：">
           <el-input v-model="order.storageDays" style="width: 250px"></el-input>
         </el-form-item>
@@ -439,6 +445,9 @@
           <a :href="order.attachment" target="_blank" download>
             <el-button v-if="order.attachment" size="small">下载</el-button>
           </a>
+        </el-form-item>
+        <el-form-item v-if="order.overtimeDate" label="超时时间：">
+          {{order.overtimeDate | formatDateTime}}
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">

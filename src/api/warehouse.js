@@ -113,6 +113,9 @@ export function updateOrderByUser(data) {
       'attachment': data.attachment?data.attachment:'',
       'storageDays': data.storageDays?data.storageDays:'',
       'storageLocation': data.storageLocation?data.storageLocation:'',
+      'overtimeDate': data.overtimeDate?data.overtimeDate:'',
+      'labelNumber': data.labelNumber?data.labelNumber:'',
+      'userRemark': data.userRemark?data.userRemark:'',
     }
   })
 }

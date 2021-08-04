@@ -147,7 +147,7 @@ export const operateOptions = [
 
 export function formatDateTime(time) {
   if (time == null || time === '') {
-    return 'N/A';
+    return '';
   }
   let date = new Date(time);
   return formatDate(date, 'yyyy-MM-dd hh:mm')
@@ -280,7 +280,10 @@ export var defaultOrder = {
   attachment: null,
   price: null,
   storageDays: null,
-  storageLocation: null
+  storageLocation: null,
+  overtimeDate: null,
+  labelNumber: null,
+  userRemark: null
 }
 
 export const actionOptions = [

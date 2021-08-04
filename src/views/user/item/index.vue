@@ -192,13 +192,28 @@
             </el-option>
           </el-select>
         </el-form-item>
+        <el-form-item v-if="order.orderAction==='5'" label="超时时间：">
+          <el-date-picker
+            style="width: 250px"
+            v-model="order.overtimeDate"
+            value-format="yyyy-MM-dd"
+            type="date"
+            placeholder="请选择时间">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='2'||order.orderAction==='3'||order.orderAction==='5'" label="Label单号：">
+          <el-input v-model="order.labelNumber" style="width: 250px" placeholder="Label单号" clearable></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='2'||order.orderAction==='3'||order.orderAction==='5'" label="用户备注：">
+          <el-input v-model="order.userRemark" style="width: 250px" placeholder="用户备注" clearable></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='2'" label="SKU：">
+          <el-input v-model="item.sku" style="width: 250px" placeholder="SKU" clearable></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='2'" label="Size：">
+          <el-input v-model="item.size" style="width: 250px" placeholder="Size" clearable></el-input>
+        </el-form-item>
         <el-form-item v-if="order.orderAction==='1'||order.orderAction==='3'||order.orderAction==='9'" label="地址：">
-<!--          <el-autocomplete-->
-<!--            v-model="order.destination"-->
-<!--            :fetch-suggestions="querySearch"-->
-<!--            placeholder="请输入地址"-->
-<!--            style="width: 600px">-->
-<!--          </el-autocomplete>-->
           <el-select no-data-text="请至地址管理中添加地址" v-model="order.destination" clearable style="width: 600px">
             <el-option v-for="address in addressOptions"
                        :key="address.value"
@@ -207,8 +222,8 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item v-if="order.orderAction==='2'||order.orderAction==='5'" label="Label：" prop="附件">
-          <single-upload v-model="order.attachment"></single-upload>
+        <el-form-item v-if="order.orderAction==='2'||order.orderAction==='3'||order.orderAction==='5'" label="Label：" prop="附件">
+          <pdf-upload v-model="order.attachment"></pdf-upload>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -364,6 +379,20 @@
       <el-row class="el-row-user" :gutter="20">
         <el-col :span="12">
           <div class="un-handle-item">
+            <span class="font-title-large">Label单号：</span>
+            {{order.labelNumber}}
+          </div>
+        </el-col>
+        <el-col :span="12">
+          <div class="un-handle-item">
+            <span class="font-title-large">用户备注：</span>
+            {{order.userRemark}}
+          </div>
+        </el-col>
+      </el-row>
+      <el-row class="el-row-user" :gutter="20">
+        <el-col :span="12">
+          <div class="un-handle-item">
             <span class="font-title-large">寄存天数：</span>
             {{order.storageDays}}
           </div>
@@ -382,6 +411,12 @@
             <a :href="order.attachment" target="_blank" download>
               <el-button v-if="order.attachment" size="small">下载</el-button>
             </a>
+          </div>
+        </el-col>
+        <el-col :span="12" v-if="order.overtimeDate">
+          <div class="un-handle-item">
+            <span class="font-title-large">超时时间：</span>
+            {{order.overtimeDate | formatDateTime}}
           </div>
         </el-col>
       </el-row>
@@ -426,6 +461,27 @@
             </el-option>
           </el-select>
         </el-form-item>
+        <el-form-item v-if="order.orderAction==='5'" label="超时时间：">
+          <el-date-picker
+            style="width: 250px"
+            v-model="order.overtimeDate"
+            value-format="yyyy-MM-dd"
+            type="date"
+            placeholder="请选择时间">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='2'||order.orderAction==='3'||order.orderAction==='5'" label="Label单号：">
+          <el-input v-model="order.labelNumber" style="width: 250px" placeholder="Label单号" clearable></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='2'||order.orderAction==='3'||order.orderAction==='5'" label="用户备注：">
+          <el-input v-model="order.userRemark" style="width: 250px" placeholder="用户备注" clearable></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='2'" label="SKU：">
+          <el-input v-model="item.sku" style="width: 250px" placeholder="SKU" clearable></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='2'" label="Size：">
+          <el-input v-model="item.size" style="width: 250px" placeholder="Size" clearable></el-input>
+        </el-form-item>
         <el-form-item v-if="order.orderAction==='1'||order.orderAction==='3'||order.orderAction==='9'" label="地址：">
           <el-select no-data-text="请至地址管理中添加地址" v-model="order.destination" clearable style="width: 600px">
             <el-option v-for="address in addressOptions"
@@ -435,8 +491,8 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item v-if="order.orderAction==='2'||order.orderAction==='5'" label="Label：" prop="附件">
-          <single-upload v-model="order.attachment"></single-upload>
+        <el-form-item v-if="order.orderAction==='2'||order.orderAction==='3'||order.orderAction==='5'" label="Label：" prop="附件">
+          <pdf-upload v-model="order.attachment"></pdf-upload>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -490,7 +546,7 @@
   };
   export default {
     name: 'itemList',
-    components:{SingleUpload,PdfUpload},
+    components:{PdfUpload},
     data() {
       return {
         processButton: '完成',
@@ -579,16 +635,16 @@
       handleResetSearch() {
         this.listQuery = Object.assign({}, defaultListQuery);
       },
-      querySearch(queryString, cb) {
-        let results = queryString ? this.addressOptions.filter(this.createFilter(queryString)) : this.addressOptions;
-        // 调用 callback 返回建议列表的数据
-        cb(results);
-      },
-      createFilter(queryString) {
-        return (addressOptions) => {
-          return (addressOptions.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
-        };
-      },
+      // querySearch(queryString, cb) {
+      //   let results = queryString ? this.addressOptions.filter(this.createFilter(queryString)) : this.addressOptions;
+      //   // 调用 callback 返回建议列表的数据
+      //   cb(results);
+      // },
+      // createFilter(queryString) {
+      //   return (addressOptions) => {
+      //     return (addressOptions.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+      //   };
+      // },
       handleSearchList() {
         this.listQuery.userSn = this.userInfo.userSn;
         this.listQuery.pageNum = 1;

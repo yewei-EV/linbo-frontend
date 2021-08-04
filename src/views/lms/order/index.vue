@@ -171,11 +171,20 @@
             </el-button>
           </template>
         </el-table-column>
+        <el-table-column label="Label单号" min-width="120" align="center">
+          <template slot-scope="scope">{{scope.row.labelNumber}}</template>
+        </el-table-column>
+        <el-table-column label="用户备注" min-width="120" align="center">
+          <template slot-scope="scope">{{scope.row.userRemark}}</template>
+        </el-table-column>
         <el-table-column label="付款备注" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.note}}</template>
         </el-table-column>
-        <el-table-column label="支付成功时间" min-width="120" align="center">
+        <el-table-column label="支付时间" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.paymentTime | formatDateTime}}</template>
+        </el-table-column>
+        <el-table-column label="超时时间" min-width="100" align="center">
+          <template slot-scope="scope">{{scope.row.overtimeDate | formatDateTime}}</template>
         </el-table-column>
         <el-table-column label="寄存地点" min-width="80" align="center">
           <template slot-scope="scope">{{scope.row.storageLocation | formatLocation}}</template>
@@ -318,6 +327,12 @@
                     :rows="1"
                     style="width: 250px"></el-input>
         </el-form-item>
+        <el-form-item label="Label单号：">
+          <el-input v-model="order.labelNumber" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="用户备注：">
+          <el-input v-model="order.userRemark" style="width: 250px"></el-input>
+        </el-form-item>
         <el-form-item label="寄存天数：">
           <el-input v-model="order.storageDays" style="width: 250px"></el-input>
         </el-form-item>
@@ -329,6 +344,15 @@
                        :value="unit.value">
             </el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item label="超时时间：">
+          <el-date-picker
+            style="width: 250px"
+            v-model="order.overtimeDate"
+            value-format="yyyy-MM-dd"
+            type="date"
+            placeholder="请选择时间">
+          </el-date-picker>
         </el-form-item>
         <el-form-item label="Label：" prop="附件">
           <single-upload v-model="order.attachment"></single-upload>
@@ -378,13 +402,25 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item v-if="order.orderAction==='1'||order.orderAction==='3'||order.orderAction==='9'" label="地址：">
-          <el-input v-model="order.destination"
-                    type="textarea"
-                    :rows="2"
-                    style="width: 250px"></el-input>
+        <el-form-item v-if="order.orderAction==='5'" label="超时时间：">
+          <el-date-picker
+            style="width: 250px"
+            v-model="order.overtimeDate"
+            value-format="yyyy-MM-dd"
+            type="date"
+            placeholder="请选择时间">
+          </el-date-picker>
         </el-form-item>
-        <el-form-item v-if="order.orderAction==='2'||order.orderAction==='5'" label="Label：" prop="附件">
+        <el-form-item v-if="order.orderAction==='2'||order.orderAction==='3'||order.orderAction==='5'" label="Label单号：">
+          <el-input v-model="order.labelNumber" style="width: 250px" placeholder="Label单号" clearable></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='2'||order.orderAction==='3'||order.orderAction==='5'" label="用户备注：">
+          <el-input v-model="order.userRemark" style="width: 250px" placeholder="用户备注" clearable></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='1'||order.orderAction==='3'||order.orderAction==='9'" label="地址：">
+          <el-input v-model="order.destination" style="width: 250px" placeholder="地址" clearable></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='2'||order.orderAction==='3'||order.orderAction==='5'" label="Label：" prop="附件">
           <single-upload v-model="order.attachment"></single-upload>
         </el-form-item>
       </el-form>

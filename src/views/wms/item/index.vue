@@ -355,6 +355,9 @@
         <el-form-item label="价格：">
           <el-input v-model="order.price" style="width: 250px"></el-input>
         </el-form-item>
+        <el-form-item label="顺丰运费：">
+          <el-input v-model="order.sfPrice" style="width: 250px"></el-input>
+        </el-form-item>
         <el-form-item label="物流单号：">
           <el-input v-model="item.note"
                     type="textarea"

@@ -128,12 +128,12 @@
                        @click="chooseSecondActionByUser(scope.$index, scope.row)">
               选择操作
             </el-button>
-            <el-button size="mini"
-                       type="warning"
-                       v-if="scope.row.orders && getButtonByAction(scope.row.orders[0].orderAction, scope.row.itemStatus)==='上传Label'"
-                       @click="uploadAttachment(scope.$index, scope.row)">
-              上传Label
-            </el-button>
+<!--            <el-button size="mini"-->
+<!--                       type="warning"-->
+<!--                       v-if="scope.row.orders && getButtonByAction(scope.row.orders[0].orderAction, scope.row.itemStatus)==='上传Label'"-->
+<!--                       @click="uploadAttachment(scope.$index, scope.row)">-->
+<!--              上传Label-->
+<!--            </el-button>-->
           </template>
         </el-table-column>
       </el-table>
@@ -377,10 +377,10 @@
         </el-col>
       </el-row>
       <el-row class="el-row-user" :gutter="20">
-        <el-col :span="12">
+        <el-col v-if="order.sfPrice" :span="12">
           <div class="un-handle-item">
-            <span class="font-title-large">Label单号：</span>
-            {{order.labelNumber}}
+            <span class="font-title-large">顺丰运费：</span>
+            ￥{{order.sfPrice}}
           </div>
         </el-col>
         <el-col :span="12">
@@ -390,7 +390,7 @@
           </div>
         </el-col>
       </el-row>
-      <el-row class="el-row-user" :gutter="20">
+      <el-row v-if="order.storageDays" class="el-row-user" :gutter="20">
         <el-col :span="12">
           <div class="un-handle-item">
             <span class="font-title-large">寄存天数：</span>
@@ -401,6 +401,14 @@
           <div class="un-handle-item">
             <span class="font-title-large">寄存地点：</span>
             {{order.storageLocation | formatLocation}}
+          </div>
+        </el-col>
+      </el-row>
+      <el-row class="el-row-user" :gutter="20">
+        <el-col :span="12">
+          <div class="un-handle-item">
+            <span class="font-title-large">Label单号：</span>
+            {{order.labelNumber}}
           </div>
         </el-col>
       </el-row>
@@ -683,6 +691,15 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
+          if (this.order.orderAction === "2"||this.order.orderAction === "3"||this.order.orderAction === "5") {
+            if (!this.order.labelNumber || !this.order.attachment) {
+              this.$message({
+                type: 'error',
+                message: 'Label单号/Label附件为必填项!'
+              });
+              return;
+            }
+          }
           updateItemStatus(this.item, this.order.orderAction).then(() => {
             updateOrderByUser(this.order).then(() => {
               this.$message({
@@ -816,6 +833,15 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
+          if (this.order.orderAction === "2"||this.order.orderAction === "3"||this.order.orderAction === "5") {
+            if (!this.order.labelNumber || !this.order.attachment) {
+              this.$message({
+                type: 'error',
+                message: 'Label单号/Label附件为必填项!'
+              });
+              return;
+            }
+          }
           this.order.storageDays = Math.ceil((Date.now() - Date.parse(this.item.createTime)) / (1000 * 3600 * 24));
           this.order.storageLocation = this.item.itemStatus === 11?this.item.location:"CN";
           updateOrderByUser(this.order).then(() => {

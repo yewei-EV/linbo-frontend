@@ -171,6 +171,9 @@
             </el-button>
           </template>
         </el-table-column>
+        <el-table-column label="顺丰运费" min-width="80" align="center">
+          <template slot-scope="scope">￥{{scope.row.sfPrice?scope.row.sfPrice:0}}</template>
+        </el-table-column>
         <el-table-column label="Label单号" min-width="120" align="center">
           <template slot-scope="scope">{{scope.row.labelNumber}}</template>
         </el-table-column>
@@ -320,6 +323,9 @@
         </el-form-item>
         <el-form-item label="价格：">
           <el-input v-model="order.price" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="顺丰运费：">
+          <el-input v-model="order.sfPrice" style="width: 250px"></el-input>
         </el-form-item>
         <el-form-item label="付款备注：">
           <el-input v-model="order.note"
@@ -675,7 +681,11 @@ export default {
         type: 'warning'
       }).then(() => {
         this.order.note = this.paymentNote;
-        this.order.orderStatus = 2;
+        if (this.order.sfPrice) {
+          this.order.orderStatus = 3;
+        } else {
+          this.order.orderStatus = 2;
+        }
         this.order.paymentTime = Date.now();
         updateOrder(this.order).then(() => {
           updateItemStatusByOrder(this.order).then(() => {

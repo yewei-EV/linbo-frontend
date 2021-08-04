@@ -279,6 +279,7 @@ export var defaultOrder = {
   newDeliverySn: null,
   attachment: null,
   price: null,
+  sfPrice: null,
   storageDays: null,
   storageLocation: null,
   overtimeDate: null,

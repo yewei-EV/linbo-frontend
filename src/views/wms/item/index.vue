@@ -270,6 +270,15 @@
           <el-input v-model="item.userSn" style="width: 250px"></el-input>
         </el-form-item>
         <el-button type="warning" @click="checkIfPreload()" size="mini" v-if="!this.isEdit&&!this.isFinish">查询预录</el-button>
+        <el-form-item v-if="!this.warehouseLocation" label="地点：">
+          <el-select v-model="item.location" placeholder="全部" clearable class="input-width" style="width: 250px">
+            <el-option v-for="item in regionOptions"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="SKU：">
           <el-input v-model="item.sku" style="width: 250px"></el-input>
         </el-form-item>

@@ -111,6 +111,9 @@
         <el-form-item label="Discord Id：">
           <el-input v-model="admin.discordId" style="width: 250px"></el-input>
         </el-form-item>
+        <el-form-item label="识别码：">
+          <el-input v-model="admin.userSn" style="width: 250px"></el-input>
+        </el-form-item>
         <el-form-item label="邮箱：">
           <el-input v-model="admin.email" style="width: 250px"></el-input>
         </el-form-item>

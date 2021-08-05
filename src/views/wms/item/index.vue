@@ -756,7 +756,7 @@ import {
             this.handleSearchList();
             this.$message({
               type: 'success',
-              message: '货物已登记!'
+              message: '包裹已登记!'
             });
           } else {
             this.$message({
@@ -811,44 +811,26 @@ import {
               });
               return;
             }
-            let query = {
-              deliverySn: this.item.deliverySn,
-              userSn: this.item.userSn,
-              location: this.item.location,
-            };
-            checkIfItemExist(query).then(response => {
-              if (response.data) {
-                this.dialogVisible = false;
-                this.listQuery.deliverySn = query.deliverySn;
-                this.listQuery.userSn = query.userSn;
-                this.handleSearchList();
-                this.$message({
-                  type: 'warning',
-                  message: '货物已登记!'
-                });
+            updateItem(this.item).then(() => {
+              if (this.item.userSn !== this.order.userSn) {
+                this.order.userSn = this.item.userSn;
+                updateOrder(this.order).then(() => {
+                  this.$message({
+                    message: '修改成功！',
+                    type: 'success'
+                  });
+                  this.dialogVisible = false;
+                  this.isEdit = false;
+                  this.getList();
+                })
               } else {
-                updateItem(this.item).then(() => {
-                  if (this.item.userSn !== this.order.userSn) {
-                    this.order.userSn = this.item.userSn;
-                    updateOrder(this.order).then(() => {
-                      this.$message({
-                        message: '修改成功！',
-                        type: 'success'
-                      });
-                      this.dialogVisible = false;
-                      this.isEdit = false;
-                      this.getList();
-                    })
-                  } else {
-                    this.$message({
-                      message: '修改成功！',
-                      type: 'success'
-                    });
-                    this.dialogVisible = false;
-                    this.isEdit = false;
-                    this.getList();
-                  }
+                this.$message({
+                  message: '修改成功！',
+                  type: 'success'
                 });
+                this.dialogVisible = false;
+                this.isEdit = false;
+                this.getList();
               }
             });
           } else {
@@ -875,7 +857,7 @@ import {
                 this.handleSearchList();
                 this.$message({
                   type: 'warning',
-                  message: '货物已登记!'
+                  message: '包裹已登记!'
                 });
               } else {
                 this.item.itemStatus = 1;

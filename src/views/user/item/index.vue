@@ -594,6 +594,7 @@
         isEdit: false,
         orderActionDialogVisible: false,
         directDeliveryDialogVisible: false,
+        totalDeliveryDialogVisible: false,
         secondOrderActionDialogVisible: false,
         orderAttachmentDialogVisible: false,
         orderDialogVisible: false,
@@ -607,7 +608,11 @@
           {
             label: "批量结束寄存并直邮",
             value: 2
-          }
+          },
+         {
+           label: "批量集运linbo国内仓",
+             value: 3
+         }
         ]
       }
     },
@@ -878,7 +883,7 @@
             duration: 1000
           });
           return;
-        } else if(this.multipleSelection.length<3){
+        } else if((this.operateType===1 || this.operateType===2) && this.multipleSelection.length<3){
           this.$message({
             message: '至少三件包裹才能选择直邮',
             type: 'warning',
@@ -887,9 +892,12 @@
           return;
         }
         if (this.multipleSelection.map(value => value.orders[0].orderAction).every(value => value === "-1"||value === "4")) {
-          if(this.operateType===1 || this.operateType===2){
+          if(this.operateType===1 || this.operateType===2) {
             //批量选择操作
             this.directDeliveryDialogVisible = true;
+          } else if (this.operateType===3) {
+            //批量选择集运
+            this.totalDeliveryDialogVisible = true;
           }
         } else {
           this.$message({

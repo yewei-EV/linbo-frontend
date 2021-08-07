@@ -35,15 +35,6 @@
           <el-form-item label="备注：">
             <el-input v-model="listQuery.remark" class="input-width" placeholder="备注" clearable></el-input>
           </el-form-item>
-          <el-form-item label="状态：">
-            <el-select v-model="listQuery.itemStatus" placeholder="全部" clearable style="width: 177px">
-              <el-option v-for="item in statusOptions"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
           <el-form-item label="创建时间：">
             <el-date-picker
               style="width: 177px"
@@ -52,6 +43,15 @@
               type="date"
               placeholder="请选择时间">
             </el-date-picker>
+          </el-form-item>
+          <el-form-item label="状态：">
+            <el-select multiple collapse-tags v-model="listQuery.itemStatuses" placeholder="全部" clearable style="width: 220px">
+              <el-option v-for="item in statusOptions"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value">
+              </el-option>
+            </el-select>
           </el-form-item>
         </el-form>
       </div>
@@ -108,7 +108,7 @@
           </template>
         </el-table-column>
         <el-table-column label="状态" min-width="100" align="center">
-          <template slot-scope="scope">{{statusOptions[scope.row.itemStatus].label}}</template>
+          <template slot-scope="scope">{{scope.row.itemStatus | formatItemStatus}}</template>
         </el-table-column>
         <el-table-column label="支付状态" min-width="100" align="center">
           <template slot-scope="scope">
@@ -201,7 +201,7 @@
           <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].orderAction:"" | formatAction}}</template>
         </el-table-column>
         <el-table-column label="状态" min-width="100" align="center">
-          <template slot-scope="scope">{{statusOptions[scope.row.itemStatus].label}}</template>
+          <template slot-scope="scope">{{scope.row.itemStatus | formatItemStatus}}</template>
         </el-table-column>
         <el-table-column label="支付状态" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].orderStatus:"" | formatOrderStatus}}</template>
@@ -562,7 +562,12 @@ import {
   defaultOrder,
   formatDateTime,
   formatAction,
-  formatOrderStatus, sizeOptions, formatLocation, actionOptions, getActionOptionsAfterStorageByLocation
+  formatOrderStatus,
+  sizeOptions,
+  formatLocation,
+  actionOptions,
+  getActionOptionsAfterStorageByLocation,
+  formatItemStatus
 } from '../../../dto/options';
   import FileSaver from 'file-saver'
   import XLSX from 'xlsx'
@@ -575,7 +580,7 @@ import {
     location: null,
     note: null,
     createTime: null,
-    itemStatus: null,
+    itemStatuses: [],
     positionInfo: null,
     remark: null,
     orders: []
@@ -628,7 +633,11 @@ import {
       }
     },
     created() {
-      this.listQuery.itemStatus = this.$route.query.itemStatus;
+      if (this.$route.query.itemStatus) {
+        this.listQuery.itemStatuses = this.$route.query.itemStatus;
+      } else {
+        this.listQuery.itemStatuses = [0,1,2,3,4,5,6,7,8,9,10,11,20];
+      }
       this.listQuery.location = this.$route.query.location;
       getInfo().then(response => {
         this.userInfo = response.data;
@@ -662,6 +671,7 @@ import {
             return "待定";
         }
       },
+      formatItemStatus: formatItemStatus,
       formatDateTime: formatDateTime,
       formatAction: formatAction,
       formatOrderStatus: formatOrderStatus,
@@ -670,6 +680,7 @@ import {
     methods: {
       handleResetSearch() {
         this.listQuery = Object.assign({}, defaultListQuery);
+        this.listQuery.itemStatuses = [0,1,2,3,4,5,6,7,8,9,10,11,20];
       },
       handleSearchList() {
         this.listQuery.pageNum = 1;

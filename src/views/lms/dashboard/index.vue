@@ -26,7 +26,7 @@
             <div class="un-handle-item">
               <span class="font-medium">待集运linbo国内仓-代卖</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="directToSpecificItemList(13)">
+                         class="color-danger" type="text" @click="directToSpecificItemList([13])">
                 ({{this.duOrderCount}})
               </el-button>
             </div>
@@ -35,7 +35,7 @@
             <div class="un-handle-item">
               <span class="font-medium">待快递国内</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="directToSpecificItemList(14)">
+                         class="color-danger" type="text" @click="directToSpecificItemList([14])">
                 ({{this.directDeliveryCount}})
               </el-button>
             </div>
@@ -46,7 +46,7 @@
             <div class="un-handle-item">
               <span class="font-medium">待集运linbo国内仓-寄存</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="directToSpecificItemList(15)">
+                         class="color-danger" type="text" @click="directToSpecificItemList([15])">
                 ({{this.localStorageCount}})
               </el-button>
             </div>
@@ -62,7 +62,7 @@
             <div class="un-handle-item">
               <span class="font-medium">待定价订单</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="directToSpecificOrderList(0)">
+                         class="color-danger" type="text" @click="directToSpecificOrderList([0])">
                 ({{this.needToPricingCount}})
               </el-button>
             </div>
@@ -71,7 +71,7 @@
             <div class="un-handle-item">
               <span class="font-medium">待收款订单</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="directToSpecificOrderList(1)">
+                         class="color-danger" type="text" @click="directToSpecificOrderList([1])">
                 ({{this.needToPayCount}})
               </el-button>
             </div>

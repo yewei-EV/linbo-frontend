@@ -56,15 +56,6 @@
           <el-form-item label="备注：">
             <el-input v-model="listQuery.remark" class="input-width" placeholder="备注" clearable></el-input>
           </el-form-item>
-          <el-form-item label="状态：">
-            <el-select v-model="listQuery.itemStatus" placeholder="全部" clearable style="width: 177px">
-              <el-option v-for="item in statusOptions"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
           <el-form-item label="创建时间：">
             <el-date-picker
               style="width: 177px"
@@ -73,6 +64,15 @@
               type="date"
               placeholder="请选择时间">
             </el-date-picker>
+          </el-form-item>
+          <el-form-item label="状态：">
+            <el-select multiple collapse-tags v-model="listQuery.itemStatuses" placeholder="全部" clearable style="width: 220px;">
+              <el-option v-for="item in statusOptions"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value">
+              </el-option>
+            </el-select>
           </el-form-item>
         </el-form>
       </div>
@@ -129,7 +129,7 @@
           </template>
         </el-table-column>
         <el-table-column label="状态" min-width="100" align="center">
-          <template slot-scope="scope">{{statusOptions[scope.row.itemStatus].label}}</template>
+          <template slot-scope="scope">{{scope.row.itemStatus | formatItemStatus}}</template>
         </el-table-column>
         <el-table-column label="支付状态" min-width="100" align="center">
           <template slot-scope="scope">
@@ -227,7 +227,7 @@
           <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].orderAction:"" | formatAction}}</template>
         </el-table-column>
         <el-table-column label="状态" min-width="100" align="center">
-          <template slot-scope="scope">{{statusOptions[scope.row.itemStatus].label}}</template>
+          <template slot-scope="scope">{{scope.row.itemStatus | formatItemStatus}}</template>
         </el-table-column>
         <el-table-column label="支付状态" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].orderStatus:"" | formatOrderStatus}}</template>
@@ -526,7 +526,12 @@ import {
   defaultItem,
   defaultOrder,
   actionOptions,
-  formatOrderStatus, sizeOptions, orderStatusOptions, formatLocation, getActionOptionsAfterStorageByLocation
+  formatOrderStatus,
+  sizeOptions,
+  orderStatusOptions,
+  formatLocation,
+  getActionOptionsAfterStorageByLocation,
+  formatItemStatus
 } from '../../../dto/options';
 import {
   createOrder,
@@ -549,7 +554,7 @@ import {
     createTime: null,
     sku: null,
     size: null,
-    itemStatus: null,
+    itemStatuses: [],
     positionInfo: null,
     orders: [],
     remark: null
@@ -609,7 +614,11 @@ import {
       }
     },
     created() {
-      this.listQuery.itemStatus = this.$route.query.itemStatus;
+      if (this.$route.query.itemStatus) {
+        this.listQuery.itemStatuses = this.$route.query.itemStatus;
+      } else {
+        this.listQuery.itemStatuses = [21,12,13,14,15,16,17,18];
+      }
       this.listQuery.id = this.$route.query.id;
       this.listQuery.deliverySn = this.$route.query.deliverySn;
       this.listQuery.userSn = this.$route.query.userSn;
@@ -627,6 +636,7 @@ import {
             return "寄存";
         }
       },
+      formatItemStatus: formatItemStatus,
       formatDateTime: formatDateTime,
       formatAction: formatAction,
       formatOrderStatus: formatOrderStatus,
@@ -635,6 +645,7 @@ import {
     methods: {
       handleResetSearch() {
         this.listQuery = Object.assign({}, defaultListQuery);
+        this.listQuery.itemStatuses = [21,12,13,14,15,16,17,18];
       },
       handleSearchList() {
         this.listQuery.pageNum = 1;
@@ -1004,7 +1015,7 @@ import {
         if (!row.orders || row.orders.length < 1 ) {
           return false;
         }
-        return row.itemStatus === 10 && (row.orders[0].orderAction === "0");
+        return row.itemStatus === 21 && (row.orders[0].orderAction === "0");
       },
       showEndStorageButton(row) {
         if (!row.orders || row.orders.length < 1) {

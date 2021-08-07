@@ -65,12 +65,20 @@ export const statusOptions = [
     value: 9
   },
   {
+    label: '待代卖stockx',
+    value: 20
+  },
+  {
     label: '已发货（海外仓）',
     value: 10
   },
   {
     label: '已寄存（海外仓）',
     value: 11
+  },
+  {
+    label: '待入库（国内仓）',
+    value: 21
   },
   {
     label: '已入库（国内仓）',
@@ -99,10 +107,6 @@ export const statusOptions = [
   {
     label: '已归档',
     value: 18
-  },
-  {
-    label: '待代卖stockx',
-    value: 20
   }
 ]
 
@@ -230,6 +234,55 @@ export function formatLocation(location) {
       return "香港";
     case 'CA':
       return "加拿大";
+  }
+}
+
+export function formatItemStatus(status) {
+  switch (status) {
+    case 0:
+      return "待入库";
+    case 1:
+      return "已入库（海外仓）";
+    case 2:
+      return "待打包";
+    case 3:
+      return "已打包";
+    case 4:
+      return "待集运linbo国内仓";
+    case 5:
+      return "待直邮国内用户手上";
+    case 6:
+      return "待退货";
+    case 7:
+      return "待转寄海外其他地址";
+    case 8:
+      return "待海外寄存";
+    case 9:
+      return "待转寄stockx";
+    case 10:
+      return "已发货（海外仓）";
+    case 11:
+      return "已寄存（海外仓）";
+    case 12:
+      return "已入库（国内仓）";
+    case 13:
+      return "待国内仓代卖";
+    case 14:
+      return "待顺丰快递";
+    case 15:
+      return "待国内仓寄存";
+    case 16:
+      return "已发货（国内仓）";
+    case 17:
+      return "已寄存（国内仓）";
+    case 18:
+      return "已归档";
+    case 20:
+      return "待代卖stockx";
+    case 21:
+      return "待入库（国内仓）";
+    default:
+      return "未知";
   }
 }
 

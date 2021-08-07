@@ -64,7 +64,7 @@
             <div class="un-handle-item">
               <span class="font-medium">待打包</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="directToSpecificItemList(2)">
+                         class="color-danger" type="text" @click="directToSpecificItemList([2])">
                 ({{this.toBePackageCount}})
               </el-button>
             </div>
@@ -73,7 +73,7 @@
             <div class="un-handle-item">
               <span class="font-medium">待集运linbo国内仓</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="directToSpecificItemList(4)">
+                         class="color-danger" type="text" @click="directToSpecificItemList([4])">
                 ({{this.totalDeliveryCount}})
               </el-button>
             </div>
@@ -84,7 +84,7 @@
             <div class="un-handle-item">
               <span class="font-medium">待直邮国内用户手上</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="directToSpecificItemList(5)">
+                         class="color-danger" type="text" @click="directToSpecificItemList([5])">
                 ({{this.directDeliveryCount}})
               </el-button>
             </div>
@@ -93,7 +93,7 @@
             <div class="un-handle-item">
               <span class="font-medium">待处理退货</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="directToSpecificItemList(6)">
+                         class="color-danger" type="text" @click="directToSpecificItemList([6])">
                 ({{this.refundCount}})
               </el-button>
             </div>
@@ -104,7 +104,7 @@
             <div class="un-handle-item">
               <span class="font-medium">待转寄海外其他地址</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="directToSpecificItemList(7)">
+                         class="color-danger" type="text" @click="directToSpecificItemList([7])">
                 ({{this.localDeliveryCount}})
               </el-button>
             </div>
@@ -113,7 +113,7 @@
             <div class="un-handle-item">
               <span class="font-medium">待海外寄存</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="directToSpecificItemList(8)">
+                         class="color-danger" type="text" @click="directToSpecificItemList([8])">
                 ({{this.localStorageCount}})
               </el-button>
             </div>
@@ -124,7 +124,7 @@
             <div class="un-handle-item">
               <span class="font-medium">待转寄stockx</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="directToSpecificItemList(9)">
+                         class="color-danger" type="text" @click="directToSpecificItemList([9])">
                 ({{this.stockxOrderCount}})
               </el-button>
             </div>
@@ -133,7 +133,7 @@
             <div class="un-handle-item">
               <span class="font-medium">待stockx代卖</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
-                         class="color-danger" type="text" @click="directToSpecificItemList(20)">
+                         class="color-danger" type="text" @click="directToSpecificItemList([20])">
                 ({{this.stockxConsignmentCount}})
               </el-button>
             </div>

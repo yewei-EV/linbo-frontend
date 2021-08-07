@@ -82,7 +82,7 @@
           </template>
         </el-table-column>
         <el-table-column label="状态" min-width="100" align="center">
-          <template slot-scope="scope">{{statusOptions[scope.row.itemStatus].label}}</template>
+          <template slot-scope="scope">{{scope.row.itemStatus | formatItemStatus}}</template>
         </el-table-column>
         <el-table-column label="支付状态" min-width="100" align="center">
           <template slot-scope="scope">
@@ -512,7 +512,6 @@
 </template>
 <script>
   import {getInfo} from "../../../api/login";
-  import SingleUpload from '../../../components/Upload/singleUpload'
   import PdfUpload from '../../../components/Upload/pdfUpload'
   import {
     orderStatusOptions,
@@ -528,7 +527,7 @@
     operateOptions,
     formatLocation,
     getActionOptionsByLocation,
-    getActionOptionsAfterStorageByLocation,
+    getActionOptionsAfterStorageByLocation, formatItemStatus,
   } from '../../../dto/options';
   import {
     updateOrderByUser,
@@ -609,10 +608,10 @@
             label: "批量结束寄存并直邮",
             value: 2
           },
-         {
-           label: "批量集运linbo国内仓",
-             value: 3
-         }
+         // {
+         //   label: "批量集运linbo国内仓",
+         //     value: 3
+         // }
         ]
       }
     },
@@ -638,6 +637,7 @@
       });
     },
     filters: {
+      formatItemStatus: formatItemStatus,
       formatDateTime: formatDateTime,
       formatAction: formatAction,
       formatWeightUnit: formatWeightUnit,
@@ -724,6 +724,13 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
+          if (!this.directDestination) {
+            this.$message({
+              type: 'error',
+              message: '收货地址为必填项!'
+            });
+            return;
+          }
           if (this.operateType===1) {
             for (let item of this.multipleSelection) {
               item.orders[0].orderAction = "1";
@@ -843,6 +850,15 @@
               this.$message({
                 type: 'error',
                 message: 'Label单号/Label附件为必填项!'
+              });
+              return;
+            }
+          }
+          if (this.order.orderAction === "9") {
+            if (!this.order.destination) {
+              this.$message({
+                type: 'error',
+                message: '收货地址为必填项!'
               });
               return;
             }

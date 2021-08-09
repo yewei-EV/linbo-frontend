@@ -366,9 +366,15 @@ export function getActionOptionsByLocation(location) {
       {label:"转寄stockx", value:"5"},
       // {label:"代卖stockx", value:"8"}
     ];
-  } else if (location === 'CA' || location === 'AU') {
+  } else if (location === 'CA') {
     return [
       {label:"待用户选择", value:"-1"},
+      {label:"转寄stockx", value:"5"}
+    ];
+  } else if (location === 'AU') {
+    return [
+      {label:"待用户选择", value:"-1"},
+      {label:"退货", value:"2"},
       {label:"转寄stockx", value:"5"}
     ];
   } else if (location === 'EN') {
@@ -393,7 +399,7 @@ export function getActionOptionsAfterStorageByLocation(location) {
     return [
       {label:"待用户选择", value:"-1"},
       {label:"集运linbo国内仓", value:"0"},
-      // {label:"直邮国内用户手上", value:"1"},
+      {label:"退货", value:"2"},
       {label:"转寄海外其他地址", value:"3"},
       {label:"转寄stockx", value:"5"},
     ];

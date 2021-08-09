@@ -524,7 +524,6 @@
     formatAction,
     formatWeightUnit,
     formatOrderStatus,
-    operateOptions,
     formatLocation,
     getActionOptionsByLocation,
     getActionOptionsAfterStorageByLocation, formatItemStatus,
@@ -681,6 +680,9 @@
       },
       chooseActionByUser(index, row) {
         this.actionOptions = getActionOptionsByLocation(row.location);
+        if (row.location === "AU") {
+          this.actionOptions.splice(1, 1);
+        }
         this.orderActionDialogVisible = true;
         this.order = Object.assign({}, row.orders[0]);
         this.item = Object.assign({}, row);
@@ -830,6 +832,9 @@
         this.order.orderAction = '-1';
         if (this.item.itemStatus === 11) {
           this.actionOptionsAfterStorage = getActionOptionsAfterStorageByLocation(row.location);
+          if (row.location === "AU") {
+            this.actionOptionsAfterStorage.splice(1, 1);
+          }
         } else if (this.item.itemStatus === 17) {
           this.actionOptionsAfterStorage = [
             {label:"待用户选择", value:"-1"},

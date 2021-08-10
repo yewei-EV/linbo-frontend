@@ -238,6 +238,9 @@
         <el-table-column label="订单ID" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].id:""}}</template>
         </el-table-column>
+        <el-table-column label="地址" min-width="100" align="center">
+          <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].destination:""}}</template>
+        </el-table-column>
         <el-table-column label="备注" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.remark}}</template>
         </el-table-column>
@@ -554,6 +557,7 @@ import {
     createTime: null,
     sku: null,
     size: null,
+    requestBy: null,
     itemStatuses: [],
     positionInfo: null,
     orders: [],
@@ -573,7 +577,33 @@ import {
         listQuery: Object.assign({}, defaultListQuery),
         actionOptions: actionOptions,
         actionOptionsAfterStorage: null,
-        statusOptions: statusOptions,
+        statusOptions: [
+          {
+            label: '待入库（国内仓）',
+            value: 21
+          }, {
+            label: '已入库（国内仓）',
+            value: 12
+          }, {
+            label: '待国内仓代卖',
+            value: 13
+          }, {
+            label: '待顺丰快递',
+            value: 14
+          }, {
+            label: '待国内仓寄存',
+            value: 15
+          }, {
+            label: '已发货（国内仓）',
+            value: 16
+          }, {
+            label: '已寄存（国内仓）',
+            value: 17
+          }, {
+            label: '已归档',
+            value: 18
+          }
+        ],
         regionOptions: regionOptions,
         sizeOptions: sizeOptions,
         weightUnitOptions: weightUnitOptions,
@@ -616,9 +646,8 @@ import {
     created() {
       if (this.$route.query.itemStatus) {
         this.listQuery.itemStatuses = this.$route.query.itemStatus;
-      } else {
-        this.listQuery.itemStatuses = [21,12,13,14,15,16,17,18];
       }
+      this.listQuery.requestBy = "CN";
       this.listQuery.id = this.$route.query.id;
       this.listQuery.deliverySn = this.$route.query.deliverySn;
       this.listQuery.userSn = this.$route.query.userSn;

@@ -24,10 +24,10 @@ export var orderStatusOptions = [
 ]
 
 export const statusOptions = [
-  {
-    label: '待入库',
-    value: 0
-  },
+  // {
+  //   label: '待入库',
+  //   value: 0
+  // },
   {
     label: '已入库（海外仓）',
     value: 1

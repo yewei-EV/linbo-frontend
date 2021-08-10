@@ -29,6 +29,27 @@
           <el-form-item label="物流单号：">
             <el-input v-model="listQuery.note" class="input-width" placeholder="物流单号" clearable></el-input>
           </el-form-item>
+          <el-form-item label="SKU：">
+            <el-input v-model="listQuery.sku" class="input-width" placeholder="SKU" clearable></el-input>
+          </el-form-item>
+          <el-form-item label="尺寸：">
+            <el-select v-model="item.size" placeholder="全部" clearable style="width: 177px">
+              <el-option v-for="item in sizeOptions"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item v-if="!this.warehouseLocation" label="地点：">
+            <el-select v-model="listQuery.location" placeholder="全部" clearable style="width: 177px">
+              <el-option v-for="item in regionOptions"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
           <el-form-item label="存放位置: ">
             <el-input v-model="listQuery.positionInfo" class="input-width" placeholder="存放位置" clearable></el-input>
           </el-form-item>
@@ -211,6 +232,9 @@
         </el-table-column>
         <el-table-column label="订单ID" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].id:""}}</template>
+        </el-table-column>
+        <el-table-column label="地址" min-width="100" align="center">
+          <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].destination:""}}</template>
         </el-table-column>
         <el-table-column label="备注" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.remark}}</template>
@@ -402,7 +426,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="orderDialogVisible = false" size="small">取 消</el-button>
-<!--        <el-button type="primary" @click="gotoOrderPage(order)" size="small">进入订单</el-button>-->
+        <el-button v-if="!this.warehouseLocation" type="primary" @click="gotoOrderPage(order)" size="small">进入订单</el-button>
       </span>
     </el-dialog>
     <el-dialog
@@ -580,6 +604,7 @@ import {
     location: null,
     note: null,
     createTime: null,
+    requestBy: null,
     itemStatuses: [],
     positionInfo: null,
     remark: null,
@@ -623,7 +648,45 @@ import {
         inOutBoundDialogVisible: false,
         operateType: null,
         orderStatusOptions: orderStatusOptions,
-        statusOptions: statusOptions,
+        statusOptions: [
+          {
+            label: '已入库（海外仓）',
+            value: 1
+          }, {
+            label: '待打包',
+            value: 2
+          }, {
+            label: '已打包',
+            value: 3
+          }, {
+            label: '待集运linbo国内仓',
+            value: 4
+          }, {
+            label: '待直邮国内用户手上',
+            value: 5
+          }, {
+            label: '待退货',
+            value: 6
+          }, {
+            label: '待转寄海外其他地址',
+            value: 7
+          }, {
+            label: '待海外寄存',
+            value: 8
+          }, {
+            label: '待转寄stockx',
+            value: 9
+          }, {
+            label: '待代卖stockx',
+            value: 20
+          }, {
+            label: '已发货（海外仓）',
+            value: 10
+          }, {
+            label: '已寄存（海外仓）',
+            value: 11
+          }
+        ],
         regionOptions: regionOptions,
         sizeOptions: sizeOptions,
         weightUnitOptions: weightUnitOptions,
@@ -635,9 +698,8 @@ import {
     created() {
       if (this.$route.query.itemStatus) {
         this.listQuery.itemStatuses = this.$route.query.itemStatus;
-      } else {
-        this.listQuery.itemStatuses = [0,1,2,3,4,5,6,7,8,9,10,11,20];
       }
+      this.listQuery.requestBy = "OS";
       this.listQuery.location = this.$route.query.location;
       getInfo().then(response => {
         this.userInfo = response.data;

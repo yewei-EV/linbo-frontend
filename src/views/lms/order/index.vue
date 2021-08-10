@@ -361,7 +361,7 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item label="Label：" prop="附件">
-          <single-upload v-model="order.attachment"></single-upload>
+          <pdf-upload v-model="order.attachment"></pdf-upload>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -427,7 +427,7 @@
           <el-input v-model="order.destination" style="width: 250px" placeholder="地址" clearable></el-input>
         </el-form-item>
         <el-form-item v-if="order.orderAction==='2'||order.orderAction==='3'||order.orderAction==='5'" label="Label：" prop="附件">
-          <single-upload v-model="order.attachment"></single-upload>
+          <pdf-upload v-model="order.attachment"></pdf-upload>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -469,7 +469,7 @@ import {
 import FileSaver from 'file-saver'
 import XLSX from 'xlsx'
 import {getAdminByUserSn} from "../../../api/login";
-import SingleUpload from "../../../components/Upload/singleUpload";
+import PdfUpload from "../../../components/Upload/pdfUpload";
 
 const defaultListQuery = {
   pageNum: 1,
@@ -487,7 +487,7 @@ const defaultListQuery = {
 };
 export default {
   name: "orderList",
-  components:{SingleUpload},
+  components:{PdfUpload},
   data() {
     return {
       listQuery: Object.assign({}, defaultListQuery),

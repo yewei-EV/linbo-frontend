@@ -172,6 +172,11 @@
                        @click="handleUpdate(scope.row)">
               编辑
             </el-button>
+            <el-button size="mini"
+                       type="info"
+                       style="margin-left:0;margin-top:10px;"
+                       @click="handleDelete(scope.$index, scope.row)">删除
+            </el-button>
           </template>
         </el-table-column>
         <el-table-column label="物流单号" min-width="100" align="center">
@@ -769,7 +774,7 @@ import {
         this.dialogVisible = true;
       },
       handleDelete(index, row) {
-        this.$confirm('是否要删除该货物?', '提示', {
+        this.$confirm('是否要删除该包裹?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -946,13 +951,18 @@ import {
                 this.order.createTime = new Date();
                 this.order.userSn = this.item.userSn;
                 this.order.deliverySn = this.item.deliverySn;
-                this.order.location = this.item.location
+                this.order.location = this.item.location;
                 this.order.note = this.item.note;
                 if (!this.order.orderStatus) {
                   this.order.orderStatus = 4;
                 }
                 if (!this.order.orderAction) {
                   this.order.orderAction = -1;
+                  //英国默认集运回国
+                  if (this.item.location === "EN") {
+                    this.order.orderAction = 0;
+                    this.item.itemStatus = 2;
+                  }
                 }
                 createOrder(this.order).then(() => {
                   createItem(this.item).then(() => {

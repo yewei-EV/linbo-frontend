@@ -1,5 +1,11 @@
 <template>
   <div class="app-container">
+    <div class="announcement">
+      <img :src="speaker" style="margin-right: 15px;">
+      <span class="announcement-content font-medium" @click="showDetails" @mouseover="stop" @mouseout="start" ref="announcement_content">
+        {{ msg }}
+      </span>
+    </div>
     <div class="info-layout">
       <el-row :gutter="20">
         <el-col :span="12">
@@ -59,8 +65,10 @@
         </el-col>
         <el-col :span="12">
           <div class="info-frame">
-            <div class="info-title">用户： {{this.userInfo.username}}</div>
-            <div class="info-user">识别码： {{this.userInfo.userSn}}</div>
+            <div class="info-title">用户名： <span class="content-value">{{this.userInfo.username}}</span></div>
+            <div class="info-title">Discord： <span class="content-value">{{this.userInfo.discordId}}</span></div>
+            <div class="info-title">邮箱： <span class="content-value">{{this.userInfo.email}}</span></div>
+            <div class="info-user">识别码： <span class="content-value">{{this.userInfo.userSn}}</span></div>
           </div>
         </el-col>
       </el-row>
@@ -246,6 +254,21 @@
         </el-col>
       </el-row>
     </div>
+    <el-dialog
+      :visible.sync="announcementDialogVisible"
+      width="80%">
+      <el-row :gutter="20">
+        <el-col :span="24">
+          <div class="un-handle-item" style="word-break:break-all">
+            <span class="font-title-large">公告： </span>
+            <span class="font-medium">{{this.announcement}}</span>
+          </div>
+        </el-col>
+      </el-row>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="announcementDialogVisible = false" size="small">取 消</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -254,8 +277,9 @@ import {str2Date} from '@/utils/date';
 import img_home_order from '@/assets/images/home_order.png';
 import img_home_today_amount from '@/assets/images/home_today_amount.png';
 import img_home_yesterday_amount from '@/assets/images/home_yesterday_amount.png';
+import speaker from '@/assets/images/speaker.png';
 import {fetchItemCount} from '@/api/warehouse';
-import {getInfo} from "../../api/login";
+import {getAnnouncement, getInfo} from "../../api/login";
 import {
   statusOptions,
   regionOptions,
@@ -285,7 +309,11 @@ export default {
   name: 'home',
   data() {
     return {
+      msg: null,
+      announcement: null,
+      intervalId: null,
       userInfo: null,
+      announcementDialogVisible: false,
       todayInboundItemCount: 0,
       todayOutboundItemCount: 0,
       totalInboundItemCount: 0,
@@ -340,6 +368,7 @@ export default {
       },
       loading: false,
       dataEmpty: false,
+      speaker,
       img_home_order,
       img_home_today_amount,
       img_home_yesterday_amount
@@ -349,8 +378,32 @@ export default {
     this.getSalesInfo();
     this.initOrderCountDate();
     this.getData();
+    this.getAnnouncement();
+    this.start();
   },
   methods:{
+    showDetails() {
+      this.announcementDialogVisible = true;
+    },
+    start() {
+      let that = this;
+      if (that.intervalId != null) {
+        return;
+      } else {
+        that.intervalId = setInterval(() => {
+          //截取到头到第一个字符串
+          let start = that.msg.substring(0, 1);
+          //截取到后面所有到字符串
+          let end = that.msg.substring(1);
+          //重新拼接得到新到字符串，并赋值给msg
+          that.msg = end + start;
+        }, 400);
+      }
+    },
+    stop() {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
+    },
     directToItemList() {
       this.$router.push({
         path: '/user/item'
@@ -490,14 +543,32 @@ export default {
         this.dataEmpty = false;
         this.loading = false
       }, 1000)
+    },
+    getAnnouncement() {
+      getAnnouncement().then(response => {
+        this.msg = response.data;
+        this.announcement = response.data;
+      });
     }
   }
 }
 </script>
 
 <style scoped>
+.announcement {
+  width: 100%;
+  display: inline-flex;
+  margin-bottom: 20px;
+}
+.announcement-content {
+  width:  100%;
+  overflow: hidden;
+  display: block;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 .app-container {
-  margin-top: 40px;
   margin-left: 120px;
   margin-right: 120px;
 }
@@ -567,6 +638,7 @@ export default {
 .info-title {
   color: orange;
   font-size: 20px;
+  margin-bottom: 10px;
 }
 .info-content {
   margin-top: 10px;

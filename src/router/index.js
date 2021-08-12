@@ -136,7 +136,13 @@ export const asyncRouterMap = [
         component: () => import('@/views/ums/resource/categoryList'),
         meta: {title: '资源分类'},
         hidden: true
-      }
+      },
+      {
+        path: 'announcement',
+        name: 'announcement',
+        component: () => import('@/views/ums/announcement/index'),
+        meta: {title: '公告管理', icon: 'product-add'},
+      },
     ]
   },
   {

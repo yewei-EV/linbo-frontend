@@ -440,7 +440,7 @@
       width="80%">
       <el-row class="el-row-address" :gutter="20">
         <el-col :span="24">
-          <div class="un-handle-item">
+          <div class="un-handle-item" style="word-break:break-all">
             <span class="font-title-large">收件地址：</span>
             {{this.address}}
           </div>

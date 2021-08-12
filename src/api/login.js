@@ -31,6 +31,24 @@ export function getInfo() {
   })
 }
 
+export function getAnnouncement() {
+  return request({
+    url: '/announcement/info',
+    method: 'get',
+  })
+}
+
+export function updateAnnouncement(data) {
+  return request({
+    url: '/announcement/update',
+    method: 'post',
+    data: {
+      id:1,
+      announcement: data
+    }
+  })
+}
+
 export function createAddress(data) {
   return request({
     url: '/address/create',

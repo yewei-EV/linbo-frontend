@@ -7,68 +7,78 @@
       </span>
     </div>
     <div class="info-layout">
+      <div class="address-title">
+        <div>
+          <label style="color:#164988">仓库地点：</label>
+          <el-select @change="switchWarehouseLocation()" v-model="warehouseLocation" placeholder="全部" clearable style="width:177px">
+            <el-option v-for="item in regionOptions"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value">
+            </el-option>
+          </el-select>
+        </div>
+        <div class="info-user">识别码： <span style="color:#164988">{{this.userInfo?this.userInfo.userSn:''}}</span></div>
+      </div>
       <el-row :gutter="20">
-        <el-col :span="12">
+        <el-col :span="24">
           <div class="info-frame">
-            <div class="info-title">海外仓地址：</div>
-            <div class="info-content">
+            <div class="address-content">
               <el-row :gutter="20">
-                <el-col :span="12" class="content-title">
-                  Name
+                <el-col :span="12">
+                  <div class="info-title">First Name：
+                    <span v-if="this.address.firstName!==''" class="content-value">{{this.address.firstName}}</span>
+                    <span v-else style="color:gray">请自行设置</span>
+                  </div>
                 </el-col>
-                <el-col :span="12" class="content-value">
-                  Test
+                <el-col :span="12">
+                  <div class="info-title">Last Name：
+                    <span v-if="this.address.lastName!==''" class="content-value">{{this.address.lastName}}</span>
+                    <span v-else style="color:gray">请自行设置</span>
+                  </div>
                 </el-col>
               </el-row>
             </div>
-            <div class="info-content">
+            <div class="address-content">
               <el-row :gutter="20">
-                <el-col :span="12" class="content-title">
-                  Address Line 1
+                <el-col :span="12">
+                  <div class="info-title">地址1： <span class="content-value">{{this.address.address1}}</span></div>
                 </el-col>
-                <el-col :span="12" class="content-value">
-                  Test
+                <el-col :span="12">
+                  <div class="info-title">地址2： <span class="content-value">{{this.address.address2}}</span></div>
                 </el-col>
               </el-row>
             </div>
-            <div class="info-content">
+            <div class="address-content">
               <el-row :gutter="20">
-                <el-col :span="12" class="content-title">
-                  Address Line 2
+                <el-col :span="12">
+                  <div class="info-title">城市： <span class="content-value">{{this.address.city}}</span></div>
                 </el-col>
-                <el-col :span="12" class="content-value">
-                  Test
+                <el-col :span="12">
+                  <div class="info-title">州： <span class="content-value">{{this.address.state}}</span></div>
                 </el-col>
               </el-row>
             </div>
-            <div class="info-content">
+            <div class="address-content">
               <el-row :gutter="20">
-                <el-col :span="12" class="content-title">
-                  City, State, Zip Code
+                <el-col :span="12">
+                  <div class="info-title">邮编： <span class="content-value">{{this.address.zip}}</span></div>
                 </el-col>
-                <el-col :span="12" class="content-value">
-                  Test
+                <el-col :span="12">
+                  <div class="info-title">电话： <span class="content-value">{{this.address.tel}}</span></div>
                 </el-col>
               </el-row>
             </div>
-            <div class="info-content">
+            <div class="address-content">
               <el-row :gutter="20">
-                <el-col :span="12" class="content-title">
-                  Phone
+                <el-col :span="12" v-if="this.address.fullZip">
+                  <div class="info-title">全邮编： <span class="content-value">{{this.address.fullZip}}</span></div>
                 </el-col>
-                <el-col :span="12" class="content-value">
-                  Test
+                <el-col :span="12" v-if="this.address.country">
+                  <div class="info-title">国家： <span class="content-value">{{this.address.country}}</span></div>
                 </el-col>
               </el-row>
             </div>
-          </div>
-        </el-col>
-        <el-col :span="12">
-          <div class="info-frame">
-            <div class="info-title">用户名： <span class="content-value">{{this.userInfo.username}}</span></div>
-            <div class="info-title">Discord： <span class="content-value">{{this.userInfo.discordId}}</span></div>
-            <div class="info-title">邮箱： <span class="content-value">{{this.userInfo.email}}</span></div>
-            <div class="info-user">识别码： <span class="content-value">{{this.userInfo.userSn}}</span></div>
           </div>
         </el-col>
       </el-row>
@@ -282,8 +292,8 @@ import {fetchItemCount} from '@/api/warehouse';
 import {getAnnouncement, getInfo} from "../../api/login";
 import {
   statusOptions,
-  regionOptions,
 } from '../../dto/options';
+import {getAddress} from "../../utils/address";
 
 const DATA_FROM_BACKEND = {
   columns: ['date', 'orderCount','orderAmount'],
@@ -305,6 +315,19 @@ const DATA_FROM_BACKEND = {
     {date: '2021-05-15', orderCount: 40, orderAmount: 4293}
   ]
 };
+
+const defaultAddress = {
+  firstName: null,
+  lastName: null,
+  address1: null,
+  address2: null,
+  city: null,
+  state: null,
+  zip: null,
+  tel: null,
+  fullZip: null,
+  country: null
+};
 export default {
   name: 'home',
   data() {
@@ -313,6 +336,8 @@ export default {
       announcement: null,
       intervalId: null,
       userInfo: null,
+      warehouseLocation: "US1",
+      address: Object.assign({}, defaultAddress),
       announcementDialogVisible: false,
       todayInboundItemCount: 0,
       todayOutboundItemCount: 0,
@@ -324,7 +349,19 @@ export default {
       currentProcessingItemCount: 0,
       currentSentItemCount: 0,
       currentStorageItemCount: 0,
-      regionOptions: regionOptions,
+      regionOptions: [
+        {label:"新泽西", value:'US1'},
+        {label:"洛杉矶", value:'US2'},
+        {label:"西班牙", value:'SP'},
+        {label:"意大利", value:'IT'},
+        {label:"荷兰", value:'NL'},
+        {label:"德国", value:'DE'},
+        {label:"英国", value:'EN'},
+        {label:"日本", value:'JP'},
+        {label:"澳大利亚", value:'AU'},
+        {label:"香港", value:'HK'},
+        {label:"加拿大", value:'CA'},
+      ],
       itemCountOption: {
         dayOffset: null,
         location: null,
@@ -429,6 +466,7 @@ export default {
       getInfo().then(response => {
         this.userInfo = response.data;
         this.fetchStatisticsInfo();
+        this.switchWarehouseLocation();
       });
     },
     fetchStatisticsInfo() {
@@ -511,7 +549,7 @@ export default {
 
     },
     switchWarehouseLocation() {
-      this.fetchStatisticsInfo();
+      this.address = getAddress(this.warehouseLocation, this.userInfo.userSn, "", "");
     },
     handleDateChange(){
       this.getData();
@@ -558,7 +596,7 @@ export default {
 .announcement {
   width: 100%;
   display: inline-flex;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 .announcement-content {
   width:  100%;
@@ -631,31 +669,31 @@ export default {
 }
 .info-frame {
   border: 1px solid #DCDFE6;
-  padding: 20px;
-  height: 210px;
+  border-radius: 5px;
+  padding-left: 30px;
+  height: 320px;
   background-color: #164988;
+}
+.address-title {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
 }
 .info-title {
   color: orange;
   font-size: 20px;
   margin-bottom: 10px;
 }
-.info-content {
-  margin-top: 10px;
-}
-.content-title {
-  color: white;
-  font-weight: bold
+.address-content {
+  margin-top: 25px;
 }
 .content-value {
   color: whitesmoke;
 }
 .info-user {
   margin-top: 10px;
-  margin-bottom: 20px;
-  font-size: 30px;
-  color: white;
-  position: absolute;
-  bottom: 0;
+  margin-right: 10px;
+  font-size: 18px;
+  color: orange;
 }
 </style>

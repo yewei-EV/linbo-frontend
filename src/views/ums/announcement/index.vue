@@ -57,7 +57,7 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
 .app-container {
   margin-top: 40px;
 }

@@ -1077,7 +1077,7 @@ import {
     }
   }
 </script>
-<style>
+<style scoped>
 .tableTitle {
   position: relative;
   margin: 0 auto;

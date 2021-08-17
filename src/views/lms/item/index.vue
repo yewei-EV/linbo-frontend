@@ -898,17 +898,19 @@ import {
                     this.item.itemStatus = 2;
                   }
                 }
-                createOrder(this.order).then(() => {
-                  createItem(this.item).then(() => {
-                    this.$message({
-                      message: '添加成功！',
-                      type: 'success'
+                createOrder(this.order).then((res) => {
+                  if (res.code === 200) {
+                    createItem(this.item).then(() => {
+                      this.$message({
+                        message: '添加成功！',
+                        type: 'success'
+                      });
+                      this.dialogVisible = false;
+                      this.order = Object.assign({}, defaultOrder);
+                      this.item = Object.assign({}, defaultItem);
+                      this.getList();
                     });
-                    this.dialogVisible = false;
-                    this.order = Object.assign({}, defaultOrder);
-                    this.item = Object.assign({}, defaultItem);
-                    this.getList();
-                  })
+                  }
                 })
               }
             });

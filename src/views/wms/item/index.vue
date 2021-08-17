@@ -1027,22 +1027,25 @@ import {
           return;
         }
         let mainOrder = null;
+        let totalDeliverySn = "";
+        let totalAmount = 0;
+        this.listLoading = true;
+        this.packageDialogVisible = false;
         for (const element of items) {
           if (!mainOrder) {
             mainOrder = element.orders[0];
-            mainOrder.weightUnit = this.packageWeightUnit;
-            mainOrder.weight = this.packageWeight;
-            mainOrder.price = this.packagePrice;
-            // mainOrder.orderStatus = 0;
-            await updateOrder(mainOrder);
           } else {
-            await allocOrder(element.id, mainOrder.id).then(() => {
-              mainOrder.deliverySn = mainOrder.deliverySn + "&" + element.deliverySn;
-              mainOrder.amount++;
-              // mainOrder.orderStatus = 0;
-              updateOrder(mainOrder);
-            });
+            totalDeliverySn = totalDeliverySn + element.deliverySn + ", ";
+            totalAmount = totalAmount + 1;
+            await allocOrder(element.id, mainOrder.id);
           }
+          mainOrder.weightUnit = this.packageWeightUnit;
+          mainOrder.weight = this.packageWeight;
+          mainOrder.price = this.packagePrice;
+          mainOrder.deliverySn = totalDeliverySn;
+          mainOrder.amount = totalAmount;
+          await updateOrder(mainOrder);
+
           element.note = this.packageNote;
           element.positionInfo = this.packagePositionInfo;
           await updateItemStatus(element, mainOrder.orderAction);
@@ -1056,7 +1059,6 @@ import {
         this.packagePrice = null;
         this.packageNote = null;
         this.packagePositionInfo = null;
-        this.packageDialogVisible = false;
         this.getList();
       },
       async tryCombinePackages() {

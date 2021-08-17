@@ -706,6 +706,14 @@
               });
               return;
             }
+          } else if (this.order.orderAction === "9") {
+            if (!this.order.destination) {
+              this.$message({
+                type: 'error',
+                message: '地址为必填项!'
+              });
+              return;
+            }
           }
           updateItemStatus(this.item, this.order.orderAction).then(() => {
             updateOrderByUser(this.order).then(() => {

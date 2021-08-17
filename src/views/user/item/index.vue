@@ -920,7 +920,8 @@
           });
           return;
         }
-        if (this.multipleSelection.map(value => value.orders[0].orderAction).every(value => value === "-1"||value === "4")) {
+        if (this.multipleSelection.map(value => value.orders[0].orderAction).every(value => value === "-1"||value === "4")
+          && this.multipleSelection.map(value => value.location).every(value => value === "US1")) {
           if(this.operateType===1 || this.operateType===2) {
             //批量选择操作
             this.directDeliveryDialogVisible = true;
@@ -930,9 +931,9 @@
           }
         } else {
           this.$message({
-            message: '请选择未处理的包裹',
+            message: '请选择允许直邮的包裹(新泽西仓Only)',
             type: 'error',
-            duration: 3000
+            duration: 5000
           });
         }
       },

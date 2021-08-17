@@ -118,7 +118,7 @@
         <el-table-column label="尺寸" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.size}}</template>
         </el-table-column>
-        <el-table-column label="操作" min-width="140" align="center">
+        <el-table-column label="包裹操作" min-width="140" align="center">
           <template slot-scope="scope">
             <el-button size="mini"
                        type="text"
@@ -179,6 +179,9 @@
             </el-button>
           </template>
         </el-table-column>
+        <el-table-column label="地址" min-width="150" align="center">
+          <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].destination:""}}</template>
+        </el-table-column>
         <el-table-column label="物流单号" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.note}}</template>
         </el-table-column>
@@ -223,7 +226,7 @@
         <el-table-column label="尺寸" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.size}}</template>
         </el-table-column>
-        <el-table-column label="最新操作" min-width="100" align="center">
+        <el-table-column label="包裹操作" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].orderAction:"" | formatAction}}</template>
         </el-table-column>
         <el-table-column label="状态" min-width="100" align="center">

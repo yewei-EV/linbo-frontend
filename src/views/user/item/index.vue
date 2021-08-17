@@ -71,7 +71,7 @@
         <el-table-column label="尺寸" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.size}}</template>
         </el-table-column>
-        <el-table-column label="最新操作" min-width="140" align="center">
+        <el-table-column label="包裹操作" min-width="140" align="center">
           <template slot-scope="scope">
             <el-button size="mini"
                        type="text"

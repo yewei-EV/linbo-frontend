@@ -161,6 +161,15 @@
 <!--            </el-button>-->
           </template>
         </el-table-column>
+        <el-table-column label="相关包裹" min-width="80" align="center">
+          <template slot-scope="scope">
+            <el-button size="mini"
+                       type="info"
+                       style="margin-left:0;margin-top:10px;"
+                       @click="showRelatedItems(scope.row.id)">显示
+            </el-button>
+          </template>
+        </el-table-column>
         <el-table-column label="地址" min-width="80" align="center">
           <template slot-scope="scope">
             <el-button size="mini"
@@ -450,6 +459,27 @@
         <el-button @click="addressDetailsDialogVisible = false" size="small">取 消</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      :visible.sync="relatedItemsDialogVisible"
+      width="80%">
+      <ul id="v-for-object">
+        <li v-for="item in relatedItems">
+          <div class="un-handle-item" style="word-break:break-all">
+            运单号：{{item.deliverySn}}；
+            地点：{{item.location|formatLocation}}；
+            包裹状态：{{item.itemStatus|formatItemStatus}}；
+            存放位置：{{item.positionInfo}}；
+            物流单号：{{item.newDeliverySn}}；
+            包裹备注：{{item.remark}}；
+            SKU：{{item.sku}}；
+            尺寸：{{item.size}}；
+          </div>
+        </li>
+      </ul>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="relatedItemsDialogVisible = false" size="small">取 消</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -457,14 +487,14 @@ import {
   fetchOrderList,
   updateOrder,
   createOrder,
-  deleteOrder, updateItemStatusByOrder, updateOrderByUser, refreshItemStatusByOrder,
+  deleteOrder, updateItemStatusByOrder, updateOrderByUser, refreshItemStatusByOrder, fetchItemOrders, fetchRelatedItems,
 } from '../../../api/warehouse';
 import {
   orderStatusOptions,
   weightUnitOptions,
   formatDateTime,
   formatAction,
-  defaultOrder, actionOptions, formatWeightUnit, formatLocation, regionOptions
+  defaultOrder, actionOptions, formatWeightUnit, formatLocation, regionOptions, formatItemStatus
 } from '../../../dto/options';
 import FileSaver from 'file-saver'
 import XLSX from 'xlsx'
@@ -498,10 +528,12 @@ export default {
       list: null,
       total: null,
       address: null,
+      relatedItems: [],
       dialogVisible: false,
       paymentDialogVisible: false,
       orderActionDialogVisible: false,
       addressDetailsDialogVisible: false,
+      relatedItemsDialogVisible: false,
       operateType: null,
       multipleSelection: [],
       paymentNote: null,
@@ -524,7 +556,8 @@ export default {
     formatDateTime: formatDateTime,
     formatAction: formatAction,
     formatWeightUnit: formatWeightUnit,
-    formatLocation: formatLocation
+    formatLocation: formatLocation,
+    formatItemStatus: formatItemStatus
   },
   methods: {
     handleResetSearch() {
@@ -720,6 +753,12 @@ export default {
     showAddressDetails(value) {
       this.address = value;
       this.addressDetailsDialogVisible = true;
+    },
+    showRelatedItems(orderId) {
+      fetchRelatedItems(orderId).then(result => {
+        this.relatedItems = result.data;
+        this.relatedItemsDialogVisible = true;
+      })
     },
     refreshData() {
       this.getList();

@@ -23,6 +23,14 @@ export function fetchItemOrders(itemId) {
   })
 }
 
+export function fetchRelatedItems(orderId) {
+  return request({
+    url: '/item/fetchRelatedItemsByOrder/',
+    method: 'get',
+    params: {orderId: orderId}
+  })
+}
+
 export function fetchOrderList(params) {
   return request({
     url: '/order/list',

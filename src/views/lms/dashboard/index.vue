@@ -359,9 +359,6 @@
     margin-right: 120px;
   }
 
-  .address-layout {
-  }
-
   .total-layout {
     margin-top: 40px;
   }

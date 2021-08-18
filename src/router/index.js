@@ -143,6 +143,12 @@ export const asyncRouterMap = [
         component: () => import('@/views/ums/announcement/index'),
         meta: {title: '公告管理', icon: 'product-add'},
       },
+      {
+        path: 'log',
+        name: 'log',
+        component: () => import('@/views/ums/log/index'),
+        meta: {title: '日志管理', icon: 'product-add'},
+      }
     ]
   },
   {

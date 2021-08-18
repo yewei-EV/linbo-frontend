@@ -177,3 +177,11 @@ export function allocRole(data) {
     data: data
   })
 }
+
+export function getLog(params) {
+  return request({
+    url: '/log/list',
+    method: 'post',
+    data: params
+  })
+}

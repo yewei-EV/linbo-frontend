@@ -26,9 +26,6 @@
           <el-form-item label="识别码：">
             <el-input v-model="listQuery.userSn" class="input-width" placeholder="识别码" clearable></el-input>
           </el-form-item>
-          <el-form-item label="物流单号：">
-            <el-input v-model="listQuery.note" class="input-width" placeholder="物流单号" clearable></el-input>
-          </el-form-item>
           <el-form-item label="SKU：">
             <el-input v-model="listQuery.sku" class="input-width" placeholder="SKU" clearable></el-input>
           </el-form-item>
@@ -49,9 +46,6 @@
                          :value="item.value">
               </el-option>
             </el-select>
-          </el-form-item>
-          <el-form-item label="存放位置: ">
-            <el-input v-model="listQuery.positionInfo" class="input-width" placeholder="存放位置" clearable></el-input>
           </el-form-item>
           <el-form-item label="备注：">
             <el-input v-model="listQuery.remark" class="input-width" placeholder="备注" clearable></el-input>
@@ -108,9 +102,6 @@
         </el-table-column>
         <el-table-column label="添加时间" min-width="140" align="center">
           <template slot-scope="scope">{{scope.row.createTime | formatDateTime}}</template>
-        </el-table-column>
-        <el-table-column label="存放位置" min-width="100" align="center">
-          <template slot-scope="scope">{{scope.row.positionInfo}}</template>
         </el-table-column>
         <el-table-column label="SKU" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.sku}}</template>
@@ -182,8 +173,18 @@
         <el-table-column label="地址" min-width="150" align="center">
           <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].destination:""}}</template>
         </el-table-column>
-        <el-table-column label="物流单号" min-width="100" align="center">
-          <template slot-scope="scope">{{scope.row.note}}</template>
+        <el-table-column label="Label单号" min-width="150" align="center">
+          <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].labelNumber:""}}</template>
+        </el-table-column>
+        <el-table-column label="超时时间" min-width="150" align="center">
+          <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].overtimeDate:"" | formatDateTime}}</template>
+        </el-table-column>
+        <el-table-column label="Label" min-width="100" align="center">
+          <template slot-scope="scope">
+            <a :href="scope.row.orders[0].attachment" target="_blank" download>
+              <el-button v-if="scope.row.orders[0].attachment" size="small">下载</el-button>
+            </a>
+          </template>
         </el-table-column>
         <el-table-column label="备注" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.remark}}</template>
@@ -217,9 +218,6 @@
         <el-table-column label="添加时间" min-width="140" align="center">
           <template slot-scope="scope">{{scope.row.createTime | formatDateTime}}</template>
         </el-table-column>
-        <el-table-column label="存放位置" min-width="100" align="center">
-          <template slot-scope="scope">{{scope.row.positionInfo}}</template>
-        </el-table-column>
         <el-table-column label="SKU" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.sku}}</template>
         </el-table-column>
@@ -235,14 +233,20 @@
         <el-table-column label="支付状态" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].orderStatus:"" | formatOrderStatus}}</template>
         </el-table-column>
-        <el-table-column label="物流单号" min-width="100" align="center">
-          <template slot-scope="scope">{{scope.row.note}}</template>
-        </el-table-column>
         <el-table-column label="订单ID" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].id:""}}</template>
         </el-table-column>
         <el-table-column label="地址" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].destination:""}}</template>
+        </el-table-column>
+        <el-table-column label="Label单号" min-width="100" align="center">
+          <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].labelNumber:""}}</template>
+        </el-table-column>
+        <el-table-column label="Label" min-width="100" align="center">
+          <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].attachment:""}}</template>
+        </el-table-column>
+        <el-table-column label="超时时间" min-width="100" align="center">
+          <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].overtimeDate:"" | formatDateTime}}</template>
         </el-table-column>
         <el-table-column label="备注" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.remark}}</template>
@@ -323,15 +327,6 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="存放位置：">
-          <el-input v-model="item.positionInfo" style="width: 250px"></el-input>
-        </el-form-item>
-        <el-form-item label="物流单号：">
-          <el-input v-model="item.note"
-                    type="textarea"
-                    :rows="1"
-                    style="width: 250px"></el-input>
-        </el-form-item>
         <el-form-item label="备注：">
           <el-input v-model="item.remark" style="width: 250px"></el-input>
         </el-form-item>
@@ -399,12 +394,6 @@
         <el-form-item label="顺丰运费：">
           <el-input v-model="order.sfPrice" style="width: 250px"></el-input>
         </el-form-item>
-        <el-form-item label="物流单号：">
-          <el-input v-model="item.note"
-                    type="textarea"
-                    :rows="1"
-                    style="width: 250px"></el-input>
-        </el-form-item>
         <el-form-item label="Label单号：">
           <el-input v-model="order.labelNumber" style="width: 250px"></el-input>
         </el-form-item>
@@ -449,15 +438,6 @@
             </span>
           </div>
         </div>
-        <el-form-item label="存放位置：">
-          <el-input v-model="packagePositionInfo" style="width: 250px"></el-input>
-        </el-form-item>
-        <el-form-item v-if="this.operateType===3" label="物流单号：">
-          <el-input v-model="packageNote"
-                    type="textarea"
-                    :rows="1"
-                    style="width: 250px"></el-input>
-        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="inOutBoundDialogVisible = false" size="small">取 消</el-button>
@@ -476,15 +456,6 @@
             </span>
           </div>
         </div>
-        <el-form-item label="存放位置：">
-          <el-input v-model="packagePositionInfo" style="width: 250px"></el-input>
-        </el-form-item>
-        <el-form-item label="物流单号：">
-          <el-input v-model="packageNote"
-                    type="textarea"
-                    :rows="1"
-                    style="width: 250px"></el-input>
-        </el-form-item>
         <div class="optionalDivider">
           <div class="tableTitle">
             <span class="midText">

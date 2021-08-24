@@ -47,7 +47,8 @@
     <el-card class="operate-container" shadow="never">
       <i class="el-icon-tickets"></i>
       <span>包裹列表</span>
-      <el-button size="mini" class="btn-add" type="primary" @click="refreshData()">刷新</el-button>
+      <el-button size="mini" class="btn-add" type="primary" @click="refreshData()" style="margin-left: 20px">刷新</el-button>
+      <el-button size="mini" class="btn-add" type="warning" @click="handlePreload()">包裹预录</el-button>
     </el-card>
     <div class="table-container">
       <el-table ref="itemTable"
@@ -128,12 +129,20 @@
                        @click="chooseSecondActionByUser(scope.$index, scope.row)">
               选择操作
             </el-button>
-<!--            <el-button size="mini"-->
-<!--                       type="warning"-->
-<!--                       v-if="scope.row.orders && getButtonByAction(scope.row.orders[0].orderAction, scope.row.itemStatus)==='上传Label'"-->
-<!--                       @click="uploadAttachment(scope.$index, scope.row)">-->
-<!--              上传Label-->
-<!--            </el-button>-->
+            <el-button size="mini"
+                       type="warning"
+                       v-if="scope.row.orders && getButtonByAction(scope.row.orders[0].orderAction, scope.row.itemStatus)==='上传Label'
+                       && !scope.row.orders[0].attachment"
+                       @click="uploadAttachment(scope.$index, scope.row)">
+              上传Label
+            </el-button>
+            <el-button size="mini"
+                       type="warning"
+                       v-if="scope.row.orders && getButtonByAction(scope.row.orders[0].orderAction, scope.row.itemStatus)==='上传Label'
+                       && scope.row.orders[0].attachment"
+                       @click="uploadAttachment(scope.$index, scope.row)">
+              修改Label
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -307,7 +316,37 @@
             </span>
           </div>
         </div>
-        <el-form-item label="Label：" prop="附件">
+        <el-form-item v-if="order.orderAction==='5'" label="超时时间：">
+          <el-date-picker
+            style="width: 250px"
+            v-model="order.overtimeDate"
+            value-format="yyyy-MM-dd"
+            type="date"
+            placeholder="请选择时间">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='2'||order.orderAction==='3'||order.orderAction==='5'" label="Label单号：">
+          <el-input v-model="order.labelNumber" style="width: 250px" placeholder="Label单号" clearable></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='2'||order.orderAction==='3'||order.orderAction==='5'" label="用户备注：">
+          <el-input v-model="order.userRemark" style="width: 250px" placeholder="用户备注" clearable></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='2'" label="SKU：">
+          <el-input v-model="item.sku" style="width: 250px" placeholder="SKU" clearable></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='2'" label="Size：">
+          <el-input v-model="item.size" style="width: 250px" placeholder="Size" clearable></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='1'||order.orderAction==='3'||order.orderAction==='9'" label="地址：">
+          <el-select no-data-text="请至地址管理中添加地址" v-model="order.destination" clearable style="width: 600px">
+            <el-option v-for="address in addressOptions"
+                       :key="address.value"
+                       :label="address.label"
+                       :value="address.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='2'||order.orderAction==='3'||order.orderAction==='5'" label="Label：" prop="附件">
           <pdf-upload v-model="order.attachment"></pdf-upload>
         </el-form-item>
       </el-form>
@@ -433,21 +472,6 @@
       </span>
     </el-dialog>
     <el-dialog
-      :title="'入库图片'"
-      :visible.sync="photoDialogVisible"
-      width="50%">
-      <el-row :gutter="20">
-        <el-col :span="12">
-          <div class="un-handle-item">
-            <img style="height: 600px" :src="item.photo">
-          </div>
-        </el-col>
-      </el-row>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="photoDialogVisible = false" size="small">关 闭</el-button>
-      </span>
-    </el-dialog>
-    <el-dialog
       :visible.sync="dialogEndStorageVisible"
       width="80%">
       <el-form :inline="true" :model="order"
@@ -508,6 +532,68 @@
         <el-button type="primary" @click="handleChooseNextActionConfirm()" size="small">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      :title="'预录包裹（澳大利亚仓Only）'"
+      :visible.sync="preloadDialogVisible"
+      width="80%">
+      <el-form :inline="true" :model="item"
+               ref="itemForm"
+               label-width="180px" size="small">
+        <el-form-item label="运单号：">
+          <el-input v-model="item.deliverySn" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="SKU：">
+          <el-input v-model="item.sku" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="尺寸：">
+          <el-select v-model="item.size" placeholder="全部" clearable class="input-width" style="width: 250px">
+            <el-option v-for="item in sizeOptions"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <div class="optionalDivider">
+          <div class="tableTitle">
+            <span class="midText">
+              选择操作：
+            </span>
+          </div>
+        </div>
+        <el-form-item label="操作：">
+          <el-select v-model="order.orderAction" clearable style="width: 250px">
+            <el-option v-for="order in actionOptions"
+                       :key="order.value"
+                       :label="order.label"
+                       :value="order.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='5'" label="超时时间：">
+          <el-date-picker
+            style="width: 250px"
+            v-model="order.overtimeDate"
+            value-format="yyyy-MM-dd"
+            type="date"
+            placeholder="请选择时间">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='2'||order.orderAction==='3'||order.orderAction==='5'" label="Label单号：">
+          <el-input v-model="order.labelNumber" style="width: 250px" placeholder="Label单号" clearable></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='2'||order.orderAction==='3'||order.orderAction==='5'" label="用户备注：">
+          <el-input v-model="order.userRemark" style="width: 250px" placeholder="用户备注" clearable></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='2'||order.orderAction==='3'||order.orderAction==='5'" label="Label：" prop="附件">
+          <pdf-upload v-model="order.attachment"></pdf-upload>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="preloadDialogVisible = false" size="small">取 消</el-button>
+        <el-button type="primary" @click="preloadPackage()" size="small">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -526,12 +612,12 @@
     formatOrderStatus,
     formatLocation,
     getActionOptionsByLocation,
-    getActionOptionsAfterStorageByLocation, formatItemStatus,
+    getActionOptionsAfterStorageByLocation, formatItemStatus, sizeOptions,
   } from '../../../dto/options';
   import {
     updateOrderByUser,
     fetchItemList,
-    fetchItemOrders, updateItemStatus, refreshItemStatusByOrder,
+    fetchItemOrders, updateItemStatus, refreshItemStatusByOrder, createOrder, createItem,
   } from '../../../api/warehouse';
 
   const defaultListQuery = {
@@ -560,6 +646,7 @@
         listQuery: Object.assign({}, defaultListQuery),
         orderStatusOptions: orderStatusOptions,
         statusOptions: statusOptions,
+        sizeOptions: sizeOptions,
         regionOptions: regionOptions,
         weightUnitOptions: weightUnitOptions,
         actionOptions:  [
@@ -595,6 +682,7 @@
         totalDeliveryDialogVisible: false,
         secondOrderActionDialogVisible: false,
         orderAttachmentDialogVisible: false,
+        preloadDialogVisible: false,
         orderDialogVisible: false,
         operateType: null,
         directDestination: null,
@@ -834,6 +922,17 @@
       refreshData() {
         this.getList();
       },
+      handlePreload() {
+        this.item = Object.assign({}, defaultItem);
+        this.item.location = "AU";
+        this.item.userSn = this.userInfo.userSn;
+        this.order = Object.assign({}, defaultOrder);
+        this.actionOptions = getActionOptionsByLocation("AU");
+        if (this.item.location === "AU") {
+          this.actionOptions.splice(1, 1);
+        }
+        this.preloadDialogVisible = true;
+      },
       handleEndStorage(row) {
         this.item = Object.assign({}, row);
         this.order = this.item.orders[0];
@@ -888,6 +987,48 @@
               this.getList();
             });
           });
+        });
+      },
+      preloadPackage() {
+        this.$confirm('是否要确认?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.item.createTime = new Date();
+          // find if item is preloaded or not
+          if (!this.item.deliverySn || !this.item.userSn) {
+            this.$message({
+              type: 'error',
+              message: '运单号/识别码/入库地点为必填项!'
+            });
+            return;
+          }
+          this.item.itemStatus = 0;
+          this.order.createTime = new Date();
+          this.order.userSn = this.item.userSn;
+          this.order.deliverySn = this.item.deliverySn;
+          this.order.location = this.item.location;
+          if (!this.order.orderStatus) {
+            this.order.orderStatus = 4;
+          }
+          if (!this.order.orderAction) {
+            this.order.orderAction = -1;
+          }
+          createOrder(this.order).then((res) => {
+            if (res.code === 200) {
+              createItem(this.item).then(() => {
+                this.$message({
+                  message: '添加成功！',
+                  type: 'success'
+                });
+                this.preloadDialogVisible = false;
+                this.order = Object.assign({}, defaultOrder);
+                this.item = Object.assign({}, defaultItem);
+                this.getList();
+              });
+            }
+          })
         });
       },
       getButtonByAction(currentAction, currentStatus) {

@@ -76,7 +76,8 @@
       <span>包裹列表</span>
       <el-button size="mini" class="btn-add" type="primary" style="margin-left: 20px" @click="refreshData()">刷新</el-button>
       <el-button size="mini" class="btn-add" type="danger" style="margin-left: 20px" @click="handleAdd()">包裹入库</el-button>
-      <el-button size="mini" type="success" class="btn-add" @click="getExportList()">导出</el-button>
+      <el-button size="mini" type="success" class="btn-add" style="margin-left: 20px" @click="getExportList()">导出</el-button>
+      <el-button size="mini" class="btn-add" type="warning" v-if="!this.warehouseLocation" @click="handlePreload()">包裹预录</el-button>
     </el-card>
     <div class="table-container">
       <el-table ref="itemTable"
@@ -536,6 +537,46 @@
         <el-button type="primary" @click="handleChooseNextActionConfirm()" size="small">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      :title="'预录包裹'"
+      :visible.sync="preloadDialogVisible"
+      width="80%">
+      <el-form :inline="true" :model="item"
+               ref="itemForm"
+               label-width="180px" size="small">
+        <el-form-item label="运单号：">
+          <el-input v-model="item.deliverySn" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="识别码：">
+          <el-input v-model="item.userSn" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="地点：">
+          <el-select v-model="item.location" placeholder="全部" clearable class="input-width" style="width: 250px">
+            <el-option v-for="item in regionOptions"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="SKU：">
+          <el-input v-model="item.sku" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="尺寸：">
+          <el-select v-model="item.size" placeholder="全部" clearable class="input-width" style="width: 250px">
+            <el-option v-for="item in sizeOptions"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="preloadDialogVisible = false" size="small">取 消</el-button>
+        <el-button type="primary" @click="preloadPackage()" size="small">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -570,7 +611,7 @@ import {
   formatLocation,
   actionOptions,
   getActionOptionsAfterStorageByLocation,
-  formatItemStatus
+  formatItemStatus, getActionOptionsByLocation
 } from '../../../dto/options';
   import FileSaver from 'file-saver'
   import XLSX from 'xlsx'
@@ -625,6 +666,7 @@ import {
         packageDialogVisible: false,
         photoDialogVisible: false,
         inOutBoundDialogVisible: false,
+        preloadDialogVisible: false,
         operateType: null,
         orderStatusOptions: orderStatusOptions,
         statusOptions: [
@@ -1134,6 +1176,54 @@ import {
       },
       refreshData() {
         this.getList();
+      },
+      handlePreload() {
+        this.item = Object.assign({}, defaultItem);
+        this.order = Object.assign({}, defaultOrder);
+        this.actionOptions = actionOptions;
+        this.preloadDialogVisible = true;
+      },
+      preloadPackage() {
+        this.$confirm('是否要确认?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.item.createTime = new Date();
+          // find if item is preloaded or not
+          if (!this.item.deliverySn || !this.item.userSn) {
+            this.$message({
+              type: 'error',
+              message: '运单号/识别码/入库地点为必填项!'
+            });
+            return;
+          }
+          this.item.itemStatus = 0;
+          this.order.createTime = new Date();
+          this.order.userSn = this.item.userSn;
+          this.order.deliverySn = this.item.deliverySn;
+          this.order.location = this.item.location;
+          if (!this.order.orderStatus) {
+            this.order.orderStatus = 4;
+          }
+          if (!this.order.orderAction) {
+            this.order.orderAction = -1;
+          }
+          createOrder(this.order).then((res) => {
+            if (res.code === 200) {
+              createItem(this.item).then(() => {
+                this.$message({
+                  message: '添加成功！',
+                  type: 'success'
+                });
+                this.preloadDialogVisible = false;
+                this.order = Object.assign({}, defaultOrder);
+                this.item = Object.assign({}, defaultItem);
+                this.getList();
+              });
+            }
+          })
+        });
       },
       showNextButton(currentStatus) {
         switch (currentStatus) {

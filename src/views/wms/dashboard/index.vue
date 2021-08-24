@@ -62,6 +62,15 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <div class="un-handle-item">
+              <span class="font-medium">待入库（海外仓）</span>
+              <el-button style="float: right; padding: 0; font-size: 20px"
+                         class="color-danger" type="text" @click="directToSpecificItemList([0])">
+                ({{this.toBeInboundCount}})
+              </el-button>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="un-handle-item">
               <span class="font-medium">待打包</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
                          class="color-danger" type="text" @click="directToSpecificItemList([2])">
@@ -69,6 +78,8 @@
               </el-button>
             </div>
           </el-col>
+        </el-row>
+        <el-row :gutter="20">
           <el-col :span="12">
             <div class="un-handle-item">
               <span class="font-medium">待集运linbo国内仓</span>
@@ -78,8 +89,6 @@
               </el-button>
             </div>
           </el-col>
-        </el-row>
-        <el-row :gutter="20">
           <el-col :span="12">
             <div class="un-handle-item">
               <span class="font-medium">待直邮国内用户手上</span>
@@ -89,6 +98,8 @@
               </el-button>
             </div>
           </el-col>
+        </el-row>
+        <el-row :gutter="20">
           <el-col :span="12">
             <div class="un-handle-item">
               <span class="font-medium">待处理退货</span>
@@ -98,8 +109,6 @@
               </el-button>
             </div>
           </el-col>
-        </el-row>
-        <el-row :gutter="20">
           <el-col :span="12">
             <div class="un-handle-item">
               <span class="font-medium">待转寄海外其他地址</span>
@@ -109,6 +118,8 @@
               </el-button>
             </div>
           </el-col>
+        </el-row>
+        <el-row :gutter="20">
           <el-col :span="12">
             <div class="un-handle-item">
               <span class="font-medium">待海外寄存</span>
@@ -118,8 +129,6 @@
               </el-button>
             </div>
           </el-col>
-        </el-row>
-        <el-row :gutter="20">
           <el-col :span="12">
             <div class="un-handle-item">
               <span class="font-medium">待转寄stockx</span>
@@ -129,6 +138,8 @@
               </el-button>
             </div>
           </el-col>
+        </el-row>
+        <el-row :gutter="20">
           <el-col :span="12">
             <div class="un-handle-item">
               <span class="font-medium">待stockx代卖</span>
@@ -138,6 +149,7 @@
               </el-button>
             </div>
           </el-col>
+          <el-col :span="12"></el-col>
         </el-row>
       </div>
     </div>
@@ -254,6 +266,7 @@
         sevenDaysSales: 0,
         totalDeliveryCount: 0,
         directDeliveryCount: 0,
+        toBeInboundCount: 0,
         toBePackageCount: 0,
         refundCount: 0,
         localDeliveryCount: 0,
@@ -357,6 +370,14 @@
         });
         fetchSalesCount(saleOption7Days).then((response) => {
           this.sevenDaysSales = response.data;
+        });
+
+        let toBeInboundOption = {
+          location: this.warehouseLocation,
+          statuses: [0]
+        };
+        fetchItemCount(toBeInboundOption).then((response) => {
+          this.toBeInboundCount = response.data;
         });
 
         let toBePackageOption = {

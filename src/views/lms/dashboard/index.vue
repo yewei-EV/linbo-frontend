@@ -24,6 +24,15 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <div class="un-handle-item">
+              <span class="font-medium">待入库（国内仓）</span>
+              <el-button style="float: right; padding: 0; font-size: 20px"
+                         class="color-danger" type="text" @click="directToSpecificItemList([21])">
+                ({{this.toBeInboundCount}})
+              </el-button>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="un-handle-item">
               <span class="font-medium">待国内仓代卖</span>
               <el-button style="float: right; padding: 0; font-size: 20px"
                          class="color-danger" type="text" @click="directToSpecificItemList([13])">
@@ -31,6 +40,8 @@
               </el-button>
             </div>
           </el-col>
+        </el-row>
+        <el-row :gutter="20">
           <el-col :span="12">
             <div class="un-handle-item">
               <span class="font-medium">待顺丰快递</span>
@@ -40,8 +51,6 @@
               </el-button>
             </div>
           </el-col>
-        </el-row>
-        <el-row :gutter="20">
           <el-col :span="12">
             <div class="un-handle-item">
               <span class="font-medium">待国内仓寄存</span>
@@ -189,6 +198,7 @@
         inboundItemCount: 0,
         outboundItemCount: 0,
         duOrderCount: 0,
+        toBeInboundCount: 0,
         directDeliveryCount: 0,
         localStorageCount: 0,
         needToPricingCount: 0,
@@ -283,6 +293,12 @@
           this.outboundItemCount = response.data;
         });
 
+        let toBeInboundOption = {
+          statuses: [21]
+        };
+        fetchItemCount(toBeInboundOption).then((response) => {
+          this.toBeInboundCount = response.data;
+        });
         let duOrderCountOption = {
           statuses: [13]
         };

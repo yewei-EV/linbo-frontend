@@ -326,6 +326,7 @@ export var defaultOrder = {
   destination: null,
   note: null,
   createTime: null,
+  updateTime: null,
   orderStatus: null,
   paymentStatus: null,
   paymentTime: null,

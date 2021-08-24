@@ -77,6 +77,15 @@
           <el-form-item label="付款备注：">
             <el-input v-model="listQuery.note" class="input-width" placeholder="付款备注" clearable></el-input>
           </el-form-item>
+          <el-form-item label="最新更新时间：">
+            <el-date-picker
+              style="width: 177px"
+              v-model="listQuery.updateTime"
+              value-format="yyyy-MM-dd"
+              type="date"
+              placeholder="请选择时间">
+            </el-date-picker>
+          </el-form-item>
         </el-form>
       </div>
     </el-card>
@@ -198,6 +207,9 @@
         <el-table-column label="超时时间" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.overtimeDate | formatDateTime}}</template>
         </el-table-column>
+        <el-table-column label="最新更新时间" min-width="80" align="center">
+          <template slot-scope="scope">{{scope.row.updateTime | formatDateTime}}</template>
+        </el-table-column>
         <el-table-column label="寄存地点" min-width="80" align="center">
           <template slot-scope="scope">{{scope.row.storageLocation | formatLocation}}</template>
         </el-table-column>
@@ -246,6 +258,9 @@
         </el-table-column>
         <el-table-column label="支付成功时间" min-width="120" align="center">
           <template slot-scope="scope">{{scope.row.paymentTime | formatDateTime}}</template>
+        </el-table-column>
+        <el-table-column label="最新更新时间" min-width="80" align="center">
+          <template slot-scope="scope">{{scope.row.updateTime | formatDateTime}}</template>
         </el-table-column>
       </el-table>
     </div>
@@ -513,7 +528,8 @@ const defaultListQuery = {
   note: null,
   createTime: null,
   orderStatus: null,
-  paymentTime: null
+  paymentTime: null,
+  updateTime: null,
 };
 export default {
   name: "orderList",

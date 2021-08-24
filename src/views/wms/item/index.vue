@@ -171,6 +171,9 @@
             </el-button>
           </template>
         </el-table-column>
+        <el-table-column label="最新更新时间" min-width="140" align="center">
+          <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].updateTime:""  | formatDateTime}}</template>
+        </el-table-column>
         <el-table-column label="地址" min-width="150" align="center">
           <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].destination:""}}</template>
         </el-table-column>
@@ -236,6 +239,9 @@
         </el-table-column>
         <el-table-column label="订单ID" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].id:""}}</template>
+        </el-table-column>
+        <el-table-column label="最新更新时间" min-width="140" align="center">
+          <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].updateTime:""  | formatDateTime}}</template>
         </el-table-column>
         <el-table-column label="地址" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].destination:""}}</template>

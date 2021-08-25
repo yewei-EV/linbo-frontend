@@ -891,10 +891,10 @@ import {
                   this.order.orderStatus = 4;
                 }
                 if (!this.order.orderAction) {
-                  this.order.orderAction = -1;
+                  this.order.orderAction = "-1";
                   //英国默认集运回国
                   if (this.item.location === "EN") {
-                    this.order.orderAction = 0;
+                    this.order.orderAction = "0";
                     this.item.itemStatus = 2;
                   }
                 }
@@ -972,11 +972,16 @@ import {
           this.multipleSelection[i].note = this.packageNote;
           this.multipleSelection[i].positionInfo = this.packagePositionInfo;
           updateItemStatus(this.multipleSelection[i], this.multipleSelection[i].orders[0].orderAction).then(() => {
+            if(this.operateType===1) {
+              this.multipleSelection[i].orders[0].orderAction = "-1";
+              updateOrder(this.multipleSelection[i].orders[0]).then()
+            }
             this.$message({
-              message: '修改成功！',
+              message: '操作成功！',
               type: 'success'
             });
             this.inOutBoundDialogVisible = false;
+            this.isInput = false;
             this.getList();
           }).catch(() => {
             this.inOutBoundDialogVisible = false;

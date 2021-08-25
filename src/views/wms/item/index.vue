@@ -434,7 +434,7 @@
       </span>
     </el-dialog>
     <el-dialog
-      :title="'批量入库/出库'"
+      :title="'批量出库'"
       :visible.sync="inOutBoundDialogVisible"
       width="80%">
       <el-form :inline="true" label-width="180px" size="small">
@@ -460,13 +460,6 @@
           <div class="tableTitle">
             <span class="midText">
               包裹数量: {{this.multipleSelection.length===0?1:this.multipleSelection.length}}
-            </span>
-          </div>
-        </div>
-        <div class="optionalDivider">
-          <div class="tableTitle">
-            <span class="midText">
-              称重信息：
             </span>
           </div>
         </div>
@@ -979,10 +972,10 @@ import {
                   this.order.orderStatus = 4;
                 }
                 if (!this.order.orderAction) {
-                  this.order.orderAction = -1;
+                  this.order.orderAction = "-1";
                   //英国默认集运回国
                   if (this.item.location === "EN") {
-                    this.order.orderAction = 0;
+                    this.order.orderAction = "0";
                     this.item.itemStatus = 2;
                   }
                 }
@@ -1051,11 +1044,11 @@ import {
         this.listLoading = true;
         this.packageDialogVisible = false;
         for (const element of items) {
+          totalDeliverySn = totalDeliverySn + element.deliverySn + ", ";
+          totalAmount = totalAmount + 1;
           if (!mainOrder) {
             mainOrder = element.orders[0];
           } else {
-            totalDeliverySn = totalDeliverySn + element.deliverySn + ", ";
-            totalAmount = totalAmount + 1;
             await allocOrder(element.id, mainOrder.id);
           }
           mainOrder.weightUnit = this.packageWeightUnit;
@@ -1213,7 +1206,7 @@ import {
             this.order.orderStatus = 4;
           }
           if (!this.order.orderAction) {
-            this.order.orderAction = -1;
+            this.order.orderAction = "-1";
           }
           createOrder(this.order).then((res) => {
             if (res.code === 200) {

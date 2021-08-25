@@ -1013,7 +1013,7 @@
             this.order.orderStatus = 4;
           }
           if (!this.order.orderAction) {
-            this.order.orderAction = -1;
+            this.order.orderAction = "-1";
           }
           createOrder(this.order).then((res) => {
             if (res.code === 200) {

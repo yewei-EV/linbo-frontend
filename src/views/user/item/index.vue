@@ -734,6 +734,7 @@
     methods: {
       handleResetSearch() {
         this.listQuery = Object.assign({}, defaultListQuery);
+        this.listQuery.userSn = this.userInfo.userSn;
       },
       // querySearch(queryString, cb) {
       //   let results = queryString ? this.addressOptions.filter(this.createFilter(queryString)) : this.addressOptions;

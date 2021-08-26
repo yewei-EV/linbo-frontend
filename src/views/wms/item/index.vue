@@ -762,10 +762,11 @@ import {
     methods: {
       handleResetSearch() {
         this.listQuery = Object.assign({}, defaultListQuery);
-        this.listQuery.itemStatuses = [0,1,2,3,4,5,6,7,8,9,10,11,20];
+        this.listQuery.location = this.warehouseLocation;
       },
       handleSearchList() {
         this.listQuery.pageNum = 1;
+        this.listQuery.location = this.warehouseLocation;
         this.getList();
       },
       handleSelectionChange(val){

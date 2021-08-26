@@ -677,10 +677,11 @@ import {
     methods: {
       handleResetSearch() {
         this.listQuery = Object.assign({}, defaultListQuery);
-        this.listQuery.itemStatuses = [21,12,13,14,15,16,17,18];
+        this.listQuery.requestBy = "CN";
       },
       handleSearchList() {
         this.listQuery.pageNum = 1;
+        this.listQuery.requestBy = "CN";
         this.getList();
       },
       handleSelectionChange(val){

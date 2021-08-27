@@ -1039,7 +1039,7 @@
         if (currentAction === "-1" && currentStatus === 12) {
           return "选择操作(国内仓)";
         }
-        if (currentAction === "-1" && currentStatus !== 11) {
+        if (currentAction === "-1" && currentStatus !== 11 && currentStatus !== 0) {
           return "选择操作";
         }
         switch (currentAction) {

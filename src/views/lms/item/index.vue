@@ -682,6 +682,9 @@ import {
       handleSearchList() {
         this.listQuery.pageNum = 1;
         this.listQuery.requestBy = "CN";
+        if (this.listQuery.deliverySn) {
+          this.listQuery.deliverySn = this.listQuery.deliverySn.trim();
+        }
         this.getList();
       },
       handleSelectionChange(val){

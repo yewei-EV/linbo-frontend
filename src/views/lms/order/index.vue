@@ -581,6 +581,9 @@ export default {
     },
     handleSearchList() {
       this.listQuery.pageNum = 1;
+      if (this.listQuery.deliverySn) {
+          this.listQuery.deliverySn = this.listQuery.deliverySn.trim();
+        }
       this.getList();
     },
     handleSelectionChange(val){

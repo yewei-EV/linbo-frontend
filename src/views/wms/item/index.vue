@@ -769,6 +769,9 @@ import {
         if (!this.listQuery.location) {
           this.listQuery.location = this.warehouseLocation;
         }
+        if (this.listQuery.deliverySn) {
+          this.listQuery.deliverySn = this.listQuery.deliverySn.trim();
+        }
         this.getList();
       },
       handleSelectionChange(val){

@@ -748,6 +748,9 @@
       // },
       handleSearchList() {
         this.listQuery.userSn = this.userInfo.userSn;
+        if (this.listQuery.deliverySn) {
+          this.listQuery.deliverySn = this.listQuery.deliverySn.trim();
+        }
         this.listQuery.pageNum = 1;
         this.getList();
       },

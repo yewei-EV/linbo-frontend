@@ -502,7 +502,13 @@ import {
   fetchOrderList,
   updateOrder,
   createOrder,
-  deleteOrder, updateItemStatusByOrder, updateOrderByUser, refreshItemStatusByOrder, fetchItemOrders, fetchRelatedItems,
+  deleteOrder,
+  updateItemStatusByOrder,
+  updateOrderByUser,
+  refreshItemStatusByOrder,
+  fetchItemOrders,
+  fetchRelatedItems,
+  fetchItemList,
 } from '../../../api/warehouse';
 import {
   orderStatusOptions,
@@ -557,7 +563,7 @@ export default {
       weightUnitOptions: weightUnitOptions,
       orderStatusOptions: orderStatusOptions,
       regionOptions: regionOptions,
-      exportData: null,
+      exportData: [],
       operateOptions: []
     }
   },
@@ -812,15 +818,26 @@ export default {
         }
       });
     },
-    getExportList() {
+    async fetchExportItems(listQuery) {
+      let orderResponse = await fetchOrderList(listQuery);
+      this.exportData = this.exportData.concat(orderResponse.data.list);
+      return orderResponse;
+    },
+    async getExportList() {
       this.listLoading = true;
-      this.listQuery.pageSize = 10000;
-      fetchOrderList(this.listQuery).then(response => {
-        this.exportData = response.data.list;
-        this.listLoading = false;
-      }).then(() => {
-        this.exportExcelData('orders');
-      });
+      this.listQuery.pageSize = 500;
+      let i = 1;
+      // set max pageNumber to 10
+      while (i < 10) {
+        this.listQuery.pageNum = i;
+        await this.fetchExportItems(this.listQuery).then();
+        if (this.exportData.length % 500 !== 0) {
+          break;
+        }
+        i++;
+      }
+      await this.exportExcelData('orders');
+      this.listLoading = false;
     },
   }
 }

@@ -629,7 +629,7 @@ import {
         photoDialogVisible: false,
         dialogEndStorageVisible: false,
         orderStatusOptions: orderStatusOptions,
-        exportData: null,
+        exportData: [],
         operateOptions: [
           {
             label: "批量入库",
@@ -1035,17 +1035,27 @@ import {
           })
         });
       },
-      getExportList() {
+      async fetchExportItems(listQuery) {
+        let itemResponse = await fetchItemList(listQuery);
+        let orderResponse = await this.getListOrder(itemResponse);
+        this.exportData = this.exportData.concat(orderResponse.data.list);
+        return itemResponse;
+      },
+      async getExportList() {
         this.listLoading = true;
-        this.listQuery.pageSize = 10000;
-        fetchItemList(this.listQuery).then(response => {
-          this.getListOrder(response).then(response => {
-            this.exportData = response.data.list;
-            this.listLoading = false;
-          }).then(() => {
-            this.exportExcelData('items');
-          })
-        });
+        this.listQuery.pageSize = 500;
+        let i = 1;
+        // set max pageNumber to 10
+        while (i < 10) {
+          this.listQuery.pageNum = i;
+          await this.fetchExportItems(this.listQuery).then();
+          if (this.exportData.length % 500 !== 0) {
+            break;
+          }
+          i++;
+        }
+        await this.exportExcelData('items');
+        this.listLoading = false;
       },
       getUserInfo() {
         getInfo().then(response => {

@@ -670,7 +670,7 @@ import {
         orderStatusOptions: orderStatusOptions,
         statusOptions: [
           {
-            label: '待定价',
+            label: '待入库',
             value: 0
           }, {
             label: '已入库（海外仓）',

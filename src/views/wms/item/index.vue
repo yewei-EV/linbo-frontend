@@ -766,7 +766,9 @@ import {
       },
       handleSearchList() {
         this.listQuery.pageNum = 1;
-        this.listQuery.location = this.warehouseLocation;
+        if (!this.listQuery.location) {
+          this.listQuery.location = this.warehouseLocation;
+        }
         this.getList();
       },
       handleSelectionChange(val){

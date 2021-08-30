@@ -1053,7 +1053,11 @@ import {
         this.listLoading = true;
         this.packageDialogVisible = false;
         for (const element of items) {
-          totalDeliverySn = totalDeliverySn + element.deliverySn + ", ";
+          if (items.length > 1) {
+            totalDeliverySn = totalDeliverySn + element.deliverySn + ", ";
+          } else {
+            totalDeliverySn = element.deliverySn;
+          }
           totalAmount = totalAmount + 1;
           if (!mainOrder) {
             mainOrder = element.orders[0];

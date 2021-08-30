@@ -790,11 +790,19 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          if (this.order.orderAction === "2"||this.order.orderAction === "3"||this.order.orderAction === "5") {
+          if (this.order.orderAction === "2"||this.order.orderAction === "3") {
             if (!this.order.labelNumber || !this.order.attachment) {
               this.$message({
                 type: 'error',
                 message: 'Label单号/Label附件为必填项!'
+              });
+              return;
+            }
+          } else if (this.order.orderAction === "5") {
+            if (!this.order.labelNumber || !this.order.attachment || !this.order.overtimeDate) {
+              this.$message({
+                type: 'error',
+                message: 'Label单号/Label附件/超时时间为必填项!'
               });
               return;
             }

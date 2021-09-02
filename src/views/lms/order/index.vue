@@ -253,6 +253,9 @@
         <el-table-column label="收件地址" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.destination}}</template>
         </el-table-column>
+        <el-table-column label="顺丰运费" min-width="80" align="center">
+          <template slot-scope="scope">￥{{scope.row.sfPrice?scope.row.sfPrice:0}}</template>
+        </el-table-column>
         <el-table-column label="付款备注" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.note}}</template>
         </el-table-column>

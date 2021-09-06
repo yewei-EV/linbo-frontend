@@ -143,6 +143,12 @@
                        @click="uploadAttachment(scope.$index, scope.row)">
               修改Label
             </el-button>
+            <el-button size="mini"
+                       type="success"
+                       v-if="scope.row.orders && scope.row.orders[0].orderStatus===1 && scope.row.userSn==='777GS7'"
+                       @click="payOrder(scope.$index, scope.row)">
+              支付
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -617,7 +623,7 @@
   import {
     updateOrderByUser,
     fetchItemList,
-    fetchItemOrders, updateItemStatus, refreshItemStatusByOrder, createOrder, createItem,
+    fetchItemOrders, updateItemStatus, refreshItemStatusByOrder, createOrder, createItem, aliPay,
   } from '../../../api/warehouse';
 
   const defaultListQuery = {
@@ -699,7 +705,13 @@
          //   label: "批量集运linbo国内仓",
          //     value: 3
          // }
-        ]
+        ],
+        payInfo: {
+          outTradeNo: '',
+          subject: '',
+          totalAmount: 1,
+          body: ''
+        }
       }
     },
     created() {
@@ -1090,6 +1102,18 @@
           });
         }
       },
+      payOrder(index, row) {
+        let payOption = {
+          outTradeNo: Math.floor(Math.random() * 200000000000).toString(),
+          subject: "转运费用",
+          totalAmount: row.orders[0].price,
+          body: ""
+        }
+        aliPay(payOption).then((res) => {
+          document.querySelector('body').innerHTML = res.data;
+          document.forms[0].submit();  //执行submit表单提交，让页面重定向，跳转到支付宝页面
+        })
+      }
     },
   }
 </script>

@@ -159,3 +159,11 @@ export function fetchSalesCount(params) {
     params: params
   })
 }
+
+export function aliPay(params) {
+  return request({
+    url: '/alipay/pay',
+    method: 'post',
+    data: params
+  })
+}

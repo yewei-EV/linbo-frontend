@@ -118,6 +118,9 @@
         <el-table-column label="尺寸" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.size}}</template>
         </el-table-column>
+        <el-table-column label="国内尺码" min-width="60" align="center">
+          <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].chinaSize:""}}</template>
+        </el-table-column>
         <el-table-column label="包裹操作" min-width="140" align="center">
           <template slot-scope="scope">
             <el-button size="mini"
@@ -166,6 +169,27 @@
                        v-if="showNextButton(scope.row)"
                        @click="handleFinish(scope.row)">
               {{scope.row.itemStatus | formatNextButton}}
+            </el-button>
+            <el-button size="mini"
+                       type="success"
+                       style="margin-left:0;"
+                       v-if="scope.row.itemStatus===13"
+                       @click="launchDuProduct(scope.row)">
+              上架
+            </el-button>
+            <el-button size="mini"
+                       type="success"
+                       style="margin-left:0;"
+                       v-if="scope.row.itemStatus===22"
+                       @click="soldDuProduct(scope.row)">
+              卖出
+            </el-button>
+            <el-button size="mini"
+                       type="success"
+                       style="margin-left:0;"
+                       v-if="scope.row.itemStatus===23"
+                       @click="clearDuProduct(scope.row)">
+              结算
             </el-button>
             <el-button size="mini"
                        type="info"
@@ -225,6 +249,12 @@
         </el-table-column>
         <el-table-column label="尺寸" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.size}}</template>
+        </el-table-column>
+        <el-table-column label="国内尺码" min-width="60" align="center">
+          <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].chinaSize:""}}</template>
+        </el-table-column>
+        <el-table-column label="是否跟价" min-width="60" align="center">
+          <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].isFollowPrice:""}}</template>
         </el-table-column>
         <el-table-column label="包裹操作" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].orderAction:"" | formatAction}}</template>
@@ -516,6 +546,52 @@
         <el-button type="primary" @click="handleChooseNextActionConfirm()" size="small">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      :title="'得物代卖信息'"
+      :visible.sync="this.duSoldDialogVisible"
+      width="80%">
+      <el-form :inline="true" :model="order"
+               ref="orderForm"
+               label-width="180px" size="small">
+        <el-form-item label="商品价格：">
+          <el-input @change="calculateDuPrice" v-model="order.soldPrice" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="技术服务费率：">
+          <el-input  @change="calculateDuPrice" v-model="order.techServiceFeePercentage" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="技术服务费：">
+          <el-input  @change="calculateDuPrice" v-model="order.techServiceFee" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="转账手续费：">
+          <el-input v-model="order.transactionFee" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="查鉴包：">
+          <el-input @change="calculateDuPrice" v-model="order.duServiceFee" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="售后无忧：">
+          <el-input @change="calculateDuPrice" v-model="order.afterSaleServiceFee" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="运费+手续费：">
+          <el-input @change="calculateDuPrice" v-model="order.totalServiceFee" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="用户到手价格：">
+          <el-input @change="calculateDuPrice" v-model="order.userOwnPrice" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="实际入账价格：">
+          <el-input @change="calculateDuPrice" v-model="order.realSalePrice" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="实际技术服务费：">
+          <el-input v-model="order.realTechServiceFee" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="实际利润：">
+          <el-input v-model="order.realProfit" style="width: 250px"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="duSoldDialogVisible = false" size="small">取 消</el-button>
+        <el-button type="primary" @click="duSoldConfirm()" size="small">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -617,6 +693,7 @@ import {
         total: null,
         listLoading: false,
         dialogVisible: false,
+        duSoldDialogVisible: false,
         item: Object.assign({}, defaultItem),
         order: Object.assign({}, defaultOrder),
         allocGroup: Object.assign({}, defaultAllocGroup),
@@ -660,8 +737,6 @@ import {
     filters: {
       formatNextButton(currentStatus) {
         switch (currentStatus) {
-          case 13:
-            return "发货";
           case 14:
             return "发货";
           case 15:
@@ -730,6 +805,101 @@ import {
         this.dialogVisible = true;
         this.item = Object.assign({}, row);
         this.order = this.item.orders[0];
+      },
+      launchDuProduct(row) {
+        this.item = Object.assign({}, row);
+        this.order = this.item.orders[0];
+        this.$confirm('是否要上架该包裹?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          updateItemStatus(this.item, this.order.orderAction).then(() => {
+            this.order.onlineDate = Date.now();
+            updateOrder(this.order).then(() => {
+              this.$message({
+                message: '上架成功！',
+                type: 'success'
+              });
+              this.getList();
+            })
+          }).catch(() => {
+            this.getList();
+          });
+        });
+      },
+      soldDuProduct(row) {
+        this.duSoldDialogVisible = true;
+        this.item = Object.assign({}, row);
+        this.order = this.item.orders[0];
+        this.order.techServiceFeePercentage = 0.03;
+      },
+      calculateDuPrice() {
+        if (this.order.techServiceFeePercentage) {
+          this.order.techServiceFee  = this.order.soldPrice * this.order.techServiceFeePercentage;
+          this.order.techServiceFee = this.order.techServiceFee.toFixed(2);
+        }
+        if (this.order.soldPrice) {
+          this.order.transactionFee = this.order.soldPrice * 0.01;
+          this.order.transactionFee = this.order.transactionFee.toFixed(2);
+          this.order.realTechServiceFee = this.order.soldPrice * 0.035;
+          this.order.realTechServiceFee = this.order.realTechServiceFee.toFixed(2);
+        }
+        if (this.order.realSalePrice && this.order.userOwnPrice) {
+          this.order.realProfit = this.order.realSalePrice - this.order.userOwnPrice;
+          this.order.realProfit = this.order.realProfit.toFixed(2);
+        }
+        if (this.order.soldPrice && this.order.techServiceFee && this.order.transactionFee
+          && this.order.afterSaleServiceFee && this.order.duServiceFee) {
+          this.order.userOwnPrice = this.order.soldPrice - this.order.techServiceFee - this.order.transactionFee
+            - this.order.afterSaleServiceFee - this.order.duServiceFee - this.order.totalServiceFee;
+          this.order.userOwnPrice = this.order.userOwnPrice.toFixed(2);
+        }
+      },
+      duSoldConfirm () {
+        this.$confirm('该包裹是否卖出?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          updateItemStatus(this.item, this.order.orderAction).then(() => {
+            this.order.soldDate = Date.now();
+            updateOrder(this.order).then(() => {
+              this.$message({
+                message: '操作成功！',
+                type: 'success'
+              });
+              this.getList();
+              this.duSoldDialogVisible = false;
+            })
+          }).catch(() => {
+            this.getList();
+            this.duSoldDialogVisible = false;
+          });
+        });
+      },
+      clearDuProduct(row) {
+        this.item = Object.assign({}, row);
+        this.order = this.item.orders[0];
+        this.$confirm('是否结算该包裹?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          updateItemStatus(this.item, this.order.orderAction).then(() => {
+            this.order.clearDate = Date.now();
+            this.order.orderStatus = 3;
+            updateOrder(this.order).then(() => {
+              this.$message({
+                message: '结算成功！',
+                type: 'success'
+              });
+              this.getList();
+            })
+          }).catch(() => {
+            this.getList();
+          });
+        });
       },
       inputPackage(row) {
         this.isEdit = false;
@@ -1067,7 +1237,13 @@ import {
         if (!row.orders || row.orders.length < 1) {
           return false;
         }
-        return row.itemStatus === 13 || row.itemStatus === 14 || row.itemStatus === 15;
+        return row.itemStatus === 14 || row.itemStatus === 15;
+      },
+      showDuButton(row) {
+        if (!row.orders || row.orders.length < 1) {
+          return false;
+        }
+        return row.itemStatus === 13 || row.itemStatus === 22 || row.itemStatus === 23;
       },
       showInboundButton(row) {
         if (!row.orders || row.orders.length < 1 ) {

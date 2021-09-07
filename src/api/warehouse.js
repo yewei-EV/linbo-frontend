@@ -124,6 +124,8 @@ export function updateOrderByUser(data) {
       'overtimeDate': data.overtimeDate?data.overtimeDate:'',
       'labelNumber': data.labelNumber?data.labelNumber:'',
       'userRemark': data.userRemark?data.userRemark:'',
+      'chinaSize': data.chinaSize?data.chinaSize:'',
+      'isFollowPrice': data.isFollowPrice?data.isFollowPrice:'',
     }
   })
 }

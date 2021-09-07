@@ -89,6 +89,18 @@ export const statusOptions = [
     value: 13
   },
   {
+    label: '已上架',
+    value: 22
+  },
+  {
+    label: '已卖出',
+    value: 23
+  },
+  {
+    label: '已结算',
+    value: 24
+  },
+  {
     label: '待顺丰快递',
     value: 14
   },
@@ -281,6 +293,12 @@ export function formatItemStatus(status) {
       return "待代卖stockx";
     case 21:
       return "待入库（国内仓）";
+    case 22:
+      return "已上架";
+    case 23:
+      return "已卖出";
+    case 24:
+      return "已结算";
     default:
       return "未知";
   }
@@ -338,7 +356,23 @@ export var defaultOrder = {
   storageLocation: null,
   overtimeDate: null,
   labelNumber: null,
-  userRemark: null
+  userRemark: null,
+  chinaSize: null,
+  onlineDate: null,
+  soldDate: null,
+  soldPrice: null,
+  techServiceFeePercentage: 0.03,
+  techServiceFee: null,
+  transactionFee: null,
+  duServiceFee: null,
+  afterSaleServiceFee: null,
+  totalServiceFee: 20,
+  userOwnPrice: null,
+  realSalePrice: null,
+  realTechServiceFee: null,
+  realProfit: null,
+  isFollowPrice: null,
+  clearDate: null
 }
 
 export const actionOptions = [

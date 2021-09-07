@@ -151,6 +151,16 @@
             </el-button>
           </template>
         </el-table-column>
+        <el-table-column label="代卖信息" min-width="80" align="center">
+          <template slot-scope="scope">
+            <el-button size="mini"
+                       type="info"
+                       style="margin-left:0;margin-top:10px;"
+                       v-if="scope.row.orders && scope.row.orders[0].soldPrice"
+                       @click="showDuInfoDialog(scope.row.orders[0])">显示
+            </el-button>
+          </template>
+        </el-table-column>
       </el-table>
     </div>
     <div class="batch-operate-container">
@@ -303,6 +313,13 @@
             </el-option>
           </el-select>
         </el-form-item>
+        <el-form-item v-if="order.orderAction==='6'" label="国内尺码：" prop="国内尺码">
+          <el-input v-model="order.chinaSize" style="width: 250px"></el-input>
+        </el-form-item>
+        <div style="margin-left: 120px;" v-if="order.orderAction==='6'">
+          <span>是否跟价</span>
+          <el-switch label="Label：" on-value=true off-value=false v-model="order.isFollowPrice"></el-switch>
+        </div>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="secondOrderActionDialogVisible = false" size="small">取 消</el-button>
@@ -600,6 +617,70 @@
         <el-button type="primary" @click="preloadPackage()" size="small">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      :title="'得物代卖信息'"
+      :visible.sync="duInfoDialogVisible"
+      width="80%">
+      <el-row class="el-row-user" :gutter="20">
+        <el-col :span="12">
+          <div class="un-handle-item">
+            <span class="font-title-large">商品价格：</span>
+            ￥{{order.soldPrice}}
+          </div>
+        </el-col>
+        <el-col :span="12">
+          <div class="un-handle-item">
+            <span class="font-title-large">技术服务费率：</span>
+            {{order.techServiceFeePercentage}}
+          </div>
+        </el-col>
+      </el-row>
+      <el-row class="el-row-user" :gutter="20">
+        <el-col :span="12">
+          <div class="un-handle-item">
+            <span class="font-title-large">技术服务费：</span>
+            ￥{{order.techServiceFee}}
+          </div>
+        </el-col>
+        <el-col :span="12">
+          <div class="un-handle-item">
+            <span class="font-title-large">转账手续费：</span>
+            ￥{{order.transactionFee}}
+          </div>
+        </el-col>
+      </el-row>
+      <el-row class="el-row-user" :gutter="20">
+        <el-col :span="12">
+          <div class="un-handle-item">
+            <span class="font-title-large">查鉴包：</span>
+            ￥{{order.duServiceFee}}
+          </div>
+        </el-col>
+        <el-col :span="12">
+          <div class="un-handle-item">
+            <span class="font-title-large">售后无忧：</span>
+            ￥{{order.afterSaleServiceFee}}
+          </div>
+        </el-col>
+      </el-row>
+      <el-row class="el-row-user" :gutter="20">
+        <el-col :span="12">
+          <div class="un-handle-item">
+            <span class="font-title-large">运费+手续费：</span>
+            ￥{{order.totalServiceFee}}
+          </div>
+        </el-col>
+        <el-col :span="12">
+          <div class="un-handle-item">
+            <span class="font-title-large">用户到手价格：</span>
+            ￥{{order.userOwnPrice}}
+          </div>
+        </el-col>
+      </el-row>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="duInfoDialogVisible = false" size="small">关 闭</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -679,6 +760,7 @@
         dialogVisible: false,
         photoDialogVisible: false,
         dialogEndStorageVisible: false,
+        duInfoDialogVisible: false,
         item: Object.assign({}, defaultItem),
         order: Object.assign({}, defaultOrder),
         allocGroup: Object.assign({}, defaultAllocGroup),
@@ -887,6 +969,10 @@
             }
           }
         })
+      },
+      showDuInfoDialog(order) {
+        this.order = Object.assign({}, order);
+        this.duInfoDialogVisible = true;
       },
       uploadAttachmentConfirm() {
         this.$confirm('是否要确认?', '提示', {

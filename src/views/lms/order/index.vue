@@ -189,6 +189,19 @@
             </el-button>
           </template>
         </el-table-column>
+        <el-table-column label="代卖信息" min-width="80" align="center">
+          <template slot-scope="scope">
+            <el-button size="mini"
+                       type="info"
+                       style="margin-left:0;margin-top:10px;"
+                       v-if="scope.row.soldPrice"
+                       @click="showDuInfoDialog(scope.row)">显示
+            </el-button>
+          </template>
+        </el-table-column>
+        <el-table-column label="是否跟价" min-width="80" align="center">
+          <template slot-scope="scope">{{scope.row.isFollowPrice?"是":"否"}}</template>
+        </el-table-column>
         <el-table-column label="顺丰运费" min-width="80" align="center">
           <template slot-scope="scope">￥{{scope.row.sfPrice?scope.row.sfPrice:0}}</template>
         </el-table-column>
@@ -264,6 +277,51 @@
         </el-table-column>
         <el-table-column label="最新更新时间" min-width="80" align="center">
           <template slot-scope="scope">{{scope.row.updateTime | formatDateTime}}</template>
+        </el-table-column>
+        <el-table-column label="国内尺码" min-width="100" align="center">
+          <template slot-scope="scope">{{scope.row.chinaSize}}</template>
+        </el-table-column>
+        <el-table-column label="代卖上线时间" min-width="80" align="center">
+          <template slot-scope="scope">{{scope.row.onlineDate | formatDateTime}}</template>
+        </el-table-column>
+        <el-table-column label="卖出时间" min-width="80" align="center">
+          <template slot-scope="scope">{{scope.row.soldDate | formatDateTime}}</template>
+        </el-table-column>
+        <el-table-column label="商品价格" min-width="80" align="center">
+          <template slot-scope="scope">￥{{scope.row.soldPrice?scope.row.soldPrice:0}}</template>
+        </el-table-column>
+        <el-table-column label="技术服务费率" min-width="80" align="center">
+          <template slot-scope="scope">{{scope.row.techServiceFeePercentage?scope.row.techServiceFeePercentage:0}}</template>
+        </el-table-column>
+        <el-table-column label="技术服务费" min-width="80" align="center">
+          <template slot-scope="scope">￥{{scope.row.techServiceFee?scope.row.techServiceFee:0}}</template>
+        </el-table-column>
+        <el-table-column label="转账手续费" min-width="80" align="center">
+          <template slot-scope="scope">￥{{scope.row.transactionFee?scope.row.transactionFee:0}}</template>
+        </el-table-column>
+        <el-table-column label="查鉴包" min-width="80" align="center">
+          <template slot-scope="scope">￥{{scope.row.duServiceFee?scope.row.duServiceFee:0}}</template>
+        </el-table-column>
+        <el-table-column label="售后无忧" min-width="80" align="center">
+          <template slot-scope="scope">￥{{scope.row.afterSaleServiceFee?scope.row.afterSaleServiceFee:0}}</template>
+        </el-table-column>
+        <el-table-column label="运费+手续费" min-width="80" align="center">
+          <template slot-scope="scope">￥{{scope.row.totalServiceFee?scope.row.totalServiceFee:0}}</template>
+        </el-table-column>
+        <el-table-column label="用户到手价格" min-width="80" align="center">
+          <template slot-scope="scope">￥{{scope.row.userOwnPrice?scope.row.userOwnPrice:0}}</template>
+        </el-table-column>
+        <el-table-column label="实际入账价格" min-width="80" align="center">
+          <template slot-scope="scope">￥{{scope.row.realSalePrice?scope.row.realSalePrice:0}}</template>
+        </el-table-column>
+        <el-table-column label="实际技术服务费" min-width="80" align="center">
+          <template slot-scope="scope">￥{{scope.row.realTechServiceFee?scope.row.realTechServiceFee:0}}</template>
+        </el-table-column>
+        <el-table-column label="实际利润" min-width="80" align="center">
+          <template slot-scope="scope">￥{{scope.row.realProfit?scope.row.realProfit:0}}</template>
+        </el-table-column>
+        <el-table-column label="结算时间" min-width="80" align="center">
+          <template slot-scope="scope">{{scope.row.clearDate | formatDateTime}}</template>
         </el-table-column>
       </el-table>
     </div>
@@ -456,6 +514,13 @@
         <el-form-item v-if="order.orderAction==='2'||order.orderAction==='3'||order.orderAction==='5'" label="Label：" prop="附件">
           <pdf-upload v-model="order.attachment"></pdf-upload>
         </el-form-item>
+        <el-form-item v-if="order.orderAction==='6'" label="国内尺码：" prop="国内尺码">
+          <el-input v-model="order.chinaSize" style="width: 250px"></el-input>
+        </el-form-item>
+        <div style="margin-left: 120px;" v-if="order.orderAction==='6'">
+          <span>是否跟价</span>
+          <el-switch label="Label：" on-value=true off-value=false v-model="order.isFollowPrice"></el-switch>
+        </div>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="orderActionDialogVisible = false" size="small">取 消</el-button>
@@ -498,6 +563,97 @@
         <el-button @click="relatedItemsDialogVisible = false" size="small">取 消</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      :title="'得物代卖信息'"
+      :visible.sync="duInfoDialogVisible"
+      width="80%">
+      <el-row class="el-row-user" :gutter="20">
+        <el-col :span="12">
+          <div class="un-handle-item">
+            <span class="font-title-large">商品价格：</span>
+            ￥{{order.soldPrice}}
+          </div>
+        </el-col>
+        <el-col :span="12">
+          <div class="un-handle-item">
+            <span class="font-title-large">技术服务费率：</span>
+            {{order.techServiceFeePercentage}}
+          </div>
+        </el-col>
+      </el-row>
+      <el-row class="el-row-user" :gutter="20">
+        <el-col :span="12">
+          <div class="un-handle-item">
+            <span class="font-title-large">技术服务费：</span>
+            ￥{{order.techServiceFee}}
+          </div>
+        </el-col>
+        <el-col :span="12">
+          <div class="un-handle-item">
+            <span class="font-title-large">转账手续费：</span>
+            ￥{{order.transactionFee}}
+          </div>
+        </el-col>
+      </el-row>
+      <el-row class="el-row-user" :gutter="20">
+        <el-col :span="12">
+          <div class="un-handle-item">
+            <span class="font-title-large">查鉴包：</span>
+            ￥{{order.duServiceFee}}
+          </div>
+        </el-col>
+        <el-col :span="12">
+          <div class="un-handle-item">
+            <span class="font-title-large">售后无忧：</span>
+            ￥{{order.afterSaleServiceFee}}
+          </div>
+        </el-col>
+      </el-row>
+      <el-row class="el-row-user" :gutter="20">
+        <el-col :span="12">
+          <div class="un-handle-item">
+            <span class="font-title-large">运费+手续费：</span>
+            ￥{{order.totalServiceFee}}
+          </div>
+        </el-col>
+        <el-col :span="12">
+          <div class="un-handle-item">
+            <span class="font-title-large">用户到手价格：</span>
+            ￥{{order.userOwnPrice}}
+          </div>
+        </el-col>
+      </el-row>
+      <el-row class="el-row-user" :gutter="20">
+        <el-col :span="12">
+          <div class="un-handle-item">
+            <span class="font-title-large">实际入账价格：</span>
+            ￥{{order.realSalePrice}}
+          </div>
+        </el-col>
+        <el-col :span="12">
+          <div class="un-handle-item">
+            <span class="font-title-large">实际技术服务费：</span>
+            ￥{{order.realTechServiceFee}}
+          </div>
+        </el-col>
+      </el-row>
+      <el-row class="el-row-user" :gutter="20">
+        <el-col :span="12">
+          <div class="un-handle-item">
+            <span class="font-title-large">实际利润：</span>
+            ￥{{order.realProfit}}
+          </div>
+        </el-col>
+<!--        <el-col :span="12">-->
+<!--          <div class="un-handle-item">-->
+<!--          </div>-->
+<!--        </el-col>-->
+      </el-row>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="duInfoDialogVisible = false" size="small">关 闭</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 </template>
 <script>
@@ -557,6 +713,7 @@ export default {
       dialogVisible: false,
       paymentDialogVisible: false,
       orderActionDialogVisible: false,
+      duInfoDialogVisible: false,
       addressDetailsDialogVisible: false,
       relatedItemsDialogVisible: false,
       operateType: null,
@@ -781,6 +938,10 @@ export default {
     showAddressDetails(value) {
       this.address = value;
       this.addressDetailsDialogVisible = true;
+    },
+    showDuInfoDialog(row) {
+      this.order = Object.assign({},row);
+      this.duInfoDialogVisible = true;
     },
     showRelatedItems(orderId) {
       fetchRelatedItems(orderId).then(result => {

@@ -885,21 +885,21 @@ import {
         }).then(() => {
           if (this.isFinish) {
             updateItemStatus(this.item, this.order.orderAction).then(() => {
-              this.$message({
-                message: '操作成功！',
-                type: 'success'
-              });
-              this.dialogVisible = false;
-              this.isFinish = false;
-              this.getList();
-            }).catch(() => {
-              this.dialogVisible = false;
-              this.isFinish = false;
-              this.getList();
-            });
+              this.order.updateTime = Date.now();
+              updateOrder(this.order).then(() => {
+                this.$message({
+                  message: '操作成功！',
+                  type: 'success'
+                });
+                this.dialogVisible = false;
+                this.isFinish = false;
+                this.getList();
+              })
+            })
           } else if (this.isInput) {
             updateItemStatus(this.item, this.order.orderAction).then(() => {
               this.order.orderAction = "-1";
+              this.order.updateTime = Date.now();
               updateOrder(this.order).then(() => {
                 this.$message({
                   message: '操作成功！',
@@ -925,6 +925,7 @@ import {
             updateItem(this.item).then(() => {
               if (this.item.userSn !== this.order.userSn) {
                 this.order.userSn = this.item.userSn;
+                this.order.updateTime = Date.now();
                 updateOrder(this.order).then(() => {
                   this.$message({
                     message: '修改成功！',
@@ -983,7 +984,7 @@ import {
                 if (!this.order.orderAction) {
                   this.order.orderAction = "-1";
                   //英国默认集运回国
-                  if (this.item.location === "EN") {
+                  if (this.item.location === "EN" || this.item.location === "DE") {
                     this.order.orderAction = "0";
                     this.item.itemStatus = 2;
                   }

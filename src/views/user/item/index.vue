@@ -802,12 +802,6 @@
          //     value: 3
          // }
         ],
-        payInfo: {
-          outTradeNo: '',
-          subject: '',
-          totalAmount: 1,
-          body: ''
-        }
       }
     },
     created() {
@@ -1204,8 +1198,8 @@
       },
       payOrder(index, row) {
         let payOption = {
-          outTradeNo: Math.floor(Math.random() * 200000000000).toString(),
-          subject: "转运费用",
+          outTradeNo: row.orders[0].id,
+          subject: "凌波转运费用",
           totalAmount: row.orders[0].price,
           body: ""
         }

@@ -677,6 +677,20 @@
           </div>
         </el-col>
       </el-row>
+      <el-row class="el-row-user" :gutter="20">
+        <el-col :span="12">
+          <div class="un-handle-item">
+            <span class="font-title-large">卖出时间：</span>
+            {{order.soldDate | formatDateTime}}
+          </div>
+        </el-col>
+        <el-col :span="12">
+          <div class="un-handle-item">
+            <span class="font-title-large">结算时间：</span>
+            {{order.clearDate | formatDateTime}}
+          </div>
+        </el-col>
+      </el-row>
       <span slot="footer" class="dialog-footer">
         <el-button @click="duInfoDialogVisible = false" size="small">关 闭</el-button>
       </span>

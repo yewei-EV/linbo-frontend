@@ -203,6 +203,9 @@
             </el-button>
           </template>
         </el-table-column>
+        <el-table-column label="用户到手价格" min-width="140" align="center">
+          <template slot-scope="scope">￥{{scope.row.orders?scope.row.orders[0].userOwnPrice:0}}</template>
+        </el-table-column>
         <el-table-column label="最新更新时间" min-width="140" align="center">
           <template slot-scope="scope">{{scope.row.orders?scope.row.orders[0].updateTime:""  | formatDateTime}}</template>
         </el-table-column>
@@ -483,7 +486,40 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="Label：">
+        <el-form-item v-if="order.orderAction==='6'" label="商品价格：">
+          <el-input @change="calculateDuPrice" v-model="order.soldPrice" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='6'" label="技术服务费率：">
+          <el-input  @change="calculateDuPrice" v-model="order.techServiceFeePercentage" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='6'" label="技术服务费：">
+          <el-input  @change="calculateDuPrice" v-model="order.techServiceFee" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='6'" label="转账手续费：">
+          <el-input v-model="order.transactionFee" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='6'" label="查鉴包：">
+          <el-input @change="calculateDuPrice" v-model="order.duServiceFee" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='6'" label="售后无忧：">
+          <el-input @change="calculateDuPrice" v-model="order.afterSaleServiceFee" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='6'" label="运费+手续费：">
+          <el-input @change="calculateDuPrice" v-model="order.totalServiceFee" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='6'" label="用户到手价格：">
+          <el-input @change="calculateDuPrice" v-model="order.userOwnPrice" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='6'" label="实际入账价格：">
+          <el-input @change="calculateDuPrice" v-model="order.realSalePrice" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='6'" label="实际技术服务费：">
+          <el-input v-model="order.realTechServiceFee" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.orderAction==='6'" label="实际利润：">
+          <el-input v-model="order.realProfit" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item v-if="order.attachment" label="Label：">
           <a :href="order.attachment" target="_blank" download>
             <el-button v-if="order.attachment" size="small">下载</el-button>
           </a>

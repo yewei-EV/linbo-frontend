@@ -1066,7 +1066,10 @@ import {
           }
           mainOrder.weightUnit = this.packageWeightUnit;
           mainOrder.weight = this.packageWeight;
-          mainOrder.price = this.packagePrice;
+          if (this.packagePrice) {
+            mainOrder.price = this.packagePrice;
+            mainOrder.orderStatus = 1;
+          }
           mainOrder.deliverySn = totalDeliverySn;
           mainOrder.amount = totalAmount;
           await updateOrder(mainOrder);

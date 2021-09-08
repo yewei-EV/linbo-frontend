@@ -906,7 +906,7 @@ export default {
         }
         this.order.paymentTime = Date.now();
         updateOrder(this.order).then(() => {
-          updateItemStatusByOrder(this.order).then(() => {
+          refreshItemStatusByOrder(this.order).then(() => {
             this.$message({
               type: 'success',
               message: '修改成功!'

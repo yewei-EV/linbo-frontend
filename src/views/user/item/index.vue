@@ -145,7 +145,8 @@
             </el-button>
             <el-button size="mini"
                        type="success"
-                       v-if="scope.row.orders && scope.row.orders[0].orderStatus===1 && scope.row.userSn==='777GS7'"
+                       style="margin-top:5px"
+                       v-if="scope.row.orders && scope.row.orders[0].orderStatus===1"
                        @click="payOrder(scope.$index, scope.row)">
               支付
             </el-button>
@@ -1197,10 +1198,14 @@
         }
       },
       payOrder(index, row) {
+        let totalPrice = row.orders[0].price;
+        if (row.orders[0].sfPrice) {
+          totalPrice = row.orders[0].sfPrice
+        }
         let payOption = {
           outTradeNo: row.orders[0].id,
           subject: "凌波转运费用",
-          totalAmount: row.orders[0].price,
+          totalAmount: totalPrice,
           body: ""
         }
         aliPay(payOption).then((res) => {

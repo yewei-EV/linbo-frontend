@@ -359,6 +359,9 @@
             </el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="国内尺码：" prop="国内尺码">
+          <el-input v-model="order.chinaSize" style="width: 250px"></el-input>
+        </el-form-item>
         <el-form-item label="存放位置：">
           <el-input v-model="item.positionInfo" style="width: 250px"></el-input>
         </el-form-item>
@@ -874,7 +877,7 @@ import {
         this.order.techServiceFeePercentage = 0.03;
       },
       calculateDuPrice() {
-        if (this.order.techServiceFeePercentage) {
+        if (this.order.techServiceFeePercentage && this.order.techServiceFeePercentage!=='0') {
           this.order.techServiceFee  = this.order.soldPrice * this.order.techServiceFeePercentage;
           this.order.techServiceFee = this.order.techServiceFee.toFixed(2);
         }
@@ -955,11 +958,18 @@ import {
         if (this.item.itemStatus === 11) {
           this.actionOptionsAfterStorage = getActionOptionsAfterStorageByLocation(row.location);
         } else if (this.item.itemStatus === 17) {
-          this.actionOptionsAfterStorage = [
-            {label:"待用户选择", value:"-1"},
-            {label:"国内仓代卖", value:"6"},
-            {label:"顺丰直邮", value:"9"}
-          ];
+          if (this.item.location === "CN") {
+            this.actionOptionsAfterStorage = [
+              {label:"待用户选择", value:"-1"},
+              {label:"国内仓代卖", value:"6"},
+            ];
+          } else {
+            this.actionOptionsAfterStorage = [
+              {label:"待用户选择", value:"-1"},
+              {label:"国内仓代卖", value:"6"},
+              {label:"顺丰直邮", value:"9"}
+            ];
+          }
         }
         this.dialogEndStorageVisible = true;
       },
@@ -1110,6 +1120,8 @@ import {
                   if (this.item.location === "EN" || this.item.location === "DE") {
                     this.order.orderAction = "0";
                     this.item.itemStatus = 2;
+                  } else if (this.item.location === "CN") {
+                    this.item.itemStatus = 12;
                   }
                 }
                 createOrder(this.order).then((res) => {

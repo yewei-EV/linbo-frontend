@@ -314,9 +314,6 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item v-if="order.orderAction==='6'" label="国内尺码：" prop="国内尺码">
-          <el-input v-model="order.chinaSize" style="width: 250px"></el-input>
-        </el-form-item>
         <div style="margin-left: 120px;" v-if="order.orderAction==='6'">
           <span>是否跟价</span>
           <el-switch label="Label：" on-value=true off-value=false v-model="order.isFollowPrice"></el-switch>
@@ -883,6 +880,13 @@
         this.item = Object.assign({}, row);
       },
       chooseSecondActionByUser(index, row) {
+        if (row.location === "CN") {
+          this.secondActionOptions = [
+            {label:"待用户选择", value:"-1"},
+            {label:"国内仓代卖", value:"6"},
+            {label:"国内仓寄存", value:"7"},
+          ];
+        }
         this.secondOrderActionDialogVisible = true;
         this.order = Object.assign({}, row.orders[0]);
         this.item = Object.assign({}, row);
@@ -1062,11 +1066,18 @@
             this.actionOptionsAfterStorage.splice(1, 1);
           }
         } else if (this.item.itemStatus === 17) {
-          this.actionOptionsAfterStorage = [
-            {label:"待用户选择", value:"-1"},
-            {label:"国内仓代卖", value:"6"},
-            {label:"顺丰直邮", value:"9"}
-          ];
+          if (this.item.location === "CN") {
+            this.actionOptionsAfterStorage = [
+              {label:"待用户选择", value:"-1"},
+              {label:"国内仓代卖", value:"6"},
+            ];
+          } else {
+            this.actionOptionsAfterStorage = [
+              {label:"待用户选择", value:"-1"},
+              {label:"国内仓代卖", value:"6"},
+              {label:"顺丰直邮", value:"9"}
+            ];
+          }
         }
         this.dialogEndStorageVisible = true;
       },

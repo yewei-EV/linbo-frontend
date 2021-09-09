@@ -242,14 +242,17 @@
         <el-table-column label="地点" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.location | formatLocation}}</template>
         </el-table-column>
-        <el-table-column label="价格" min-width="80" align="center">
-          <template slot-scope="scope">￥{{scope.row.price?scope.row.price:0}}</template>
-        </el-table-column>
         <el-table-column label="重量" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.weight}}</template>
         </el-table-column>
         <el-table-column label="重量单位" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.weightUnit | formatWeightUnit}}</template>
+        </el-table-column>
+        <el-table-column label="价格" min-width="80" align="center">
+          <template slot-scope="scope">￥{{scope.row.price?scope.row.price:0}}</template>
+        </el-table-column>
+        <el-table-column label="顺丰运费" min-width="80" align="center">
+          <template slot-scope="scope">￥{{scope.row.sfPrice?scope.row.sfPrice:0}}</template>
         </el-table-column>
         <el-table-column label="运单号" min-width="160" align="center">
           <template slot-scope="scope">{{scope.row.deliverySn}}</template>
@@ -265,9 +268,6 @@
         </el-table-column>
         <el-table-column label="收件地址" min-width="60" align="center">
           <template slot-scope="scope">{{scope.row.destination}}</template>
-        </el-table-column>
-        <el-table-column label="顺丰运费" min-width="80" align="center">
-          <template slot-scope="scope">￥{{scope.row.sfPrice?scope.row.sfPrice:0}}</template>
         </el-table-column>
         <el-table-column label="付款备注" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.note}}</template>
@@ -513,9 +513,6 @@
         </el-form-item>
         <el-form-item v-if="order.orderAction==='2'||order.orderAction==='3'||order.orderAction==='5'" label="Label：" prop="附件">
           <pdf-upload v-model="order.attachment"></pdf-upload>
-        </el-form-item>
-        <el-form-item v-if="order.orderAction==='6'" label="国内尺码：" prop="国内尺码">
-          <el-input v-model="order.chinaSize" style="width: 250px"></el-input>
         </el-form-item>
         <div style="margin-left: 120px;" v-if="order.orderAction==='6'">
           <span>是否跟价</span>

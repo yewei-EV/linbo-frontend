@@ -119,6 +119,10 @@ export const statusOptions = [
   {
     label: '已归档',
     value: 18
+  },
+  {
+    label: '已套现',
+    value: 25
   }
 ]
 
@@ -191,6 +195,8 @@ export function formatAction(actionCode) {
       return "代卖stockx";
     case "9":
       return "顺丰直邮";
+    case "10":
+      return "套现";
     default:
       return "待用户选择";
   }
@@ -299,6 +305,8 @@ export function formatItemStatus(status) {
       return "已卖出";
     case 24:
       return "已结算";
+    case 25:
+      return "已套现";
     default:
       return "未知";
   }
@@ -386,7 +394,8 @@ export const actionOptions = [
   {label:"国内仓代卖", value:"6"},
   {label:"国内仓寄存", value:"7"},
   {label:"代卖stockx", value:"8"},
-  {label:"顺丰直邮", value:"9"}
+  {label:"顺丰直邮", value:"9"},
+  {label:"套现", value:"10"}
 ]
 
 export function getActionOptionsByLocation(location) {

@@ -159,6 +159,13 @@
               打包
             </el-button>
             <el-button size="mini"
+                       type="success"
+                       style="margin-left:0;"
+                       v-if="scope.row.location === 'US1' && scope.row.itemStatus===1"
+                       @click="soldNow(scope.row)">
+              套现
+            </el-button>
+            <el-button size="mini"
                        type="info"
                        style="margin-left:0;margin-top:10px;"
                        @click="handleUpdate(scope.row)">
@@ -824,6 +831,31 @@ import {
         this.packagePositionInfo = row.positionInfo;
         this.packageNote = row.note;
         this.packageDialogVisible = true;
+      },
+      soldNow(row) {
+        this.item = Object.assign({}, row);
+        this.order = this.item.orders[0];
+        this.$confirm('是否套现?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.item.itemStatus = 25;
+          updateItem(this.item).then(() => {
+            this.order.orderAction = "10";
+            this.order.orderStatus = 3;
+            this.order.updateTime = Date.now();
+            updateOrder(this.order).then(() => {
+              this.$message({
+                message: '套现成功！',
+                type: 'success'
+              });
+              this.getList();
+            })
+          }).catch(() => {
+            this.getList();
+          });
+        });
       },
       handleEndStorage(row) {
         this.item = Object.assign({}, row);

@@ -1019,6 +1019,9 @@ import {
         }).then(() => {
           if (this.isFinish) {
             updateItemStatus(this.item, this.order.orderAction).then(() => {
+              if (this.order.orderAction === "7") {
+                this.order.storageStartTime = Date.now();
+              }
               this.order.updateTime = Date.now();
               updateOrder(this.order).then(() => {
                 this.$message({
@@ -1149,7 +1152,7 @@ import {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.order.storageDays = Math.ceil((Date.now() - Date.parse(this.item.createTime)) / (1000 * 3600 * 24));
+          this.order.storageDays = Math.ceil((Date.now() - Date.parse(this.order.storageStartTime)) / (1000 * 3600 * 24));
           this.order.storageLocation = this.item.itemStatus === 11?this.item.location:"CN";
           updateOrderByUser(this.order).then(() => {
             updateItemStatusByOrder(this.order).then(() => {

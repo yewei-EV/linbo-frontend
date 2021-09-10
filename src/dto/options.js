@@ -360,6 +360,7 @@ export var defaultOrder = {
   attachment: null,
   price: null,
   sfPrice: null,
+  storageStartTime: null,
   storageDays: null,
   storageLocation: null,
   overtimeDate: null,

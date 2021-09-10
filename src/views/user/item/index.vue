@@ -450,14 +450,20 @@
           </div>
         </el-col>
       </el-row>
-      <el-row v-if="order.storageDays" class="el-row-user" :gutter="20">
-        <el-col :span="12">
+      <el-row v-if="order.storageDays||order.storageStartTime" class="el-row-user" :gutter="20">
+        <el-col :span="12" v-if="!order.storageDays && order.storageStartTime">
+          <div class="un-handle-item">
+            <span class="font-title-large">寄存开始时间：</span>
+            {{order.storageStartTime | formatDateTime}}
+          </div>
+        </el-col>
+        <el-col :span="12" v-if="order.storageDays">
           <div class="un-handle-item">
             <span class="font-title-large">寄存天数：</span>
             {{order.storageDays}}
           </div>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="12" v-if="order.storageLocation">
           <div class="un-handle-item">
             <span class="font-title-large">寄存地点：</span>
             {{order.storageLocation | formatLocation}}
@@ -967,7 +973,7 @@
             for (let item of this.multipleSelection) {
               item.orders[0].orderAction = "1";
               item.orders[0].destination = this.directDestination;
-              item.orders[0].storageDays = Math.ceil((Date.now() - Date.parse(item.createTime)) / (1000 * 3600 * 24));
+              item.orders[0].storageDays = Math.ceil((Date.now() - Date.parse(item.orders[0].storageStartTime)) / (1000 * 3600 * 24));
               item.orders[0].storageLocation = item.itemStatus === 11?item.location:"CN";
               updateOrderByUser(item.orders[0]).then(() => {
                 refreshItemStatusByOrder(item.orders[0]).then(() => {
@@ -1105,7 +1111,7 @@
               return;
             }
           }
-          this.order.storageDays = Math.ceil((Date.now() - Date.parse(this.item.createTime)) / (1000 * 3600 * 24));
+          this.order.storageDays = Math.ceil((Date.now() - Date.parse(this.order.storageStartTime)) / (1000 * 3600 * 24));
           this.order.storageLocation = this.item.itemStatus === 11?this.item.location:"CN";
           updateOrderByUser(this.order).then(() => {
             refreshItemStatusByOrder(this.order).then(() => {

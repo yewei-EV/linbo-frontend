@@ -229,6 +229,9 @@
         <el-table-column label="寄存天数" min-width="80" align="center">
           <template slot-scope="scope">{{scope.row.storageDays?scope.row.storageDays:0}}</template>
         </el-table-column>
+        <el-table-column label="寄存开始时间" min-width="80" align="center">
+          <template slot-scope="scope">{{scope.row.storageStartTime | formatDateTime}}</template>
+        </el-table-column>
       </el-table>
       <el-table id="exportTable"
                 :data="exportData" border

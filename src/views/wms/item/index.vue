@@ -715,6 +715,9 @@ import {
           }, {
             label: '已寄存（海外仓）',
             value: 11
+          }, {
+            label: '已套现',
+            value: 25
           }
         ],
         regionOptions: regionOptions,
@@ -917,6 +920,9 @@ import {
         }).then(() => {
           if (this.isFinish) {
             updateItemStatus(this.item, this.order.orderAction).then(() => {
+              if (this.order.orderAction === "4") {
+                this.order.storageStartTime = Date.now();
+              }
               this.order.updateTime = Date.now();
               updateOrder(this.order).then(() => {
                 this.$message({
@@ -955,8 +961,9 @@ import {
               return;
             }
             updateItem(this.item).then(() => {
-              if (this.item.userSn !== this.order.userSn) {
+              if (this.item.userSn !== this.order.userSn || this.item.deliverySn !== this.item.deliverySn) {
                 this.order.userSn = this.item.userSn;
+                this.order.deliverySn = this.item.deliverySn;
                 this.order.updateTime = Date.now();
                 updateOrder(this.order).then(() => {
                   this.$message({
@@ -1044,7 +1051,7 @@ import {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.order.storageDays = Math.ceil((Date.now() - Date.parse(this.item.createTime)) / (1000 * 3600 * 24));
+          this.order.storageDays = Math.ceil((Date.now() - Date.parse(this.order.storageStartTime)) / (1000 * 3600 * 24));
           this.order.storageLocation = this.item.location;
           updateOrderByUser(this.order).then(() => {
             updateItemStatusByOrder(this.order).then(() => {

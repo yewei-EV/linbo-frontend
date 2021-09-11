@@ -159,6 +159,14 @@ export const operateOptions = [
     label: "批量发货",
     value: 3
   },
+  {
+    label: "批量套现",
+    value: 5
+  },
+  {
+    label: "批量寄存",
+    value: 6
+  },
   // {
   //   label: "批量关闭",
   //   value: 4

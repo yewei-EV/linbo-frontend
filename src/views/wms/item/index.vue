@@ -1184,6 +1184,38 @@ import {
           this.inOutBoundDialogVisible = true;
         }else if(this.operateType===4){
           //批量关闭
+        }else if(this.operateType===5){
+          //批量套现
+          for (const element of this.multipleSelection) {
+            if (element.location === 'US1' && element.itemStatus===1) {
+              element.itemStatus = 25;
+              updateItem(element).then(() => {
+                element.orders[0].orderAction = "10";
+                element.orders[0].orderStatus = 3;
+                element.orders[0].updateTime = Date.now();
+                updateOrder(element.orders[0]).then(()=>this.getList());
+              });
+            }
+          }
+          this.$message({
+            message: '套现成功！',
+            type: 'success'
+          });
+        }else if(this.operateType===6){
+          //批量寄存
+          for (const element of this.multipleSelection) {
+            if (element.itemStatus===8) {
+              updateItemStatus(element, element.orders[0].orderAction).then(() => {
+                element.orders[0].storageStartTime = Date.now();
+                element.orders[0].updateTime = Date.now();
+                updateOrder(element.orders[0]).then(()=>this.getList());
+              })
+            }
+          }
+          this.$message({
+            message: '寄存成功！',
+            type: 'success'
+          });
         }
       },
       async getListOrder(response) {

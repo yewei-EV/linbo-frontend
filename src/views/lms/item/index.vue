@@ -758,6 +758,10 @@ import {
             label: "批量发货",
             value: 3
           },
+          {
+            label: "批量寄存",
+            value: 6
+          },
           // {
           //   label: "批量关闭",
           //   value: 4
@@ -1233,6 +1237,21 @@ import {
         }else if(this.operateType===3){
           //批量发货
           this.inOutBoundDialogVisible = true;
+        }else if(this.operateType===6){
+          //批量寄存
+          for (const element of this.multipleSelection) {
+            if (element.itemStatus===15) {
+              updateItemStatus(element, element.orders[0].orderAction).then(() => {
+                element.orders[0].storageStartTime = Date.now();
+                element.orders[0].updateTime = Date.now();
+                updateOrder(element.orders[0]).then(()=>this.getList());
+              })
+            }
+          }
+          this.$message({
+            message: '寄存成功！',
+            type: 'success'
+          });
         }
       },
       async getListOrder(response) {

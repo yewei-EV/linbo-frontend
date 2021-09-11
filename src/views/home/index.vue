@@ -1,11 +1,11 @@
 <template>
   <div class="app-container">
-    <div class="announcement">
-      <img :src="speaker" style="margin-right: 15px;">
-      <span class="announcement-content font-medium" @click="showDetails" @mouseover="stop" @mouseout="start" ref="announcement_content">
-        {{ msg }}
-      </span>
-    </div>
+<!--    <div class="announcement">-->
+<!--      <img :src="speaker" style="margin-right: 15px;">-->
+<!--      <span class="announcement-content font-medium" @click="showDetails" @mouseover="stop" @mouseout="start" ref="announcement_content">-->
+<!--        {{ msg }}-->
+<!--      </span>-->
+<!--    </div>-->
     <div class="info-layout">
       <div class="address-title">
         <div>
@@ -21,7 +21,7 @@
         <div class="info-user">识别码： <span style="color:#164988">{{this.userInfo?this.userInfo.userSn:''}}</span></div>
       </div>
       <el-row :gutter="20">
-        <el-col :span="24">
+        <el-col :span="12">
           <div class="info-frame">
             <div class="address-content">
               <el-row :gutter="20">
@@ -79,6 +79,14 @@
                 </el-col>
               </el-row>
             </div>
+          </div>
+        </el-col>
+        <el-col :span="12">
+          <div class="info-frame">
+            <el-row style="font-size:15px;color:white">
+              <el-col style="font-weight: bolder;color: red;margin-bottom: 10px">公告：</el-col>
+              <el-col style="white-space: pre-wrap;line-height: 2;">{{announcement}}</el-col>
+            </el-row>
           </div>
         </el-col>
       </el-row>
@@ -670,9 +678,9 @@ export default {
 .info-frame {
   border: 1px solid #DCDFE6;
   border-radius: 5px;
-  padding-left: 30px;
-  height: 320px;
-  background-color: #164988;
+  padding: 15px;
+  height: 300px;
+  background-color: slateblue;
 }
 .address-title {
   display: flex;
@@ -681,11 +689,11 @@ export default {
 }
 .info-title {
   color: orange;
-  font-size: 20px;
+  font-size: 15px;
   margin-bottom: 10px;
 }
 .address-content {
-  margin-top: 25px;
+  margin-bottom: 25px;
 }
 .content-value {
   color: whitesmoke;

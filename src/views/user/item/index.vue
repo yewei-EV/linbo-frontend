@@ -699,6 +699,21 @@
         <el-button @click="duInfoDialogVisible = false" size="small">关 闭</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      :title="'入库图片'"
+      :visible.sync="photoDialogVisible"
+      width="50%">
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <div class="un-handle-item">
+            <img style="height: 500px" :src="item.photo">
+          </div>
+        </el-col>
+      </el-row>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="photoDialogVisible = false" size="small">关 闭</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>

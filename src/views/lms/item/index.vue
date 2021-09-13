@@ -1066,17 +1066,9 @@ import {
             updateItem(this.item).then(() => {
               if (this.item.userSn !== this.order.userSn) {
                 this.order.userSn = this.item.userSn;
-                this.order.updateTime = Date.now();
-                updateOrder(this.order).then(() => {
-                  this.$message({
-                    message: '修改成功！',
-                    type: 'success'
-                  });
-                  this.dialogVisible = false;
-                  this.isEdit = false;
-                  this.getList();
-                })
-              } else {
+              }
+              this.order.updateTime = Date.now();
+              updateOrder(this.order).then(() => {
                 this.$message({
                   message: '修改成功！',
                   type: 'success'
@@ -1084,7 +1076,7 @@ import {
                 this.dialogVisible = false;
                 this.isEdit = false;
                 this.getList();
-              }
+              })
             });
           } else {
             this.item.createTime = new Date();

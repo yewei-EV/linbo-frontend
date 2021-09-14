@@ -146,7 +146,8 @@
             <el-button size="mini"
                        type="success"
                        style="margin-top:5px"
-                       v-if="scope.row.orders && scope.row.orders[0].orderStatus===1"
+                       v-if="scope.row.orders && scope.row.orders[0].orderStatus===1
+                       && (scope.row.orders[0].price > 0 || scope.row.orders[0].sfPrice > 0)"
                        @click="payOrder(scope.$index, scope.row)">
               支付
             </el-button>

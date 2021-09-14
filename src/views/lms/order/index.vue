@@ -155,7 +155,7 @@
             </el-button>
             <el-button size="mini"
                        type="danger"
-                       v-if="scope.row.orderStatus===1 && scope.row.price"
+                       v-if="scope.row.orderStatus===1 && scope.row.price>0"
                        @click="handlePayment(scope.row)">已付
             </el-button>
             <el-button size="mini"

@@ -1026,6 +1026,9 @@ import {
               if (this.order.orderAction === "7") {
                 this.order.storageStartTime = Date.now();
               }
+              if (this.item.note) {
+                this.order.newDeliverySn = this.item.note;
+              }
               this.order.updateTime = Date.now();
               updateOrder(this.order).then(() => {
                 this.$message({
@@ -1066,6 +1069,9 @@ import {
             updateItem(this.item).then(() => {
               if (this.item.userSn !== this.order.userSn) {
                 this.order.userSn = this.item.userSn;
+              }
+              if (this.item.note) {
+                this.order.newDeliverySn = this.item.note;
               }
               this.order.updateTime = Date.now();
               updateOrder(this.order).then(() => {

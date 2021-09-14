@@ -77,6 +77,9 @@
           <el-form-item label="付款备注：">
             <el-input v-model="listQuery.note" class="input-width" placeholder="付款备注" clearable></el-input>
           </el-form-item>
+          <el-form-item label="物流单号：">
+            <el-input v-model="listQuery.newDeliverySn" class="input-width" placeholder="物流单号" clearable></el-input>
+          </el-form-item>
           <el-form-item label="最新更新时间：">
             <el-date-picker
               style="width: 177px"
@@ -204,6 +207,9 @@
         </el-table-column>
         <el-table-column label="顺丰运费" min-width="80" align="center">
           <template slot-scope="scope">￥{{scope.row.sfPrice?scope.row.sfPrice:0}}</template>
+        </el-table-column>
+        <el-table-column label="物流单号" min-width="80" align="center">
+          <template slot-scope="scope">{{scope.row.newDeliverySn}}</template>
         </el-table-column>
         <el-table-column label="Label单号" min-width="120" align="center">
           <template slot-scope="scope">{{scope.row.labelNumber}}</template>
@@ -552,7 +558,7 @@
             地点：{{item.location|formatLocation}}；
             包裹状态：{{item.itemStatus|formatItemStatus}}；
             存放位置：{{item.positionInfo}}；
-            物流单号：{{item.newDeliverySn}}；
+            物流单号：{{item.note}}；
             包裹备注：{{item.remark}}；
             SKU：{{item.sku}}；
             尺寸：{{item.size}}；
@@ -695,6 +701,7 @@ const defaultListQuery = {
   orderStatus: null,
   paymentTime: null,
   updateTime: null,
+  newDeliverySn: null
 };
 export default {
   name: "orderList",

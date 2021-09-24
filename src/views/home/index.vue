@@ -679,7 +679,7 @@ export default {
   border: 1px solid #DCDFE6;
   border-radius: 5px;
   padding: 15px;
-  height: 300px;
+  height: 330px;
   background-color: slateblue;
 }
 .address-title {

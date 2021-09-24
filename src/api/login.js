@@ -11,7 +11,7 @@ export function login(username, password) {
   })
 }
 
-export function register(username, password, email, discordId) {
+export function register(username, password, email, wechat, discordId) {
   return request({
     url: '/admin/register',
     method: 'post',
@@ -19,6 +19,7 @@ export function register(username, password, email, discordId) {
       username,
       password,
       email,
+      wechat,
       discordId
     }
   })
@@ -91,7 +92,7 @@ export function updateProfileInfo(id, params) {
   return request({
     url: '/admin/updateProfileInfo/' + id,
     method: 'post',
-    params: {name: params.name, email: params.email, discordId: params.discordId, icon: params.icon}
+    params: {name: params.name, email: params.email, wechat: params.wechat, discordId: params.discordId, icon: params.icon}
   })
 }
 

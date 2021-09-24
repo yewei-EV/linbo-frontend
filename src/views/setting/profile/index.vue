@@ -19,6 +19,13 @@
       </el-row>
       <el-row :gutter="20">
         <el-col :span="20" class="address-field">
+          <el-form-item label="微信号：">
+            <el-input v-model="profile.wechat" style="width: 250px"></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="20" class="address-field">
           <el-form-item label="Discord ID：">
             <el-input v-model="profile.discordId" style="width: 250px"></el-input>
           </el-form-item>
@@ -114,6 +121,7 @@ export default {
       getInfo().then(response => {
         this.userInfo = response.data;
         this.profile.email = response.data.email;
+        this.profile.wechat = response.data.wechat;
         this.profile.discordId = response.data.discordId;
         this.profile.icon = response.data.icon;
       });

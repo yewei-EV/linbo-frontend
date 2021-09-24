@@ -26,6 +26,9 @@
           <el-form-item label="识别码：">
             <el-input v-model="listQuery.userSn" class="input-width" placeholder="识别码" clearable></el-input>
           </el-form-item>
+          <el-form-item label="微信号：">
+            <el-input v-model="listQuery.wechat" class="input-width" placeholder="Discord Id" clearable></el-input>
+          </el-form-item>
           <el-form-item label="Discord ID：">
             <el-input v-model="listQuery.discordId" class="input-width" placeholder="Discord Id" clearable></el-input>
           </el-form-item>
@@ -51,6 +54,9 @@
         <el-table-column label="识别码" min-width="100" align="center">
           <template slot-scope="scope">{{scope.row.userSn}}</template>
         </el-table-column>
+        <el-table-column label="微信号" min-width="120" align="center">
+          <template slot-scope="scope">{{scope.row.wechat}}</template>
+        </el-table-column>
         <el-table-column label="Discord ID" min-width="120" align="center">
           <template slot-scope="scope">{{scope.row.discordId}}</template>
         </el-table-column>
@@ -71,7 +77,8 @@
           <template slot-scope="scope">
             <el-button size="mini"
                        type="text"
-                       @click="handleSelectRole(scope.$index, scope.row)">分配角色
+                       @click="handleSelectRole(scope.$index, scope.row)">
+              分配角色
             </el-button>
             <el-button size="mini"
                        type="text"
@@ -107,6 +114,9 @@
                label-width="150px" size="small">
         <el-form-item label="帐号：">
           <el-input v-model="admin.username" style="width: 250px"></el-input>
+        </el-form-item>
+        <el-form-item label="微信号：">
+          <el-input v-model="admin.wechat" style="width: 250px"></el-input>
         </el-form-item>
         <el-form-item label="Discord Id：">
           <el-input v-model="admin.discordId" style="width: 250px"></el-input>
@@ -167,12 +177,14 @@
     pageSize: 10,
     keyword: null,
     userSn: null,
+    wechat: null,
     discordId: null
   };
   const defaultAdmin = {
     id: null,
     username: null,
     password: null,
+    wechat: null,
     discordId: null,
     email: null,
     note: null,

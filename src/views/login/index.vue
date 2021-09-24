@@ -72,10 +72,15 @@
                   v-model="registerForm.registerEmail"
                   placeholder="请输入邮箱">
         </el-input>
+        <el-input name="registerWechat"
+                  class="register-input"
+                  v-model="registerForm.registerWechat"
+                  placeholder="请输入微信号">
+        </el-input>
         <el-input name="registerDiscordId"
                   class="register-input"
                   v-model="registerForm.registerDiscordId"
-                  placeholder="请输入Discord ID">
+                  placeholder="请输入Discord ID（可选）">
         </el-input>
       </div>
       <span slot="footer" class="dialog-footer">
@@ -118,6 +123,7 @@
           registerName: '',
           registerPassword: '',
           registerEmail: '',
+          registerWechat: '',
           registerDiscordId: ''
         },
         loginRules: {
@@ -176,22 +182,30 @@
         this.dialogVisible = true
       },
       dialogConfirm(){
+        if (!this.registerForm.registerWechat && !this.registerForm.registerDiscordId) {
+          this.$message({
+            type: 'error',
+            message: '微信号或Discord ID为必填!',
+            duration: 3000
+          });
+          return;
+        }
         this.dialogVisible = false;
         register(this.registerForm.registerName, this.registerForm.registerPassword, this.registerForm.registerEmail,
-        this.registerForm.registerDiscordId)
+        this.registerForm.registerWechat, this.registerForm.registerDiscordId)
           .then(response => {
             const data = response.data
             if (data.id) {
               this.$message({
                 type: 'success',
                 message: '注册成功!',
-                duration: 1000
+                duration: 2000
               });
             } else {
               this.$message({
                 message: '注册失败，请稍后再试！',
                 type: 'warning',
-                duration: 1000
+                duration: 3000
               });
             }
           });

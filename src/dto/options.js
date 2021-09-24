@@ -329,6 +329,7 @@ export var defaultAddressInfo = {
 
 export var defaultProfile = {
   email: null,
+  wechat: null,
   discordId: null,
   icon: null
 }

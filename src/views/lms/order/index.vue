@@ -976,7 +976,7 @@ export default {
     showDiscordIdByUserSn(userSn) {
       getAdminByUserSn(userSn).then((response) => {
         if (response.data) {
-          this.$alert('用户Discord ID: ' + response.data.discordId, '提示', {
+          this.$alert('微信号: ' + response.data.wechat + '; ' + 'Discord: ' + response.data.discordId, '提示', {
             confirmButtonText: '确定',
             type: 'info'
           })

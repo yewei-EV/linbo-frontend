@@ -1321,7 +1321,7 @@ import {
         if (!row.orders || row.orders.length < 1 ) {
           return false;
         }
-        return row.itemStatus === 21 && (row.orders[0].orderAction === "0");
+        return row.itemStatus === 21;
       },
       showEndStorageButton(row) {
         if (!row.orders || row.orders.length < 1) {

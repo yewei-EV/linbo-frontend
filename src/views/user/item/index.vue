@@ -147,7 +147,8 @@
                        type="success"
                        style="margin-top:5px"
                        v-if="scope.row.orders && scope.row.orders[0].orderStatus===1
-                       && (scope.row.orders[0].price > 0 || scope.row.orders[0].sfPrice > 0)"
+                       && (scope.row.orders[0].price > 0 || scope.row.orders[0].sfPrice > 0)
+                       && scope.row.orders[0].orderAction!=='5'"
                        @click="payOrder(scope.$index, scope.row)">
               支付
             </el-button>

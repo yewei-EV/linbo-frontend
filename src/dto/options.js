@@ -133,7 +133,8 @@ export const regionOptions = [
   {label:"意大利", value:'IT'},
   {label:"荷兰", value:'NL'},
   {label:"德国", value:'DE'},
-  {label:"英国", value:'EN'},
+  {label:"英国(回国)", value:'EN'},
+  {label:"英国(代寄&代卖)", value:'UK'},
   {label:"日本", value:'JP'},
   {label:"澳大利亚", value:'AU'},
   {label:"中国", value:'CN'},
@@ -249,7 +250,9 @@ export function formatLocation(location) {
     case 'DE':
       return "德国";
     case 'EN':
-      return "英国";
+      return "英国(回国)";
+    case 'UK':
+      return "英国(代寄&代卖)";
     case 'JP':
       return "日本";
     case 'AU':
@@ -435,6 +438,12 @@ export function getActionOptionsByLocation(location) {
     return [
       {label:"待用户选择", value:"-1"},
       {label:"集运linbo国内仓", value:"0"}
+    ];
+  } else if (location === 'UK') {
+    return [
+      {label:"待用户选择", value:"-1"},
+      {label:"转寄海外其他地址", value:"3"},
+      {label:"转寄stockx", value:"5"},
     ];
   } else {
     return [

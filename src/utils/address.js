@@ -106,7 +106,18 @@ export function getAddress(location, userSn, firstName, lastName) {
       address.city = "Salford";
       address.state = "Lancashire";
       address.zip = "M50 1BB";
-      address.tel = "07" + createRandomNumbers(11);
+      address.tel = "07" + createRandomNumbers(9);
+      address.country = "United Kingdom";
+      return address;
+    case "UK":
+      address.firstName = userSn + "+任意";
+      address.lastName = "Yuan";
+      address.address1 = "13 Small Street";
+      address.address2 = "Flat 4";
+      address.city = "Bristol";
+      address.state = "Somerset";
+      address.zip = "BS1 1DE";
+      address.tel = "0752" + createRandomNumbers(7);
       address.country = "United Kingdom";
       return address;
     case "AU":

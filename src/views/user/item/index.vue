@@ -148,7 +148,7 @@
                        style="margin-top:5px"
                        v-if="scope.row.orders && scope.row.orders[0].orderStatus===1
                        && (scope.row.orders[0].price > 0 || scope.row.orders[0].sfPrice > 0)
-                       && scope.row.orders[0].orderAction!=='5'"
+                       && scope.row.orders[0].orderAction!=='5' && scope.row.orders[0].orderAction!=='-1'"
                        @click="payOrder(scope.$index, scope.row)">
               支付
             </el-button>
@@ -1188,7 +1188,7 @@
         if (currentAction === "-1" && currentStatus === 12) {
           return "选择操作(国内仓)";
         }
-        if (currentAction === "-1" && currentStatus !== 11 && currentStatus !== 0) {
+        if (currentAction === "-1" && currentStatus !== 11 && currentStatus !== 0  && currentStatus !== 21) {
           return "选择操作";
         }
         switch (currentAction) {

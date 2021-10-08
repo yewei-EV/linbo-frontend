@@ -161,7 +161,8 @@
             <el-button size="mini"
                        type="success"
                        style="margin-left:0;"
-                       v-if="(scope.row.location === 'US1' || scope.row.location === 'UK' || scope.row.location === 'AU')
+                       v-if="(scope.row.location === 'US1' || scope.row.location === 'UK' || scope.row.location === 'AU'
+                       || scope.row.location === 'JP')
                        && scope.row.itemStatus===1"
                        @click="soldNow(scope.row)">
               套现

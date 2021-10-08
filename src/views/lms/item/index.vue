@@ -489,6 +489,9 @@
             </el-option>
           </el-select>
         </el-form-item>
+        <el-form-item v-if="order.orderAction==='6'" label="是否跟价：">
+          <el-input v-model="order.isFollowPrice?'是':'否'" style="width: 250px"></el-input>
+        </el-form-item>
         <el-form-item v-if="order.orderAction==='6'" label="商品价格：">
           <el-input @change="calculateDuPrice" v-model="order.soldPrice" style="width: 250px"></el-input>
         </el-form-item>
@@ -1198,12 +1201,12 @@ import {
           }
         })
       },
-      inOutBoundPackages() {
-        for(let i=0;i<this.multipleSelection.length;i++) {
+      async inOutBoundPackages() {
+        for (let i = 0; i < this.multipleSelection.length; i++) {
           this.multipleSelection[i].note = this.packageNote;
           this.multipleSelection[i].positionInfo = this.packagePositionInfo;
-          updateItemStatus(this.multipleSelection[i], this.multipleSelection[i].orders[0].orderAction).then(() => {
-            if(this.operateType===1) {
+          await updateItemStatus(this.multipleSelection[i], this.multipleSelection[i].orders[0].orderAction).then(() => {
+            if (this.operateType === 1) {
               this.multipleSelection[i].orders[0].orderAction = "-1";
               updateOrder(this.multipleSelection[i].orders[0]).then()
             }

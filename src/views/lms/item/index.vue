@@ -891,7 +891,7 @@ import {
         if (this.order.soldPrice) {
           this.order.transactionFee = this.order.soldPrice * 0.01;
           this.order.transactionFee = this.order.transactionFee.toFixed(2);
-          this.order.realTechServiceFee = this.order.soldPrice * 0.035;
+          this.order.realTechServiceFee = this.order.soldPrice * 0.037;
           this.order.realTechServiceFee = this.order.realTechServiceFee.toFixed(2);
         }
         if (this.order.realSalePrice && this.order.userOwnPrice) {

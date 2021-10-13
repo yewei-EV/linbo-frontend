@@ -406,15 +406,15 @@
         <el-form-item label="地址：">
           <el-input v-model="order.destination" style="width: 250px"></el-input>
         </el-form-item>
-        <el-form-item label="支付状态：">
-          <el-select v-model="order.orderStatus" clearable style="width: 250px">
-            <el-option v-for="status in orderStatusOptions"
-                       :key="status.value"
-                       :label="status.label"
-                       :value="status.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
+<!--        <el-form-item label="支付状态：">-->
+<!--          <el-select v-model="order.orderStatus" clearable style="width: 250px">-->
+<!--            <el-option v-for="status in orderStatusOptions"-->
+<!--                       :key="status.value"-->
+<!--                       :label="status.label"-->
+<!--                       :value="status.value">-->
+<!--            </el-option>-->
+<!--          </el-select>-->
+<!--        </el-form-item>-->
         <el-form-item label="价格：">
           <el-input v-model="order.price" style="width: 250px"></el-input>
         </el-form-item>

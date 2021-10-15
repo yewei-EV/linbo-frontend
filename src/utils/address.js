@@ -17,17 +17,17 @@ export function getAddress(location, userSn, firstName, lastName) {
   let address = Object.assign({}, defaultAddress);
 
   switch (location) {
-    case "US1":
-      address.firstName = firstName;
-      address.lastName = lastName;
-      address.address1 = createRandomCharacters(4, false) + " 277A Randolph Ave";
-      address.address2 = userSn;
-      address.city = "Jersey City";
-      address.state = "NJ";
-      address.zip = "07304";
-      address.tel = "732" + createRandomNumbers(7);
-      address.fullZip = "07304-2719";
-      return address;
+    // case "US1":
+    //   address.firstName = firstName;
+    //   address.lastName = lastName;
+    //   address.address1 = createRandomCharacters(4, false) + " 277A Randolph Ave";
+    //   address.address2 = userSn;
+    //   address.city = "Jersey City";
+    //   address.state = "NJ";
+    //   address.zip = "07304";
+    //   address.tel = "732" + createRandomNumbers(7);
+    //   address.fullZip = "07304-2719";
+    //   return address;
     case "US2":
       address.firstName = firstName;
       address.lastName = lastName;
@@ -98,17 +98,17 @@ export function getAddress(location, userSn, firstName, lastName) {
       address.tel = "688" + createRandomNumbers(6);
       address.country = "España";
       return address;
-    case "EN":
-      address.firstName = "LINBO";
-      address.lastName = userSn;
-      address.address1 = "Unit 1B Astor road";
-      address.address2 = userSn;
-      address.city = "Salford";
-      address.state = "Lancashire";
-      address.zip = "M50 1BB";
-      address.tel = "07" + createRandomNumbers(9);
-      address.country = "United Kingdom";
-      return address;
+    // case "EN":
+    //   address.firstName = "LINBO";
+    //   address.lastName = userSn;
+    //   address.address1 = "Unit 1B Astor road";
+    //   address.address2 = userSn;
+    //   address.city = "Salford";
+    //   address.state = "Lancashire";
+    //   address.zip = "M50 1BB";
+    //   address.tel = "07" + createRandomNumbers(9);
+    //   address.country = "United Kingdom";
+    //   return address;
     case "UK":
       address.firstName = userSn + "+任意";
       address.lastName = "Yuan";

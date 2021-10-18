@@ -90,7 +90,7 @@ export function getAddress(location, userSn, firstName, lastName) {
     case "SP":
       address.firstName = "Jing";
       address.lastName = "Cong";
-      address.address1 = createRandomCharacters(4, false) + " Crete 80，puerta 303";
+      address.address1 = createRandomCharacters(4, false) + " calle Marta 86 puerta 20";
       address.address2 = userSn;
       address.city = "Gran Alacant";
       address.state = "Alicante";
